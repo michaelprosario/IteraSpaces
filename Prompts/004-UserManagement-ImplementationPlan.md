@@ -135,8 +135,8 @@ public class AuthResult
 public class RegisterUserCommand
 {
     public string Email { get; set; }
-    public string Password { get; set; }
     public string DisplayName { get; set; }
+    // Note: Password is not stored as Firebase handles OAuth authentication
 }
 
 public class UpdateUserProfileCommand

@@ -1,0 +1,11 @@
+UserServices / Test the following
+
+Task<AppResult<User>> RegisterUserAsync(RegisterUserCommand command);
+Task<AppResult<User>> GetUserByIdAsync(GetUserByIdQuery query);
+Task<AppResult<User>> GetUserByEmailAsync(GetUserByEmailQuery query);
+Task<AppResult<User>> UpdateUserProfileAsync(UpdateUserProfileCommand command);
+Task<AppResult<User>> UpdatePrivacySettingsAsync(UpdatePrivacySettingsCommand command);
+Task<AppResult<bool>> DisableUserAsync(DisableUserCommand command);
+Task<AppResult<bool>> EnableUserAsync(string userId, string enabledBy);
+Task<AppResult<List<User>>> SearchUsersAsync(SearchUsersQuery query);
+Task<AppResult<bool>> RecordLoginAsync(string userId);

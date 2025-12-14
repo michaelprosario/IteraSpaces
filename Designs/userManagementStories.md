@@ -3,13 +3,13 @@
 ### User Registration & Profiles
 
 **As a** New Visitor  
-**I want to** register for an account using email or social login  
+**I want to** register for an account using social login  
 **So that** I can participate in challenges
 
 **Acceptance Criteria:**
-- Can register with email and password
 - Can sign up via Firebase Auth (Google, GitHub, etc.)
-- Must verify email before full access
+- No password is stored (Firebase handles OAuth)
+- Email verification handled by Firebase
 - Profile is automatically created upon registration
 
 ===

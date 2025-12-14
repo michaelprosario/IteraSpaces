@@ -36,13 +36,28 @@ namespace AppCore.UnitTests.Services
             var command = new RegisterUserCommand
             {
                 Email = "test@example.com",
-                Password = "password123",
                 DisplayName = "Test User"
             };
 
             _userRepository.EmailExistsAsync(command.Email).Returns(Task.FromResult(false));
 
-            _authService.CreateFirebaseUserAsync(command.Email, command.Password)
+            // Note: For Firebase OAuth, authentication is handled client-side
+            var fakeUser = new User
+            {
+                Id = Guid.NewGuid().ToString(),
+                Email = command.Email,
+                DisplayName = command.DisplayName,
+                FirebaseUid = "firebase-uid-123",
+                EmailVerified = false,
+                Status = UserStatus.PendingVerification,
+                PrivacySettings = UserPrivacySettings.GetDefault(),
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _userRepository.Add(Arg.Any<User>()).Returns(fakeUser);
+
+            // Simulate auth result (in real flow, this comes from client-side Firebase)
+            _authService.CreateFirebaseUserAsync(Arg.Any<string>(), Arg.Any<string>())
                 .Returns(Task.FromResult(new AuthResult
                 {
                     Success = true,
@@ -74,7 +89,6 @@ namespace AppCore.UnitTests.Services
             var command = new RegisterUserCommand
             {
                 Email = "existing@example.com",
-                Password = "password123",
                 DisplayName = "Test User"
             };
 
@@ -96,7 +110,6 @@ namespace AppCore.UnitTests.Services
             var command = new RegisterUserCommand
             {
                 Email = "",
-                Password = "password123",
                 DisplayName = "Test User"
             };
 
@@ -107,26 +120,6 @@ namespace AppCore.UnitTests.Services
             Assert.That(result.Success, Is.False);
             Assert.That(result.ValidationErrors, Is.Not.Null);
             Assert.That(result.ValidationErrors!.Exists(e => e.PropertyName == "Email"), Is.True);
-        }
-
-        [Test]
-        public async Task RegisterUserAsync_WithShortPassword_ShouldReturnValidationFailure()
-        {
-            // Arrange
-            var command = new RegisterUserCommand
-            {
-                Email = "test@example.com",
-                Password = "short",
-                DisplayName = "Test User"
-            };
-
-            // Act
-            var result = await _userService.RegisterUserAsync(command);
-
-            // Assert
-            Assert.That(result.Success, Is.False);
-            Assert.That(result.ValidationErrors, Is.Not.Null);
-            Assert.That(result.ValidationErrors!.Exists(e => e.PropertyName == "Password"), Is.True);
         }
 
         #endregion

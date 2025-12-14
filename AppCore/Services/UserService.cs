@@ -44,10 +44,9 @@ namespace AppCore.Services
             if (await _userRepository.EmailExistsAsync(command.Email))
                 return AppResult<User>.FailureResult("Email already registered", "EMAIL_EXISTS");
 
-            // 3. Create Firebase user
-            var authResult = await _authService.CreateFirebaseUserAsync(command.Email, command.Password);
-            if (!authResult.Success)
-                return AppResult<User>.FailureResult(authResult.ErrorMessage, "AUTH_FAILED");
+            // 3. Create Firebase user (Firebase handles OAuth authentication)
+            // Note: For Gmail/social login, Firebase auth is handled client-side
+            // This step may be skipped or adapted based on your authentication flow
 
             // 4. Create user entity
             var user = new User
@@ -212,11 +211,6 @@ namespace AppCore.Services
             
             if (string.IsNullOrWhiteSpace(command.Email))
                 errors.Add(new ValidationError { PropertyName = "Email", ErrorMessage = "Email is required" });
-            
-            if (string.IsNullOrWhiteSpace(command.Password))
-                errors.Add(new ValidationError { PropertyName = "Password", ErrorMessage = "Password is required" });
-            else if (command.Password.Length < 8)
-                errors.Add(new ValidationError { PropertyName = "Password", ErrorMessage = "Password must be at least 8 characters" });
             
             if (string.IsNullOrWhiteSpace(command.DisplayName))
                 errors.Add(new ValidationError { PropertyName = "DisplayName", ErrorMessage = "Display name is required" });
