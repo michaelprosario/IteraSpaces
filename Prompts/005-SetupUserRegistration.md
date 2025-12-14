@@ -1,0 +1,4 @@
+- draft plan for setting up firebase auth with google login
+- draft plan for user registration for angular
+- angular portal should be able to communicate with IteraWebApi api
+- write angularAuthPlan.md

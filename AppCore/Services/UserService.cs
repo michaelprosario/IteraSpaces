@@ -54,7 +54,7 @@ namespace AppCore.Services
                 Id = Guid.NewGuid().ToString(),
                 Email = command.Email,
                 DisplayName = command.DisplayName,
-                FirebaseUid = authResult.Uid,
+                FirebaseUid = command.FirebaseUid,
                 EmailVerified = false,
                 Status = UserStatus.PendingVerification,
                 PrivacySettings = UserPrivacySettings.GetDefault(),
@@ -69,8 +69,11 @@ namespace AppCore.Services
             // 5. Save to repository
             var savedUser = _userRepository.Add(user);
 
-            // 6. Send verification email
-            await _authService.SendEmailVerificationAsync(authResult.Uid);
+            // 6. Send verification email (optional for OAuth users)
+            if (!string.IsNullOrEmpty(command.FirebaseUid))
+            {
+                await _authService.SendEmailVerificationAsync(command.FirebaseUid);
+            }
 
             return AppResult<User>.SuccessResult(savedUser, "User registered successfully");
         }
