@@ -48,9 +48,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization();
 
 // Configure Entity Framework Core with PostgreSQL
+var dataSourceBuilder = new Npgsql.NpgsqlDataSourceBuilder(
+    builder.Configuration.GetConnectionString("DefaultConnection"));
+dataSourceBuilder.EnableDynamicJson();
+var dataSource = dataSourceBuilder.Build();
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
+        dataSource,
         npgsqlOptions => npgsqlOptions.MigrationsAssembly("IteraWebApi")
     ));
 
@@ -59,10 +64,14 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", policy =>
     {
-        policy.WithOrigins("http://localhost:4200", "https://localhost:4200")
+        policy.WithOrigins(
+                "http://localhost:4200", 
+                "https://localhost:4200",
+                "https://congenial-parakeet-v65x4jqr6p2v96-4200.app.github.dev")
               .AllowAnyHeader()
               .AllowAnyMethod()
-              .AllowCredentials();
+              .AllowCredentials()
+              .SetIsOriginAllowedToAllowWildcardSubdomains();
     });
 });
 

@@ -1,0 +1,2 @@
+- adjust portal code base to use web api at /api
+- in development environment, the system should proxy requests from /api/* to the dotnet backend located at localhost:5267

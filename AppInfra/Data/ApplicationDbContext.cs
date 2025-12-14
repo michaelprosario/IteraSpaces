@@ -88,7 +88,6 @@ namespace AppInfra.Data
                     .IsRequired();
 
                 entity.Property(e => e.CreatedBy)
-                    .IsRequired()
                     .HasMaxLength(255);
 
                 entity.Property(e => e.UpdatedAt);
