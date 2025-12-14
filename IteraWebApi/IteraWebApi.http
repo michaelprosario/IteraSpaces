@@ -1,0 +1,6 @@
+@IteraWebApi_HostAddress = http://localhost:5267
+
+GET {{IteraWebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
