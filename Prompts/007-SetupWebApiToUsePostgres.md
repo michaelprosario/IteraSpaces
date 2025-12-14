@@ -1,0 +1,3 @@
+- Please amend the webapi project to use Postgres with Entity Framework Core
+- Setup required code for EF migrations
+- Write HOWTO markdown talking about EF Core setup and how to setup migrations
