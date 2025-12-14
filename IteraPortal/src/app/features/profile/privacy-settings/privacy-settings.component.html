@@ -1,0 +1,62 @@
+<div class="privacy-container">
+  <header class="privacy-header">
+    <h1>Privacy Settings</h1>
+  </header>
+
+  <div class="privacy-content">
+    <form [formGroup]="privacyForm" (ngSubmit)="onSubmit()" class="privacy-form">
+      <p class="form-description">
+        Control who can see your information and how others can interact with you.
+      </p>
+
+      <div class="form-group checkbox-group">
+        <label>
+          <input type="checkbox" formControlName="profileVisible">
+          <span>Make my profile visible to others</span>
+        </label>
+        <p class="help-text">When disabled, your profile will only be visible to you.</p>
+      </div>
+
+      <div class="form-group checkbox-group">
+        <label>
+          <input type="checkbox" formControlName="showEmail">
+          <span>Show my email address on profile</span>
+        </label>
+        <p class="help-text">Allow others to see your email address.</p>
+      </div>
+
+      <div class="form-group checkbox-group">
+        <label>
+          <input type="checkbox" formControlName="showLocation">
+          <span>Show my location on profile</span>
+        </label>
+        <p class="help-text">Display your location to other users.</p>
+      </div>
+
+      <div class="form-group checkbox-group">
+        <label>
+          <input type="checkbox" formControlName="allowFollowers">
+          <span>Allow others to follow me</span>
+        </label>
+        <p class="help-text">When disabled, users cannot follow your profile.</p>
+      </div>
+
+      <div class="success-message" *ngIf="successMessage">
+        {{ successMessage }}
+      </div>
+
+      <div class="error-message" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-primary" [disabled]="isLoading">
+          {{ isLoading ? 'Saving...' : 'Save Settings' }}
+        </button>
+        <button type="button" class="btn-secondary" (click)="cancel()">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

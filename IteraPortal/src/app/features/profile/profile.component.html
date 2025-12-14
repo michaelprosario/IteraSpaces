@@ -1,0 +1,60 @@
+<div class="profile-container">
+  <header class="profile-header">
+    <button class="btn-back" (click)="goBack()">← Back</button>
+    <h1>User Profile</h1>
+  </header>
+
+  <div class="profile-content" *ngIf="currentUser() as user">
+    <div class="profile-card">
+      <div class="profile-info">
+        <div class="profile-photo" *ngIf="user.photoUrl">
+          <img [src]="user.photoUrl" [alt]="user.displayName">
+        </div>
+        <div class="profile-photo-placeholder" *ngIf="!user.photoUrl">
+          {{ user.displayName?.charAt(0) }}
+        </div>
+
+        <h2>{{ user.displayName }}</h2>
+        <p class="email">{{ user.email }}</p>
+
+        <div class="profile-details" *ngIf="user.bio || user.location">
+          <div *ngIf="user.bio" class="detail-section">
+            <h3>Bio</h3>
+            <p>{{ user.bio }}</p>
+          </div>
+
+          <div *ngIf="user.location" class="detail-section">
+            <h3>Location</h3>
+            <p>{{ user.location }}</p>
+          </div>
+
+          <div *ngIf="user.skills && user.skills.length > 0" class="detail-section">
+            <h3>Skills</h3>
+            <div class="tags">
+              <span class="tag" *ngFor="let skill of user.skills">{{ skill }}</span>
+            </div>
+          </div>
+
+          <div *ngIf="user.interests && user.interests.length > 0" class="detail-section">
+            <h3>Interests</h3>
+            <div class="tags">
+              <span class="tag" *ngFor="let interest of user.interests">{{ interest }}</span>
+            </div>
+          </div>
+
+          <div *ngIf="user.areasOfExpertise && user.areasOfExpertise.length > 0" class="detail-section">
+            <h3>Areas of Expertise</h3>
+            <div class="tags">
+              <span class="tag" *ngFor="let area of user.areasOfExpertise">{{ area }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-actions">
+          <button class="btn-primary" (click)="navigateToEdit()">Edit Profile</button>
+          <button class="btn-secondary" (click)="navigateToPrivacy()">Privacy Settings</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
