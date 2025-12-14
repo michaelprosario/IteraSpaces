@@ -10,9 +10,6 @@
         <div class="profile-photo" *ngIf="user.photoUrl">
           <img [src]="user.photoUrl" [alt]="user.displayName">
         </div>
-        <div class="profile-photo-placeholder" *ngIf="!user.photoUrl">
-          {{ user.displayName?.charAt(0) }}
-        </div>
 
         <h2>{{ user.displayName }}</h2>
         <p class="email">{{ user.email }}</p>

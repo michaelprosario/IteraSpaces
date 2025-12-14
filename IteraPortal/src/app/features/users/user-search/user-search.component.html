@@ -32,9 +32,6 @@
           <div class="user-avatar" *ngIf="user.photoUrl">
             <img [src]="user.photoUrl" [alt]="user.displayName">
           </div>
-          <div class="user-avatar-placeholder" *ngIf="!user.photoUrl">
-            {{ user.displayName?.charAt(0) }}
-          </div>
           
           <div class="user-info">
             <h3>{{ user.displayName }}</h3>
