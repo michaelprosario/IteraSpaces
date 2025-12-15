@@ -19,6 +19,9 @@ namespace AppCore.Entities
         public UserPrivacySettings PrivacySettings { get; set; } = UserPrivacySettings.GetDefault();
         public UserStatus Status { get; set; }  // Active, Disabled, Suspended
         public DateTime? LastLoginAt { get; set; }
+        
+        // Navigation property for many-to-many relationship with roles
+        public List<UserRole> UserRoles { get; set; } = new List<UserRole>();
     }
 
     public enum UserStatus

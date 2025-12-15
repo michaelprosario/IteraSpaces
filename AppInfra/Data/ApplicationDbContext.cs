@@ -11,6 +11,8 @@ namespace AppInfra.Data
         }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<Role> Roles { get; set; }
+        public DbSet<UserRole> UserRoles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -82,6 +84,113 @@ namespace AppInfra.Data
                     .HasMaxLength(50);
 
                 entity.Property(e => e.LastLoginAt);
+
+                // BaseEntity properties
+                entity.Property(e => e.CreatedAt)
+                    .IsRequired();
+
+                entity.Property(e => e.CreatedBy)
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.UpdatedAt);
+
+                entity.Property(e => e.UpdatedBy)
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.IsDeleted)
+                    .IsRequired();
+
+                entity.Property(e => e.DeletedAt);
+
+                entity.Property(e => e.DeletedBy)
+                    .HasMaxLength(255);
+
+                // Filter out soft-deleted entities by default
+                entity.HasQueryFilter(e => !e.IsDeleted);
+            });
+
+            // Configure Role entity
+            modelBuilder.Entity<Role>(entity =>
+            {
+                entity.ToTable("Roles");
+
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Id)
+                    .IsRequired()
+                    .HasMaxLength(36);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                entity.HasIndex(e => e.Name)
+                    .IsUnique();
+
+                entity.Property(e => e.Description)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.IsSystemRole)
+                    .IsRequired();
+
+                // BaseEntity properties
+                entity.Property(e => e.CreatedAt)
+                    .IsRequired();
+
+                entity.Property(e => e.CreatedBy)
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.UpdatedAt);
+
+                entity.Property(e => e.UpdatedBy)
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.IsDeleted)
+                    .IsRequired();
+
+                entity.Property(e => e.DeletedAt);
+
+                entity.Property(e => e.DeletedBy)
+                    .HasMaxLength(255);
+
+                // Filter out soft-deleted entities by default
+                entity.HasQueryFilter(e => !e.IsDeleted);
+            });
+
+            // Configure UserRole entity (junction table)
+            modelBuilder.Entity<UserRole>(entity =>
+            {
+                entity.ToTable("UserRoles");
+
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Id)
+                    .IsRequired()
+                    .HasMaxLength(36);
+
+                entity.Property(e => e.UserId)
+                    .IsRequired()
+                    .HasMaxLength(36);
+
+                entity.Property(e => e.RoleId)
+                    .IsRequired()
+                    .HasMaxLength(36);
+
+                // Configure relationships
+                entity.HasOne(e => e.User)
+                    .WithMany(u => u.UserRoles)
+                    .HasForeignKey(e => e.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(e => e.Role)
+                    .WithMany(r => r.UserRoles)
+                    .HasForeignKey(e => e.RoleId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                // Unique constraint to prevent duplicate user-role assignments
+                entity.HasIndex(e => new { e.UserId, e.RoleId })
+                    .IsUnique();
 
                 // BaseEntity properties
                 entity.Property(e => e.CreatedAt)
