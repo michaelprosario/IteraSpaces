@@ -110,14 +110,19 @@ export class ApiService {
     return throwError(() => error);
   }
 
-  private processError(error: any): Error {
+  private processError(error: any): any {
     if (error.error instanceof ErrorEvent) {
       // Client-side error
-      return new Error(error.error.message);
+      const err: any = new Error(error.error.message);
+      err.status = 0;
+      return err;
     } else {
-      // Server-side error
+      // Server-side error - preserve status code
       const message = error.error?.message || error.message || 'An error occurred';
-      return new Error(message);
+      const err: any = new Error(message);
+      err.status = error.status;
+      err.error = error.error;
+      return err;
     }
   }
 }

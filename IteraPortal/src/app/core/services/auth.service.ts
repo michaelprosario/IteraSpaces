@@ -59,22 +59,9 @@ export class AuthService {
       const result = await signInWithPopup(this.auth, provider);
       const idToken = await result.user.getIdToken();
       
-      // Register/authenticate with backend using the actual API endpoint
-      const backendUser = await this.registerOrLoginWithBackend({
-        firebaseUid: result.user.uid,
-        email: result.user.email!,
-        displayName: result.user.displayName || result.user.email!,
-        photoUrl: result.user.photoURL || undefined
-      });
-
-      this.currentUser.set(backendUser);
-      
-      // Record the login event
-      if (backendUser.id) {
-        await this.recordLogin(backendUser.id);
-      }
-      
-      this.router.navigate(['/dashboard']);
+      // After Firebase authentication, redirect to startup
+      // The auth-startup guard will check if user exists in DB and route accordingly
+      this.router.navigate(['/startup']);
     } catch (error: any) {
       console.error('Google sign-in error:', error);
       throw new Error(error.message || 'Failed to sign in with Google');
