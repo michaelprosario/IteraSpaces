@@ -293,9 +293,8 @@ namespace AppCore.UnitTests.Services
 
             // Assert
             Assert.That(result.Success, Is.True);
-            Assert.That(role.IsDeleted, Is.True);
-            Assert.That(role.DeletedAt, Is.Not.Null);
-            _roleRepository.Received(1).Update(Arg.Any<Role>());
+            Assert.That(role.DeletedBy, Is.EqualTo("admin-123"));
+            _roleRepository.Received(1).Delete(Arg.Any<Role>());
         }
 
         [Test]
@@ -324,7 +323,7 @@ namespace AppCore.UnitTests.Services
             // Assert
             Assert.That(result.Success, Is.False);
             Assert.That(result.ErrorCode, Is.EqualTo("SYSTEM_ROLE"));
-            _roleRepository.DidNotReceive().Update(Arg.Any<Role>());
+            _roleRepository.DidNotReceive().Delete(Arg.Any<Role>());
         }
 
         #endregion

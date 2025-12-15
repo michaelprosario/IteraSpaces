@@ -62,7 +62,7 @@ namespace AppInfra.Repositories
         public async Task<bool> RoleExistsAsync(string name)
         {
             return await _context.Roles
-                .AnyAsync(r => r.Name == name);
+                .AnyAsync(r => r.Name == name && !r.IsDeleted);
         }
     }
 }

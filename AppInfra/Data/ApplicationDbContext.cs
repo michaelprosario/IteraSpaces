@@ -188,9 +188,10 @@ namespace AppInfra.Data
                     .HasForeignKey(e => e.RoleId)
                     .OnDelete(DeleteBehavior.Cascade);
 
-                // Unique constraint to prevent duplicate user-role assignments
-                entity.HasIndex(e => new { e.UserId, e.RoleId })
-                    .IsUnique();
+                // Unique constraint to prevent duplicate user-role assignments (excluding soft-deleted)
+                entity.HasIndex(e => new { e.UserId, e.RoleId, e.IsDeleted })
+                    .IsUnique()
+                    .HasFilter("\"IsDeleted\" = false");
 
                 // BaseEntity properties
                 entity.Property(e => e.CreatedAt)

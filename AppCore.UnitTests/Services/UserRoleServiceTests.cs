@@ -189,9 +189,8 @@ namespace AppCore.UnitTests.Services
 
             // Assert
             Assert.That(result.Success, Is.True);
-            Assert.That(userRole.IsDeleted, Is.True);
-            Assert.That(userRole.DeletedAt, Is.Not.Null);
-            _userRoleRepository.Received(1).Update(Arg.Any<UserRole>());
+            Assert.That(userRole.DeletedBy, Is.EqualTo("admin-123"));
+            _userRoleRepository.Received(1).Delete(Arg.Any<UserRole>());
         }
 
         [Test]
@@ -216,7 +215,7 @@ namespace AppCore.UnitTests.Services
             // Assert
             Assert.That(result.Success, Is.False);
             Assert.That(result.ErrorCode, Is.EqualTo("ROLE_NOT_ASSIGNED"));
-            _userRoleRepository.DidNotReceive().Update(Arg.Any<UserRole>());
+            _userRoleRepository.DidNotReceive().Delete(Arg.Any<UserRole>());
         }
 
         #endregion

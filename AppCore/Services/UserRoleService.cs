@@ -84,12 +84,9 @@ namespace AppCore.Services
             if (userRole == null)
                 return AppResult<bool>.FailureResult("User does not have this role", "ROLE_NOT_ASSIGNED");
 
-            // Soft delete
-            userRole.IsDeleted = true;
-            userRole.DeletedAt = DateTime.UtcNow;
+            // Soft delete - set DeletedBy before calling Delete
             userRole.DeletedBy = command.RemovedBy;
-
-            _userRoleRepository.Update(userRole);
+            _userRoleRepository.Delete(userRole);
 
             return AppResult<bool>.SuccessResult(true, "Role removed from user successfully");
         }

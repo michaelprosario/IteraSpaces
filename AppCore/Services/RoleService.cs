@@ -138,12 +138,9 @@ namespace AppCore.Services
             if (role.IsSystemRole)
                 return AppResult<bool>.FailureResult("Cannot delete system role", "SYSTEM_ROLE");
 
-            // Soft delete
-            role.IsDeleted = true;
-            role.DeletedAt = DateTime.UtcNow;
+            // Soft delete - set DeletedBy before calling Delete
             role.DeletedBy = command.DeletedBy;
-
-            _roleRepository.Update(role);
+            _roleRepository.Delete(role);
 
             return AppResult<bool>.SuccessResult(true, "Role deleted successfully");
         }

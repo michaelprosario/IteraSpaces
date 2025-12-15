@@ -55,7 +55,7 @@ namespace AppInfra.Repositories
         {
             return await _context.UserRoles
                 .Include(ur => ur.Role)
-                .Where(ur => ur.UserId == userId)
+                .Where(ur => ur.UserId == userId && !ur.Role.IsDeleted)
                 .ToListAsync();
         }
 
@@ -63,7 +63,7 @@ namespace AppInfra.Repositories
         {
             return await _context.UserRoles
                 .Include(ur => ur.Role)
-                .Where(ur => ur.UserId == userId)
+                .Where(ur => ur.UserId == userId && !ur.Role.IsDeleted)
                 .Select(ur => ur.Role.Name)
                 .ToListAsync();
         }
@@ -71,20 +71,24 @@ namespace AppInfra.Repositories
         public async Task<UserRole?> GetUserRoleAsync(string userId, string roleId)
         {
             return await _context.UserRoles
-                .FirstOrDefaultAsync(ur => ur.UserId == userId && ur.RoleId == roleId);
+                .Include(ur => ur.User)
+                .Include(ur => ur.Role)
+                .FirstOrDefaultAsync(ur => ur.UserId == userId && ur.RoleId == roleId && 
+                                          !ur.User.IsDeleted && !ur.Role.IsDeleted);
         }
 
         public async Task<bool> UserHasRoleAsync(string userId, string roleId)
         {
             return await _context.UserRoles
-                .AnyAsync(ur => ur.UserId == userId && ur.RoleId == roleId);
+                .Include(ur => ur.Role)
+                .AnyAsync(ur => ur.UserId == userId && ur.RoleId == roleId && !ur.Role.IsDeleted);
         }
 
         public async Task<List<User>> GetUsersInRoleAsync(string roleId)
         {
             return await _context.UserRoles
                 .Include(ur => ur.User)
-                .Where(ur => ur.RoleId == roleId)
+                .Where(ur => ur.RoleId == roleId && !ur.User.IsDeleted)
                 .Select(ur => ur.User)
                 .ToListAsync();
         }
