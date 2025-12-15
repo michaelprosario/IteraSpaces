@@ -3,14 +3,21 @@ import { Router } from '@angular/router';
 import { CanActivateFn } from '@angular/router';
 import { Auth } from '@angular/fire/auth';
 import { UserProfileService } from '../services/user-profile.service';
+import { AuthService } from '../services/auth.service';
 
 export const authStartupGuard: CanActivateFn = async (route, state) => {
   const auth = inject(Auth);
   const userService = inject(UserProfileService);
+  const authService = inject(AuthService);
   const router = inject(Router);
 
-  // Check if user is authenticated with Firebase
-  const firebaseUser = auth.currentUser;
+  // Wait for Firebase auth state to be ready
+  const firebaseUser = await new Promise<any>((resolve) => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      unsubscribe();
+      resolve(user);
+    });
+  });
   
   if (!firebaseUser) {
     // Not authenticated, redirect to login
@@ -22,7 +29,10 @@ export const authStartupGuard: CanActivateFn = async (route, state) => {
   try {
     const user = await userService.getUserByEmail(firebaseUser.email!);
     
-    // User exists in DB, redirect to dashboard
+    // User exists in DB, store profile in service for session
+    authService.currentUser.set(user);
+    
+    // Redirect to dashboard
     router.navigate(['/dashboard']);
     return false;
   } catch (error: any) {

@@ -11,6 +11,12 @@ export interface ApiResponse<T> {
   message?: string;
 }
 
+export interface AppResult<T> {
+  success: boolean;
+  data: T;
+  message: string | null;
+}
+
 // API Models based on OpenAPI spec
 export interface UpdateUserProfileCommand {
   userId?: string;
@@ -46,10 +52,12 @@ export class ApiService {
 
   async get<T>(endpoint: string): Promise<T> {
     try {
-      return await firstValueFrom(
-        this.http.get<T>(`${this.baseUrl}${endpoint}`)
+      const response = await firstValueFrom(
+        this.http.get<AppResult<T>>(`${this.baseUrl}${endpoint}`)
           .pipe(catchError(this.handleError))
       );
+      // Unwrap AppResult and return the data
+      return response.data;
     } catch (error) {
       throw this.processError(error);
     }
@@ -57,10 +65,12 @@ export class ApiService {
 
   async post<T>(endpoint: string, data: any): Promise<T> {
     try {
-      return await firstValueFrom(
-        this.http.post<T>(`${this.baseUrl}${endpoint}`, data)
+      const response = await firstValueFrom(
+        this.http.post<AppResult<T>>(`${this.baseUrl}${endpoint}`, data)
           .pipe(catchError(this.handleError))
       );
+      // Unwrap AppResult and return the data
+      return response.data;
     } catch (error) {
       throw this.processError(error);
     }
@@ -68,10 +78,12 @@ export class ApiService {
 
   async put<T>(endpoint: string, data: any): Promise<T> {
     try {
-      return await firstValueFrom(
-        this.http.put<T>(`${this.baseUrl}${endpoint}`, data)
+      const response = await firstValueFrom(
+        this.http.put<AppResult<T>>(`${this.baseUrl}${endpoint}`, data)
           .pipe(catchError(this.handleError))
       );
+      // Unwrap AppResult and return the data
+      return response.data;
     } catch (error) {
       throw this.processError(error);
     }
@@ -79,10 +91,12 @@ export class ApiService {
 
   async delete<T>(endpoint: string): Promise<T> {
     try {
-      return await firstValueFrom(
-        this.http.delete<T>(`${this.baseUrl}${endpoint}`)
+      const response = await firstValueFrom(
+        this.http.delete<AppResult<T>>(`${this.baseUrl}${endpoint}`)
           .pipe(catchError(this.handleError))
       );
+      // Unwrap AppResult and return the data
+      return response.data;
     } catch (error) {
       throw this.processError(error);
     }

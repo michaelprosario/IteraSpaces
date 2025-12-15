@@ -4,6 +4,8 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router } from '@angular/router';
 import { Auth } from '@angular/fire/auth';
 import { ApiService } from '../../../core/services/api.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { UserProfileService } from '../../../core/services/user-profile.service';
 
 interface RegisterUserCommand {
   email: string;
@@ -23,6 +25,8 @@ export class UserRegistrationComponent implements OnInit {
   private router = inject(Router);
   private auth = inject(Auth);
   private apiService = inject(ApiService);
+  private authService = inject(AuthService);
+  private userProfileService = inject(UserProfileService);
 
   registrationForm!: FormGroup;
   loading = signal(false);
@@ -76,6 +80,10 @@ export class UserRegistrationComponent implements OnInit {
       };
 
       await this.apiService.post('/Users/register', command);
+      
+      // Load the newly created user profile
+      const userProfile = await this.userProfileService.getUserByEmail(firebaseUser.email!);
+      this.authService.currentUser.set(userProfile);
       
       // Registration successful, redirect to dashboard
       this.router.navigate(['/dashboard']);
