@@ -13,6 +13,7 @@ namespace AppInfra.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
+        public DbSet<Blog> Blogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -215,6 +216,58 @@ namespace AppInfra.Data
 
                 // Filter out soft-deleted entities by default
                 entity.HasQueryFilter(e => !e.IsDeleted);
+
+            // Configure Blog entity
+            modelBuilder.Entity<Blog>(entity =>
+            {
+                entity.ToTable("Blogs");
+
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Id)
+                    .IsRequired()
+                    .HasMaxLength(36);
+
+                entity.Property(e => e.Title)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Content)
+                    .IsRequired();
+
+                entity.Property(e => e.Abstract)
+                    .IsRequired()
+                    .HasMaxLength(1000);
+
+                entity.Property(e => e.Tags)
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.FeaturedImageUrl)
+                    .HasMaxLength(1000);
+
+                // BaseEntity properties
+                entity.Property(e => e.CreatedAt)
+                    .IsRequired();
+
+                entity.Property(e => e.CreatedBy)
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.UpdatedAt);
+
+                entity.Property(e => e.UpdatedBy)
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.IsDeleted)
+                    .IsRequired();
+
+                entity.Property(e => e.DeletedAt);
+
+                entity.Property(e => e.DeletedBy)
+                    .HasMaxLength(255);
+
+                // Filter out soft-deleted entities by default
+                entity.HasQueryFilter(e => !e.IsDeleted);
+            });
             });
         }
     }

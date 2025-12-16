@@ -91,6 +91,10 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IUserRoleService, UserRoleService>();
 
+// Register Generic Entity Services
+builder.Services.AddScoped(typeof(IEntityService<>), typeof(EntityService<>));
+builder.Services.AddScoped(typeof(IRepository<>), typeof(AppInfra.Repositories.Repository<>));
+
 // Register AppInfra Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
