@@ -88,9 +88,13 @@ builder.Services.AddSwaggerGen();
 
 // Register AppCore Services
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<IUserRoleService, UserRoleService>();
 
 // Register AppInfra Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
 
 // Register AppInfra External Services
 builder.Services.AddSingleton<IAuthenticationService, FirebaseAuthenticationService>();
