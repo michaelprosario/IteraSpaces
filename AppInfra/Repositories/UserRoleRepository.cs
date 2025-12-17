@@ -17,38 +17,38 @@ namespace AppInfra.Repositories
             _context = context;
         }
 
-        public UserRole? GetById(string id)
+        public async Task<UserRole?> GetById(string id)
         {
-            return _context.UserRoles
+            return await _context.UserRoles
                 .Include(ur => ur.User)
                 .Include(ur => ur.Role)
-                .FirstOrDefault(ur => ur.Id == id);
+                .FirstOrDefaultAsync(ur => ur.Id == id);
         }
 
-        public UserRole Add(UserRole entity)
+        public async Task<UserRole> Add(UserRole entity)
         {
-            _context.UserRoles.Add(entity);
-            _context.SaveChanges();
+            await _context.UserRoles.AddAsync(entity);
+            await _context.SaveChangesAsync();
             return entity;
         }
 
-        public void Update(UserRole entity)
+        public async Task Update(UserRole entity)
         {
             _context.UserRoles.Update(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public void Delete(UserRole entity)
+        public async Task Delete(UserRole entity)
         {
             // Soft delete
             entity.IsDeleted = true;
             entity.DeletedAt = System.DateTime.UtcNow;
-            Update(entity);
+            await Update(entity);
         }
 
-        public bool RecordExists(string id)
+        public async Task<bool> RecordExists(string id)
         {
-            return _context.UserRoles.Any(ur => ur.Id == id);
+            return await _context.UserRoles.AnyAsync(ur => ur.Id == id);
         }
 
         public async Task<List<UserRole>> GetUserRolesAsync(string userId)

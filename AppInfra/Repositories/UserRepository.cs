@@ -17,35 +17,35 @@ namespace AppInfra.Repositories
             _context = context;
         }
 
-        public User? GetById(string id)
+        public async Task<User?> GetById(string id)
         {
-            return _context.Users.FirstOrDefault(u => u.Id == id);
+            return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
         }
 
-        public User Add(User entity)
+        public async Task<User> Add(User entity)
         {
-            _context.Users.Add(entity);
-            _context.SaveChanges();
+            await _context.Users.AddAsync(entity);
+            await _context.SaveChangesAsync();
             return entity;
         }
 
-        public void Update(User entity)
+        public async Task Update(User entity)
         {
             _context.Users.Update(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public void Delete(User entity)
+        public async Task Delete(User entity)
         {
             // Soft delete
             entity.IsDeleted = true;
             entity.DeletedAt = System.DateTime.UtcNow;
-            Update(entity);
+            await Update(entity);
         }
 
-        public bool RecordExists(string id)
+        public async Task<bool> RecordExists(string id)
         {
-            return _context.Users.Any(u => u.Id == id);
+            return await _context.Users.AnyAsync(u => u.Id == id);
         }
 
         public async Task<User?> GetByEmailAsync(string email)

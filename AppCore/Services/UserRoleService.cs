@@ -43,12 +43,12 @@ namespace AppCore.Services
                 return AppResult<UserRole>.ValidationFailure(validationErrors);
 
             // Check if user exists
-            var user = _userRepository.GetById(command.UserId);
+            var user = await _userRepository.GetById(command.UserId);
             if (user == null)
                 return AppResult<UserRole>.FailureResult("User not found", "USER_NOT_FOUND");
 
             // Check if role exists
-            var role = _roleRepository.GetById(command.RoleId);
+            var role = await _roleRepository.GetById(command.RoleId);
             if (role == null)
                 return AppResult<UserRole>.FailureResult("Role not found", "ROLE_NOT_FOUND");
 
@@ -67,7 +67,7 @@ namespace AppCore.Services
             };
 
             // Save to repository
-            var savedUserRole = _userRoleRepository.Add(userRole);
+            var savedUserRole = await _userRoleRepository.Add(userRole);
 
             return AppResult<UserRole>.SuccessResult(savedUserRole, "Role assigned to user successfully");
         }
@@ -86,7 +86,7 @@ namespace AppCore.Services
 
             // Soft delete - set DeletedBy before calling Delete
             userRole.DeletedBy = command.RemovedBy;
-            _userRoleRepository.Delete(userRole);
+            await _userRoleRepository.Delete(userRole);
 
             return AppResult<bool>.SuccessResult(true, "Role removed from user successfully");
         }
@@ -97,7 +97,7 @@ namespace AppCore.Services
                 return AppResult<List<Role>>.FailureResult("User ID is required", "INVALID_INPUT");
 
             // Check if user exists
-            var user = _userRepository.GetById(query.UserId);
+            var user = await _userRepository.GetById(query.UserId);
             if (user == null)
                 return AppResult<List<Role>>.FailureResult("User not found", "USER_NOT_FOUND");
 
@@ -113,7 +113,7 @@ namespace AppCore.Services
                 return AppResult<List<string>>.FailureResult("User ID is required", "INVALID_INPUT");
 
             // Check if user exists
-            var user = _userRepository.GetById(query.UserId);
+            var user = await _userRepository.GetById(query.UserId);
             if (user == null)
                 return AppResult<List<string>>.FailureResult("User not found", "USER_NOT_FOUND");
 
@@ -141,7 +141,7 @@ namespace AppCore.Services
                 return AppResult<List<User>>.FailureResult("Role ID is required", "INVALID_INPUT");
 
             // Check if role exists
-            var role = _roleRepository.GetById(query.RoleId);
+            var role = await _roleRepository.GetById(query.RoleId);
             if (role == null)
                 return AppResult<List<User>>.FailureResult("Role not found", "ROLE_NOT_FOUND");
 

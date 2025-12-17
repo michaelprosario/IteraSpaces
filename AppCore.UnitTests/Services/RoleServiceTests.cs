@@ -38,7 +38,7 @@ namespace AppCore.UnitTests.Services
             };
 
             _roleRepository.RoleExistsAsync(command.Name).Returns(Task.FromResult(false));
-            _roleRepository.Add(Arg.Any<Role>()).Returns(callInfo => callInfo.Arg<Role>());
+            _roleRepository.Add(Arg.Any<Role>()).Returns(callInfo => Task.FromResult(callInfo.Arg<Role>()));
 
             // Act
             var result = await _roleService.CreateRoleAsync(command);
@@ -109,7 +109,7 @@ namespace AppCore.UnitTests.Services
                 Description = "Administrator role"
             };
 
-            _roleRepository.GetById(roleId).Returns(role);
+            _roleRepository.GetById(roleId).Returns(Task.FromResult<Role?>(role));
 
             var query = new GetRoleByIdQuery { RoleId = roleId };
 
@@ -127,7 +127,7 @@ namespace AppCore.UnitTests.Services
         {
             // Arrange
             var roleId = "non-existent";
-            _roleRepository.GetById(roleId).Returns((Role?)null);
+            _roleRepository.GetById(roleId).Returns(Task.FromResult<Role?>(null));
 
             var query = new GetRoleByIdQuery { RoleId = roleId };
 
@@ -210,7 +210,7 @@ namespace AppCore.UnitTests.Services
                 IsSystemRole = false
             };
 
-            _roleRepository.GetById(roleId).Returns(role);
+            _roleRepository.GetById(roleId).Returns(Task.FromResult<Role?>(role));
 
             var command = new UpdateRoleCommand
             {
@@ -245,7 +245,7 @@ namespace AppCore.UnitTests.Services
                 IsSystemRole = true
             };
 
-            _roleRepository.GetById(roleId).Returns(role);
+            _roleRepository.GetById(roleId).Returns(Task.FromResult<Role?>(role));
 
             var command = new UpdateRoleCommand
             {
@@ -280,7 +280,7 @@ namespace AppCore.UnitTests.Services
                 IsSystemRole = false
             };
 
-            _roleRepository.GetById(roleId).Returns(role);
+            _roleRepository.GetById(roleId).Returns(Task.FromResult<Role?>(role));
 
             var command = new DeleteRoleCommand
             {
@@ -309,7 +309,7 @@ namespace AppCore.UnitTests.Services
                 IsSystemRole = true
             };
 
-            _roleRepository.GetById(roleId).Returns(role);
+            _roleRepository.GetById(roleId).Returns(Task.FromResult<Role?>(role));
 
             var command = new DeleteRoleCommand
             {

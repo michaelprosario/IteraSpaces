@@ -51,10 +51,10 @@ namespace AppCore.UnitTests.Services
                 Description = "Administrator role"
             };
 
-            _userRepository.GetById(userId).Returns(user);
-            _roleRepository.GetById(roleId).Returns(role);
+            _userRepository.GetById(userId).Returns(Task.FromResult<User?>(user));
+            _roleRepository.GetById(roleId).Returns(Task.FromResult<Role?>(role));
             _userRoleRepository.UserHasRoleAsync(userId, roleId).Returns(Task.FromResult(false));
-            _userRoleRepository.Add(Arg.Any<UserRole>()).Returns(callInfo => callInfo.Arg<UserRole>());
+            _userRoleRepository.Add(Arg.Any<UserRole>()).Returns(callInfo => Task.FromResult(callInfo.Arg<UserRole>()));
 
             var command = new AssignRoleToUserCommand
             {
@@ -81,7 +81,7 @@ namespace AppCore.UnitTests.Services
             var userId = "non-existent";
             var roleId = "role-123";
 
-            _userRepository.GetById(userId).Returns((User?)null);
+            _userRepository.GetById(userId).Returns(Task.FromResult<User?>(null));
 
             var command = new AssignRoleToUserCommand
             {
@@ -108,8 +108,8 @@ namespace AppCore.UnitTests.Services
 
             var user = new User { Id = userId, Email = "test@example.com" };
 
-            _userRepository.GetById(userId).Returns(user);
-            _roleRepository.GetById(roleId).Returns((Role?)null);
+            _userRepository.GetById(userId).Returns(Task.FromResult<User?>(user));
+            _roleRepository.GetById(roleId).Returns(Task.FromResult<Role?>(null));
 
             var command = new AssignRoleToUserCommand
             {
@@ -137,8 +137,8 @@ namespace AppCore.UnitTests.Services
             var user = new User { Id = userId, Email = "test@example.com" };
             var role = new Role { Id = roleId, Name = "Admin" };
 
-            _userRepository.GetById(userId).Returns(user);
-            _roleRepository.GetById(roleId).Returns(role);
+            _userRepository.GetById(userId).Returns(Task.FromResult<User?>(user));
+            _roleRepository.GetById(roleId).Returns(Task.FromResult<Role?>(role));
             _userRoleRepository.UserHasRoleAsync(userId, roleId).Returns(Task.FromResult(true));
 
             var command = new AssignRoleToUserCommand
@@ -247,7 +247,7 @@ namespace AppCore.UnitTests.Services
                 }
             };
 
-            _userRepository.GetById(userId).Returns(user);
+            _userRepository.GetById(userId).Returns(Task.FromResult<User?>(user));
             _userRoleRepository.GetUserRolesAsync(userId).Returns(Task.FromResult(userRoles));
 
             var query = new GetUserRolesQuery { UserId = userId };
@@ -267,7 +267,7 @@ namespace AppCore.UnitTests.Services
         {
             // Arrange
             var userId = "non-existent";
-            _userRepository.GetById(userId).Returns((User?)null);
+            _userRepository.GetById(userId).Returns(Task.FromResult<User?>(null));
 
             var query = new GetUserRolesQuery { UserId = userId };
 
@@ -292,7 +292,7 @@ namespace AppCore.UnitTests.Services
 
             var roleNames = new List<string> { "Admin", "User" };
 
-            _userRepository.GetById(userId).Returns(user);
+            _userRepository.GetById(userId).Returns(Task.FromResult<User?>(user));
             _userRoleRepository.GetUserRoleNamesAsync(userId).Returns(Task.FromResult(roleNames));
 
             var query = new GetUserRolesQuery { UserId = userId };
@@ -362,7 +362,7 @@ namespace AppCore.UnitTests.Services
                 new User { Id = "user-2", Email = "user2@example.com", DisplayName = "User Two" }
             };
 
-            _roleRepository.GetById(roleId).Returns(role);
+            _roleRepository.GetById(roleId).Returns(Task.FromResult<Role?>(role));
             _userRoleRepository.GetUsersInRoleAsync(roleId).Returns(Task.FromResult(users));
 
             var query = new GetUsersInRoleQuery { RoleId = roleId };
@@ -381,7 +381,7 @@ namespace AppCore.UnitTests.Services
         {
             // Arrange
             var roleId = "non-existent";
-            _roleRepository.GetById(roleId).Returns((Role?)null);
+            _roleRepository.GetById(roleId).Returns(Task.FromResult<Role?>(null));
 
             var query = new GetUsersInRoleQuery { RoleId = roleId };
 

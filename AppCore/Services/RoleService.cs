@@ -51,7 +51,7 @@ namespace AppCore.Services
             };
 
             // Save to repository
-            var savedRole = _roleRepository.Add(role);
+            var savedRole = await _roleRepository.Add(role);
 
             return AppResult<Role>.SuccessResult(savedRole, "Role created successfully");
         }
@@ -61,7 +61,7 @@ namespace AppCore.Services
             if (string.IsNullOrWhiteSpace(query.RoleId))
                 return AppResult<Role>.FailureResult("Role ID is required", "INVALID_INPUT");
 
-            var role = _roleRepository.GetById(query.RoleId);
+            var role = await _roleRepository.GetById(query.RoleId);
             if (role == null)
                 return AppResult<Role>.FailureResult("Role not found", "ROLE_NOT_FOUND");
 
@@ -94,7 +94,7 @@ namespace AppCore.Services
                 return AppResult<Role>.ValidationFailure(validationErrors);
 
             // Get existing role
-            var role = _roleRepository.GetById(command.RoleId);
+            var role = await _roleRepository.GetById(command.RoleId);
             if (role == null)
                 return AppResult<Role>.FailureResult("Role not found", "ROLE_NOT_FOUND");
 
@@ -120,7 +120,7 @@ namespace AppCore.Services
             role.UpdatedBy = command.UpdatedBy;
 
             // Save changes
-            _roleRepository.Update(role);
+            await _roleRepository.Update(role);
 
             return AppResult<Role>.SuccessResult(role, "Role updated successfully");
         }
@@ -130,7 +130,7 @@ namespace AppCore.Services
             if (string.IsNullOrWhiteSpace(command.RoleId))
                 return AppResult<bool>.FailureResult("Role ID is required", "INVALID_INPUT");
 
-            var role = _roleRepository.GetById(command.RoleId);
+            var role = await _roleRepository.GetById(command.RoleId);
             if (role == null)
                 return AppResult<bool>.FailureResult("Role not found", "ROLE_NOT_FOUND");
 
@@ -140,7 +140,7 @@ namespace AppCore.Services
 
             // Soft delete - set DeletedBy before calling Delete
             role.DeletedBy = command.DeletedBy;
-            _roleRepository.Delete(role);
+            await _roleRepository.Delete(role);
 
             return AppResult<bool>.SuccessResult(true, "Role deleted successfully");
         }

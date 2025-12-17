@@ -17,35 +17,35 @@ namespace AppInfra.Repositories
             _context = context;
         }
 
-        public Role? GetById(string id)
+        public async Task<Role?> GetById(string id)
         {
-            return _context.Roles.FirstOrDefault(r => r.Id == id);
+            return await _context.Roles.FirstOrDefaultAsync(r => r.Id == id);
         }
 
-        public Role Add(Role entity)
+        public async Task<Role> Add(Role entity)
         {
-            _context.Roles.Add(entity);
-            _context.SaveChanges();
+            await _context.Roles.AddAsync(entity);
+            await _context.SaveChangesAsync();
             return entity;
         }
 
-        public void Update(Role entity)
+        public async Task Update(Role entity)
         {
             _context.Roles.Update(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public void Delete(Role entity)
+        public async Task Delete(Role entity)
         {
             // Soft delete
             entity.IsDeleted = true;
             entity.DeletedAt = System.DateTime.UtcNow;
-            Update(entity);
+            await Update(entity);
         }
 
-        public bool RecordExists(string id)
+        public async Task<bool> RecordExists(string id)
         {
-            return _context.Roles.Any(r => r.Id == id);
+            return await _context.Roles.AnyAsync(r => r.Id == id);
         }
 
         public async Task<Role?> GetByNameAsync(string name)

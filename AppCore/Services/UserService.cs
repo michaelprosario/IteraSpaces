@@ -67,7 +67,7 @@ namespace AppCore.Services
             };
 
             // 5. Save to repository
-            var savedUser = _userRepository.Add(user);
+            var savedUser = await _userRepository.Add(user);
 
             // 6. Send verification email (optional for OAuth users)
             if (!string.IsNullOrEmpty(command.FirebaseUid))
@@ -83,7 +83,7 @@ namespace AppCore.Services
             if (string.IsNullOrWhiteSpace(query.UserId))
                 return AppResult<User>.FailureResult("User ID is required", "INVALID_INPUT");
 
-            var user = _userRepository.GetById(query.UserId);
+            var user = await _userRepository.GetById(query.UserId);
             if (user == null)
                 return AppResult<User>.FailureResult("User not found", "USER_NOT_FOUND");
 
@@ -110,7 +110,7 @@ namespace AppCore.Services
                 return AppResult<User>.ValidationFailure(validationErrors);
 
             // 2. Get existing user
-            var user = _userRepository.GetById(command.UserId);
+            var user = await _userRepository.GetById(command.UserId);
             if (user == null)
                 return AppResult<User>.FailureResult("User not found", "USER_NOT_FOUND");
 
@@ -127,7 +127,7 @@ namespace AppCore.Services
             user.UpdatedBy = command.UserId;
 
             // 4. Save changes
-            _userRepository.Update(user);
+            await _userRepository.Update(user);
 
             return AppResult<User>.SuccessResult(user, "Profile updated successfully");
         }
@@ -137,7 +137,7 @@ namespace AppCore.Services
             if (string.IsNullOrWhiteSpace(command.UserId))
                 return AppResult<User>.FailureResult("User ID is required", "INVALID_INPUT");
 
-            var user = _userRepository.GetById(command.UserId);
+            var user = await _userRepository.GetById(command.UserId);
             if (user == null)
                 return AppResult<User>.FailureResult("User not found", "USER_NOT_FOUND");
 
@@ -145,14 +145,14 @@ namespace AppCore.Services
             user.UpdatedAt = DateTime.UtcNow;
             user.UpdatedBy = command.UserId;
 
-            _userRepository.Update(user);
+            await _userRepository.Update(user);
 
             return AppResult<User>.SuccessResult(user, "Privacy settings updated successfully");
         }
 
         public async Task<AppResult<bool>> DisableUserAsync(DisableUserCommand command)
         {
-            var user = _userRepository.GetById(command.UserId);
+            var user = await _userRepository.GetById(command.UserId);
             if (user == null)
                 return AppResult<bool>.FailureResult("User not found", "USER_NOT_FOUND");
 
@@ -160,14 +160,14 @@ namespace AppCore.Services
             user.UpdatedAt = DateTime.UtcNow;
             user.UpdatedBy = command.DisabledBy;
 
-            _userRepository.Update(user);
+            await _userRepository.Update(user);
 
             return AppResult<bool>.SuccessResult(true, $"User disabled: {command.Reason}");
         }
 
         public async Task<AppResult<bool>> EnableUserAsync(string userId, string enabledBy)
         {
-            var user = _userRepository.GetById(userId);
+            var user = await _userRepository.GetById(userId);
             if (user == null)
                 return AppResult<bool>.FailureResult("User not found", "USER_NOT_FOUND");
 
@@ -175,7 +175,7 @@ namespace AppCore.Services
             user.UpdatedAt = DateTime.UtcNow;
             user.UpdatedBy = enabledBy;
 
-            _userRepository.Update(user);
+            await _userRepository.Update(user);
 
             return AppResult<bool>.SuccessResult(true, "User enabled successfully");
         }
@@ -198,12 +198,12 @@ namespace AppCore.Services
 
         public async Task<AppResult<bool>> RecordLoginAsync(string userId)
         {
-            var user = _userRepository.GetById(userId);
+            var user = await _userRepository.GetById(userId);
             if (user == null)
                 return AppResult<bool>.FailureResult("User not found", "USER_NOT_FOUND");
 
             user.LastLoginAt = DateTime.UtcNow;
-            _userRepository.Update(user);
+            await _userRepository.Update(user);
 
             return AppResult<bool>.SuccessResult(true, "Login recorded");
         }

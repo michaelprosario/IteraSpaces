@@ -1,4 +1,6 @@
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using AppCore.Interfaces;
 using AppInfra.Data;
 
@@ -13,35 +15,35 @@ namespace AppInfra.Repositories
             _context = context;
         }
 
-        public T? GetById(string id)
+        public async Task<T?> GetById(string id)
         {
-            return _context.Set<T>().FirstOrDefault(e => e.Id == id);
+            return await _context.Set<T>().FirstOrDefaultAsync(e => e.Id == id);
         }
 
-        public T Add(T entity)
+        public async Task<T> Add(T entity)
         {
-            _context.Set<T>().Add(entity);
-            _context.SaveChanges();
+            await _context.Set<T>().AddAsync(entity);
+            await _context.SaveChangesAsync();
             return entity;
         }
 
-        public void Update(T entity)
+        public async Task Update(T entity)
         {
             _context.Set<T>().Update(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public void Delete(T entity)
+        public async Task Delete(T entity)
         {
             // Soft delete
             entity.IsDeleted = true;
             entity.DeletedAt = System.DateTime.UtcNow;
-            Update(entity);
+            await Update(entity);
         }
 
-        public bool RecordExists(string id)
+        public async Task<bool> RecordExists(string id)
         {
-            return _context.Set<T>().Any(e => e.Id == id);
+            return await _context.Set<T>().AnyAsync(e => e.Id == id);
         }
     }
 }

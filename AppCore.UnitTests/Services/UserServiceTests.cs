@@ -66,7 +66,7 @@ namespace AppCore.UnitTests.Services
                     EmailVerified = false
                 }));
 
-            _userRepository.Add(Arg.Any<User>()).Returns(callInfo => callInfo.Arg<User>());
+            _userRepository.Add(Arg.Any<User>()).Returns(callInfo => Task.FromResult(callInfo.Arg<User>()));
 
             _authService.SendEmailVerificationAsync(Arg.Any<string>()).Returns(Task.FromResult(true));
 
@@ -138,7 +138,7 @@ namespace AppCore.UnitTests.Services
                 DisplayName = "Test User"
             };
 
-            _userRepository.GetById(userId).Returns(user);
+            _userRepository.GetById(userId).Returns(Task.FromResult<User?>(user));
 
             var query = new GetUserByIdQuery { UserId = userId };
 
@@ -156,7 +156,7 @@ namespace AppCore.UnitTests.Services
         {
             // Arrange
             var userId = "non-existent";
-            _userRepository.GetById(userId).Returns((User)null);
+            _userRepository.GetById(userId).Returns(Task.FromResult<User?>(null));
 
             var query = new GetUserByIdQuery { UserId = userId };
 
@@ -185,7 +185,7 @@ namespace AppCore.UnitTests.Services
                 Bio = "Old Bio"
             };
 
-            _userRepository.GetById(userId).Returns(user);
+            _userRepository.GetById(userId).Returns(Task.FromResult<User?>(user));
 
             var command = new UpdateUserProfileCommand
             {
@@ -209,7 +209,7 @@ namespace AppCore.UnitTests.Services
         {
             // Arrange
             var userId = "non-existent";
-            _userRepository.GetById(userId).Returns((User)null);
+            _userRepository.GetById(userId).Returns(Task.FromResult<User?>(null));
 
             var command = new UpdateUserProfileCommand
             {
@@ -241,7 +241,7 @@ namespace AppCore.UnitTests.Services
                 Status = UserStatus.Active
             };
 
-            _userRepository.GetById(userId).Returns(user);
+            _userRepository.GetById(userId).Returns(Task.FromResult<User?>(user));
 
             var command = new DisableUserCommand
             {
@@ -326,7 +326,7 @@ namespace AppCore.UnitTests.Services
                 LastLoginAt = null
             };
 
-            _userRepository.GetById(userId).Returns(user);
+            _userRepository.GetById(userId).Returns(Task.FromResult<User?>(user));
 
             // Act
             var result = await _userService.RecordLoginAsync(userId);

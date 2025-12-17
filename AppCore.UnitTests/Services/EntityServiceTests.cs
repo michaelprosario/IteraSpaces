@@ -151,7 +151,7 @@ namespace AppCore.UnitTests.Services
                 UserId = "user123"
             };
 
-            _repository.RecordExists(testEntity.Id).Returns(true);
+            _repository.RecordExists(testEntity.Id).Returns(Task.FromResult(true));
 
             // Act
             var result = await _entityService.AddEntityAsync(command);
@@ -225,7 +225,7 @@ namespace AppCore.UnitTests.Services
                 UserId = "user123"
             };
 
-            _repository.GetById(testEntity.Id).Returns((TestEntity?)null);
+            _repository.GetById(testEntity.Id).Returns(Task.FromResult<TestEntity?>(null));
 
             // Act
             var result = await _entityService.UpdateEntityAsync(command);
@@ -260,7 +260,7 @@ namespace AppCore.UnitTests.Services
                 UserId = "user123"
             };
 
-            _repository.GetById(existingEntity.Id).Returns(existingEntity);
+            _repository.GetById(existingEntity.Id).Returns(Task.FromResult<TestEntity?>(existingEntity));
 
             // Act
             var result = await _entityService.UpdateEntityAsync(command);
@@ -309,8 +309,8 @@ namespace AppCore.UnitTests.Services
                 UserId = "user123"
             };
 
-            _repository.RecordExists(testEntity.Id).Returns(false);
-            _repository.Add(Arg.Any<TestEntity>()).Returns(callInfo => callInfo.Arg<TestEntity>());
+            _repository.RecordExists(testEntity.Id).Returns(Task.FromResult(false));
+            _repository.Add(Arg.Any<TestEntity>()).Returns(callInfo => Task.FromResult(callInfo.Arg<TestEntity>()));
 
             // Act
             var result = await _entityService.StoreEntityAsync(command);
@@ -348,8 +348,8 @@ namespace AppCore.UnitTests.Services
                 UserId = "user123"
             };
 
-            _repository.RecordExists(existingEntity.Id).Returns(true);
-            _repository.GetById(existingEntity.Id).Returns(existingEntity);
+            _repository.RecordExists(existingEntity.Id).Returns(Task.FromResult(true));
+            _repository.GetById(existingEntity.Id).Returns(Task.FromResult<TestEntity?>(existingEntity));
 
             // Act
             var result = await _entityService.StoreEntityAsync(command);
@@ -402,7 +402,7 @@ namespace AppCore.UnitTests.Services
                 UserId = "user123"
             };
 
-            _repository.GetById(entityId).Returns(existingEntity);
+            _repository.GetById(entityId).Returns(Task.FromResult<TestEntity?>(existingEntity));
 
             // Act
             var result = await _entityService.DeleteEntityAsync(command);
@@ -426,7 +426,7 @@ namespace AppCore.UnitTests.Services
                 UserId = "user123"
             };
 
-            _repository.GetById(entityId).Returns((TestEntity?)null);
+            _repository.GetById(entityId).Returns(Task.FromResult<TestEntity?>(null));
 
             // Act
             var result = await _entityService.DeleteEntityAsync(command);
@@ -455,7 +455,7 @@ namespace AppCore.UnitTests.Services
                 UserId = "user123"
             };
 
-            _repository.GetById(entityId).Returns(existingEntity);
+            _repository.GetById(entityId).Returns(Task.FromResult<TestEntity?>(existingEntity));
 
             // Act
             var result = await _entityService.DeleteEntityAsync(command);
@@ -540,7 +540,7 @@ namespace AppCore.UnitTests.Services
             var entityId = Guid.NewGuid().ToString();
             var query = new GetEntityByIdQuery(entityId);
 
-            _repository.GetById(entityId).Returns((TestEntity?)null);
+            _repository.GetById(entityId).Returns(Task.FromResult<TestEntity?>(null));
 
             // Act
             var result = await _entityService.GetEntityByIdAsync(query);
@@ -565,7 +565,7 @@ namespace AppCore.UnitTests.Services
 
             var query = new GetEntityByIdQuery(entityId);
 
-            _repository.GetById(entityId).Returns(testEntity);
+            _repository.GetById(entityId).Returns(Task.FromResult<TestEntity?>(testEntity));
 
             // Act
             var result = await _entityService.GetEntityByIdAsync(query);
@@ -598,7 +598,7 @@ namespace AppCore.UnitTests.Services
         {
             // Arrange
             var entityId = Guid.NewGuid().ToString();
-            _repository.RecordExists(entityId).Returns(true);
+            _repository.RecordExists(entityId).Returns(Task.FromResult(true));
 
             // Act
             var result = await _entityService.EntityExistsAsync(entityId);
@@ -613,7 +613,7 @@ namespace AppCore.UnitTests.Services
         {
             // Arrange
             var entityId = Guid.NewGuid().ToString();
-            _repository.RecordExists(entityId).Returns(false);
+            _repository.RecordExists(entityId).Returns(Task.FromResult(false));
 
             // Act
             var result = await _entityService.EntityExistsAsync(entityId);

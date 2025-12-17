@@ -107,7 +107,7 @@ public class EntityService<TEntity> : IEntityService<TEntity> where TEntity : Ba
         }
 
         // Check if entity already exists
-        if (_repository.RecordExists(command.Entity.Id))
+        if (await _repository.RecordExists(command.Entity.Id))
         {
             return AppResult<TEntity>.FailureResult(
                 $"Entity with Id '{command.Entity.Id}' already exists",
@@ -120,7 +120,7 @@ public class EntityService<TEntity> : IEntityService<TEntity> where TEntity : Ba
         command.Entity.IsDeleted = false;
 
         // Add entity
-        var addedEntity = _repository.Add(command.Entity);
+        var addedEntity = await _repository.Add(command.Entity);
 
         return AppResult<TEntity>.SuccessResult(
             addedEntity,
@@ -142,7 +142,7 @@ public class EntityService<TEntity> : IEntityService<TEntity> where TEntity : Ba
         }
 
         // Check if entity exists
-        var existingEntity = _repository.GetById(command.Entity.Id);
+        var existingEntity = await _repository.GetById(command.Entity.Id);
         if (existingEntity == null)
         {
             return AppResult<TEntity>.FailureResult(
@@ -170,7 +170,7 @@ public class EntityService<TEntity> : IEntityService<TEntity> where TEntity : Ba
         command.Entity.DeletedBy = existingEntity.DeletedBy;
 
         // Update entity
-        _repository.Update(command.Entity);
+        await _repository.Update(command.Entity);
 
         return AppResult<TEntity>.SuccessResult(
             command.Entity,
@@ -192,12 +192,12 @@ public class EntityService<TEntity> : IEntityService<TEntity> where TEntity : Ba
         }
 
         // Check if entity exists
-        var exists = _repository.RecordExists(command.Entity.Id);
+        var exists = await _repository.RecordExists(command.Entity.Id);
 
         if (exists)
         {
             // Update existing entity
-            var existingEntity = _repository.GetById(command.Entity.Id);
+            var existingEntity = await _repository.GetById(command.Entity.Id);
             if (existingEntity == null)
             {
                 return AppResult<TEntity>.FailureResult(
@@ -216,7 +216,7 @@ public class EntityService<TEntity> : IEntityService<TEntity> where TEntity : Ba
             command.Entity.DeletedAt = existingEntity.DeletedAt;
             command.Entity.DeletedBy = existingEntity.DeletedBy;
 
-            _repository.Update(command.Entity);
+            await _repository.Update(command.Entity);
 
             return AppResult<TEntity>.SuccessResult(
                 command.Entity,
@@ -229,7 +229,7 @@ public class EntityService<TEntity> : IEntityService<TEntity> where TEntity : Ba
             command.Entity.CreatedBy = command.UserId;
             command.Entity.IsDeleted = false;
 
-            var addedEntity = _repository.Add(command.Entity);
+            var addedEntity = await _repository.Add(command.Entity);
 
             return AppResult<TEntity>.SuccessResult(
                 addedEntity,
@@ -252,7 +252,7 @@ public class EntityService<TEntity> : IEntityService<TEntity> where TEntity : Ba
         }
 
         // Check if entity exists
-        var entity = _repository.GetById(command.EntityId);
+        var entity = await _repository.GetById(command.EntityId);
         if (entity == null)
         {
             return AppResult<bool>.FailureResult(
@@ -273,7 +273,7 @@ public class EntityService<TEntity> : IEntityService<TEntity> where TEntity : Ba
         entity.DeletedAt = DateTime.UtcNow;
         entity.DeletedBy = command.UserId;
 
-        _repository.Delete(entity);
+        await _repository.Delete(entity);
 
         return AppResult<bool>.SuccessResult(
             true,
@@ -295,7 +295,7 @@ public class EntityService<TEntity> : IEntityService<TEntity> where TEntity : Ba
         }
 
         // Get entity
-        var entity = _repository.GetById(query.EntityId);
+        var entity = await _repository.GetById(query.EntityId);
         if (entity == null)
         {
             return AppResult<TEntity>.FailureResult(
@@ -323,9 +323,9 @@ public class EntityService<TEntity> : IEntityService<TEntity> where TEntity : Ba
                 "INVALID_INPUT");
         }
 
-        var exists = _repository.RecordExists(entityId);
+        var exists = await _repository.RecordExists(entityId);
 
-        return await Task.FromResult(AppResult<bool>.SuccessResult(exists));
+        return AppResult<bool>.SuccessResult(exists);
     }
 } 
 
