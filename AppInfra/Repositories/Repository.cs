@@ -29,6 +29,15 @@ namespace AppInfra.Repositories
 
         public async Task Update(T entity)
         {
+            // Detach any existing tracked entity with the same key
+            var existingEntry = _context.ChangeTracker.Entries<T>()
+                .FirstOrDefault(e => e.Entity.Id == entity.Id);
+            
+            if (existingEntry != null)
+            {
+                existingEntry.State = EntityState.Detached;
+            }
+
             _context.Set<T>().Update(entity);
             await _context.SaveChangesAsync();
         }
