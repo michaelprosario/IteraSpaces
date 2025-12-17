@@ -52,7 +52,8 @@ namespace AppInfra.Repositories
 
         public async Task<bool> RecordExists(string id)
         {
-            return await _context.Set<T>().AnyAsync(e => e.Id == id);
+            // Only check for non-deleted records
+            return await _context.Set<T>().AnyAsync(e => e.Id == id && !e.IsDeleted);
         }
     }
 }

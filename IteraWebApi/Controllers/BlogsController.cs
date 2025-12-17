@@ -25,6 +25,29 @@ namespace IteraWebApi.Controllers
             // TODO: Get current user ID from authentication context
             var userId = "SYSTEM"; // Placeholder
 
+            // using validator to validate blog entity
+            var validator = new BlogValidator();
+            var validationResult = validator.Validate(blog);
+            if (!validationResult.IsValid)
+            {
+                // create list of ValidationError from validationResult
+                var errors = validationResult.Errors
+                    .Select(e => new ValidationError
+                    {
+                        PropertyName = e.PropertyName,
+                        ErrorMessage = e.ErrorMessage
+                    })
+                    .ToList();
+
+                return BadRequest(new AppResult<Blog>
+                {
+                    Success = false,
+                    ErrorCode = "VALIDATION_ERROR",
+                    ValidationErrors = errors,
+                    Message = "Validation failed"
+                });
+            }
+
             var command = new StoreEntityCommand<Blog>(blog)
             {
                 UserId = userId
