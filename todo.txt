@@ -1,11 +1,12 @@
 UserServices / Test the following
 
-Task<AppResult<User>> RegisterUserAsync(RegisterUserCommand command);
-Task<AppResult<User>> GetUserByIdAsync(GetUserByIdQuery query);
-Task<AppResult<User>> GetUserByEmailAsync(GetUserByEmailQuery query);
-Task<AppResult<User>> UpdateUserProfileAsync(UpdateUserProfileCommand command);
-Task<AppResult<User>> UpdatePrivacySettingsAsync(UpdatePrivacySettingsCommand command);
-Task<AppResult<bool>> DisableUserAsync(DisableUserCommand command);
-Task<AppResult<bool>> EnableUserAsync(string userId, string enabledBy);
-Task<AppResult<List<User>>> SearchUsersAsync(SearchUsersQuery query);
-Task<AppResult<bool>> RecordLoginAsync(string userId);
+
+### backlog
+- Task<AppResult<bool>> RecordLoginAsync(string userId);
+- setup users list screen
+    - Task<AppResult<List<User>>> SearchUsersAsync(SearchUsersQuery query);
+- As a sys user, I should be able to enable/disable user
+    - Task<AppResult<bool>> DisableUserAsync(DisableUserCommand command);
+    - Task<AppResult<bool>> EnableUserAsync(string userId, string enabledBy);
+- A a sys user, I should be able to review user
+    - Task<AppResult<User>> GetUserByIdAsync(GetUserByIdQuery query);
