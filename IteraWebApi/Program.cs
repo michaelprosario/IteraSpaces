@@ -61,6 +61,7 @@ builder.Services.AddMarten(options =>
     options.Schema.For<AppCore.Entities.Role>().Identity(x => x.Id);
     options.Schema.For<AppCore.Entities.UserRole>().Identity(x => x.Id);
     options.Schema.For<AppCore.Entities.Blog>().Identity(x => x.Id);
+    options.Schema.For<AppCore.Entities.UserLoginEvent>().Identity(x => x.Id);
     
     // Add indexes for commonly queried fields
     options.Schema.For<AppCore.Entities.User>()

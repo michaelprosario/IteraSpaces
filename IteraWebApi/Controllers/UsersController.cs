@@ -12,10 +12,15 @@ namespace IteraWebApi.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IEntityService<UserLoginEvent> _userLoginEventService; 
 
-        public UsersController(IUserService userService)
+        public UsersController(
+            IUserService userService,
+            IEntityService<UserLoginEvent> userLoginEventService
+            )
         {
             _userService = userService;
+            _userLoginEventService = userLoginEventService;
         }
 
         /// <summary>
@@ -122,6 +127,18 @@ namespace IteraWebApi.Controllers
         public async Task<IActionResult> RecordLogin(string userId)
         {
             var result = await _userService.RecordLoginAsync(userId);
+
+            // get user agent from the request headers
+            var userAgent = Request.Headers["User-Agent"].ToString();
+
+            var loginEvent = new UserLoginEvent
+            {
+                UserId = userId,
+                UserAgent = userAgent
+            };
+
+            var command = new StoreEntityCommand<UserLoginEvent>(loginEvent);
+            await _userLoginEventService.StoreEntityAsync(command);
             return HandleResult(result);
         }
 
