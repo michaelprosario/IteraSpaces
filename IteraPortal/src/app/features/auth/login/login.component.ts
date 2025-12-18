@@ -14,12 +14,19 @@ export class LoginComponent {
   isLoading = false;
   errorMessage = '';
 
+
   async signInWithGoogle(): Promise<void> {
     this.isLoading = true;
     this.errorMessage = '';
     
     try {
       await this.authService.signInWithGoogle();
+
+      const loginEmail = this.authService.user$ ? (await this.authService.user$.toPromise())?.email || '' : '';
+      
+
+      
+      await this.authService.recordLogin(loginEmail);
     } catch (error: any) {
       this.errorMessage = error.message || 'Failed to sign in';
     } finally {

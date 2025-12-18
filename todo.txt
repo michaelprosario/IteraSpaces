@@ -3,6 +3,9 @@ UserServices / Test the following
 
 ### backlog
 - Task<AppResult<bool>> RecordLoginAsync(string userId);
+    next - finish this - 12/17
+
+
 - setup users list screen
     - Task<AppResult<List<User>>> SearchUsersAsync(SearchUsersQuery query);
 - As a sys user, I should be able to enable/disable user
