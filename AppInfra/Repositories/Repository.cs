@@ -1,45 +1,38 @@
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using AppCore.Interfaces;
-using AppInfra.Data;
+using Marten;
 
 namespace AppInfra.Repositories
 {
     public class Repository<T> : IRepository<T> where T : class, IEntity
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IDocumentStore _documentStore;
 
-        public Repository(ApplicationDbContext context)
+        public Repository(IDocumentStore documentStore)
         {
-            _context = context;
+            _documentStore = documentStore;
         }
 
         public async Task<T?> GetById(string id)
         {
-            return await _context.Set<T>().FirstOrDefaultAsync(e => e.Id == id);
+            using var session = _documentStore.LightweightSession();
+            return await session.LoadAsync<T>(id);
         }
 
         public async Task<T> Add(T entity)
         {
-            await _context.Set<T>().AddAsync(entity);
-            await _context.SaveChangesAsync();
+            using var session = _documentStore.LightweightSession();
+            session.Store(entity);
+            await session.SaveChangesAsync();
             return entity;
         }
 
         public async Task Update(T entity)
         {
-            // Detach any existing tracked entity with the same key
-            var existingEntry = _context.ChangeTracker.Entries<T>()
-                .FirstOrDefault(e => e.Entity.Id == entity.Id);
-            
-            if (existingEntry != null)
-            {
-                existingEntry.State = EntityState.Detached;
-            }
-
-            _context.Set<T>().Update(entity);
-            await _context.SaveChangesAsync();
+            using var session = _documentStore.LightweightSession();
+            session.Update(entity);
+            await session.SaveChangesAsync();
         }
 
         public async Task Delete(T entity)
@@ -52,8 +45,10 @@ namespace AppInfra.Repositories
 
         public async Task<bool> RecordExists(string id)
         {
+            using var session = _documentStore.QuerySession();
             // Only check for non-deleted records
-            return await _context.Set<T>().AnyAsync(e => e.Id == id && !e.IsDeleted);
+            return await session.Query<T>()
+                .AnyAsync(e => e.Id == id && !e.IsDeleted);
         }
     }
 }

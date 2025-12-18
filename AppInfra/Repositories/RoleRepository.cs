@@ -3,36 +3,38 @@ using System.Linq;
 using System.Threading.Tasks;
 using AppCore.Entities;
 using AppCore.Interfaces;
-using AppInfra.Data;
-using Microsoft.EntityFrameworkCore;
+using Marten;
 
 namespace AppInfra.Repositories
 {
     public class RoleRepository : IRoleRepository
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IDocumentStore _documentStore;
 
-        public RoleRepository(ApplicationDbContext context)
+        public RoleRepository(IDocumentStore documentStore)
         {
-            _context = context;
+            _documentStore = documentStore;
         }
 
         public async Task<Role?> GetById(string id)
         {
-            return await _context.Roles.FirstOrDefaultAsync(r => r.Id == id);
+            using var session = _documentStore.LightweightSession();
+            return await session.LoadAsync<Role>(id);
         }
 
         public async Task<Role> Add(Role entity)
         {
-            await _context.Roles.AddAsync(entity);
-            await _context.SaveChangesAsync();
+            using var session = _documentStore.LightweightSession();
+            session.Store(entity);
+            await session.SaveChangesAsync();
             return entity;
         }
 
         public async Task Update(Role entity)
         {
-            _context.Roles.Update(entity);
-            await _context.SaveChangesAsync();
+            using var session = _documentStore.LightweightSession();
+            session.Update(entity);
+            await session.SaveChangesAsync();
         }
 
         public async Task Delete(Role entity)
@@ -45,23 +47,28 @@ namespace AppInfra.Repositories
 
         public async Task<bool> RecordExists(string id)
         {
-            return await _context.Roles.AnyAsync(r => r.Id == id);
+            using var session = _documentStore.QuerySession();
+            return await session.Query<Role>().AnyAsync(r => r.Id == id);
         }
 
         public async Task<Role?> GetByNameAsync(string name)
         {
-            return await _context.Roles
+            using var session = _documentStore.QuerySession();
+            return await session.Query<Role>()
                 .FirstOrDefaultAsync(r => r.Name == name);
         }
 
         public async Task<List<Role>> GetAllRolesAsync()
         {
-            return await _context.Roles.ToListAsync();
+            using var session = _documentStore.QuerySession();
+            var roles = await session.Query<Role>().ToListAsync();
+            return roles.ToList();
         }
 
         public async Task<bool> RoleExistsAsync(string name)
         {
-            return await _context.Roles
+            using var session = _documentStore.QuerySession();
+            return await session.Query<Role>()
                 .AnyAsync(r => r.Name == name);
         }
     }

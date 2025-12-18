@@ -101,8 +101,19 @@ namespace AppCore.Services
             if (user == null)
                 return AppResult<List<Role>>.FailureResult("User not found", "USER_NOT_FOUND");
 
-            var userRoles = await _userRoleRepository.GetUserRolesAsync(query.UserId);
-            var roles = userRoles.Select(ur => ur.Role).ToList();
+            List<UserRole> userRoles = await _userRoleRepository.GetUserRolesAsync(query.UserId);
+
+            // loop over userRoles to get Role objects
+            var roles = new List<Role>();
+            foreach (var ur in userRoles)
+            {
+                var role = await _roleRepository.GetById(ur.RoleId);
+                if (role != null && !role.IsDeleted)
+                {
+                    roles.Add(role);
+                }
+            }
+        
 
             return AppResult<List<Role>>.SuccessResult(roles, $"Found {roles.Count} roles for user");
         }

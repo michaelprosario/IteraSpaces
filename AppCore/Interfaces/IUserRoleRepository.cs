@@ -8,8 +8,8 @@ namespace AppCore.Interfaces
     {
         Task<List<UserRole>> GetUserRolesAsync(string userId);
         Task<List<string>> GetUserRoleNamesAsync(string userId);
-        Task<UserRole?> GetUserRoleAsync(string userId, string roleId);
         Task<bool> UserHasRoleAsync(string userId, string roleId);
         Task<List<User>> GetUsersInRoleAsync(string roleId);
+        Task<UserRole> GetUserRoleAsync(string userId, string roleId);
     }
 }

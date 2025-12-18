@@ -1,13 +1,13 @@
 using AppCore.Interfaces;
 using AppCore.Services;
-using AppInfra.Data;
 using AppInfra.Repositories;
 using AppInfra.Services;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Marten;
+using Weasel.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,17 +47,33 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
-// Configure Entity Framework Core with PostgreSQL
-var dataSourceBuilder = new Npgsql.NpgsqlDataSourceBuilder(
-    builder.Configuration.GetConnectionString("DefaultConnection"));
-dataSourceBuilder.EnableDynamicJson();
-var dataSource = dataSourceBuilder.Build();
-
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(
-        dataSource,
-        npgsqlOptions => npgsqlOptions.MigrationsAssembly("IteraWebApi")
-    ));
+// Configure Marten with PostgreSQL
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddMarten(options =>
+{
+    options.Connection(connectionString!);
+    
+    // Configure schema auto-creation (use in development, not production)
+    options.AutoCreateSchemaObjects = AutoCreate.CreateOrUpdate;
+    
+    // Configure document mapping - Marten will use Id property as the document identity
+    options.Schema.For<AppCore.Entities.User>().Identity(x => x.Id);
+    options.Schema.For<AppCore.Entities.Role>().Identity(x => x.Id);
+    options.Schema.For<AppCore.Entities.UserRole>().Identity(x => x.Id);
+    options.Schema.For<AppCore.Entities.Blog>().Identity(x => x.Id);
+    
+    // Add indexes for commonly queried fields
+    options.Schema.For<AppCore.Entities.User>()
+        .Index(x => x.Email)
+        .Index(x => x.FirebaseUid);
+    
+    options.Schema.For<AppCore.Entities.Role>()
+        .Index(x => x.Name);
+    
+    options.Schema.For<AppCore.Entities.UserRole>()
+        .Index(x => x.UserId)
+        .Index(x => x.RoleId);
+});
 
 // Add CORS
 builder.Services.AddCors(options =>
