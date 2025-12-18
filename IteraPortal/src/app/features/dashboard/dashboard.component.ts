@@ -16,6 +16,15 @@ export class DashboardComponent {
 
   currentUser = this.authService.currentUser;
 
+  // after the component is initialized, record a login event
+  ngOnInit(): void {
+    const userId = this.currentUser()?.id || '';
+
+    this.authService.recordLogin(userId).catch((error) => {
+      console.error('Error recording login event:', error);
+    });
+  }
+
   async signOut(): Promise<void> {
     await this.authService.signOut();
   }

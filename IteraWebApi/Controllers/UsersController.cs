@@ -133,12 +133,31 @@ namespace IteraWebApi.Controllers
 
             var loginEvent = new UserLoginEvent
             {
+                Id = Guid.NewGuid().ToString(),
                 UserId = userId,
                 UserAgent = userAgent
             };
 
-            var command = new StoreEntityCommand<UserLoginEvent>(loginEvent);
-            await _userLoginEventService.StoreEntityAsync(command);
+            // serialize loginEvent for logging
+            var loginEventJson = System.Text.Json.JsonSerializer.Serialize(loginEvent);
+            Console.WriteLine($"Recording UserLoginEvent: {loginEventJson}");
+
+            var command = new StoreEntityCommand<UserLoginEvent>(loginEvent)
+            {
+                UserId = userId
+            };
+
+            var storeResult = await _userLoginEventService.StoreEntityAsync(command);
+
+            // serialize storeResult errors for logging
+            var storeResultJson = System.Text.Json.JsonSerializer.Serialize(storeResult);
+
+            Console.WriteLine($"Store UserLoginEvent result: {storeResultJson}");
+            if (!storeResult.Success)
+            {
+                // Log the error but do not fail the entire request
+                throw new Exception($"Failed to store login event: {storeResult.Message}");
+            }
             return HandleResult(result);
         }
 
