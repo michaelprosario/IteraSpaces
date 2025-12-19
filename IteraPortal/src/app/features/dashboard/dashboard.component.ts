@@ -37,4 +37,9 @@ export class DashboardComponent {
     this.router.navigate(['/profile/edit']);
   }
 
+  // add button to navigate to list users
+  navigateToListUsers(): void {
+    this.router.navigate(['/users/list']);
+  }
+
 }

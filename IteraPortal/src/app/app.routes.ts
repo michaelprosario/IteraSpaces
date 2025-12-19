@@ -56,16 +56,16 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       {
+        path: 'list',
+        loadComponent: () => import('./list-users/list-users')
+          .then(m => m.ListUsers)
+      },
+      {
         path: ':id',
         loadComponent: () => import('./features/profile/profile.component')
           .then(m => m.ProfileComponent)
       },
-      // add route to list users
-      {
-        path: 'list',
-        loadComponent: () => import('./list-users/list-users.component')
-          .then(m => m.ListUsersComponent)
-      }
+
     ]
   },
   {
