@@ -2,7 +2,7 @@ UserServices / Test the following
 
 
 ### backlog
-- Task<AppResult<bool>> RecordLoginAsync(string userId);
+
     next - finish this - 12/17
 
 
@@ -13,3 +13,8 @@ UserServices / Test the following
     - Task<AppResult<bool>> EnableUserAsync(string userId, string enabledBy);
 - A a sys user, I should be able to review user
     - Task<AppResult<User>> GetUserByIdAsync(GetUserByIdQuery query);
+
+
+### done
+
+- Task<AppResult<bool>> RecordLoginAsync(string userId);

@@ -37,7 +37,4 @@ export class DashboardComponent {
     this.router.navigate(['/profile/edit']);
   }
 
-  navigateToUserSearch(): void {
-    this.router.navigate(['/users/search']);
-  }
 }

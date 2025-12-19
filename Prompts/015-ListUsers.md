@@ -1,0 +1,3 @@
+- Review docs here: https://martendb.io/documents/querying/linq/paging
+- implement IUsersQueryRepository using MartenDb
+- In IteraWebApi/Controllers/UsersController.cs, add action that returns users query search result

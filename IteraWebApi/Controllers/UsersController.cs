@@ -4,6 +4,7 @@ using AppCore.Common;
 using AppCore.DTOs;
 using AppCore.Entities;
 using AppCore.Services;
+using Marten;
 
 namespace IteraWebApi.Controllers
 {
@@ -12,15 +13,18 @@ namespace IteraWebApi.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
-        private readonly IEntityService<UserLoginEvent> _userLoginEventService; 
+        private readonly IEntityService<UserLoginEvent> _userLoginEventService;
+        private readonly IUsersQueryService _usersQueryService;
 
         public UsersController(
             IUserService userService,
-            IEntityService<UserLoginEvent> userLoginEventService
+            IEntityService<UserLoginEvent> userLoginEventService,
+            IUsersQueryService usersQueryService
             )
         {
             _userService = userService;
             _userLoginEventService = userLoginEventService;
+            _usersQueryService = usersQueryService;
         }
 
         /// <summary>
@@ -107,17 +111,10 @@ namespace IteraWebApi.Controllers
         /// <summary>
         /// Search users
         /// </summary>
-        [HttpGet("search")]
-        public async Task<IActionResult> SearchUsers([FromQuery] string searchTerm, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        [HttpPost("GetUsersAsync")]
+        public async Task<PagedResults<User>> GetUsersAsync([FromBody] SearchQuery query)
         {
-            var query = new SearchUsersQuery
-            {
-                SearchTerm = searchTerm,
-                PageNumber = pageNumber,
-                PageSize = pageSize
-            };
-            var result = await _userService.SearchUsersAsync(query);
-            return HandleResult(result);
+            return await _usersQueryService.GetUsersAsync(query);
         }
 
         /// <summary>
@@ -138,9 +135,6 @@ namespace IteraWebApi.Controllers
                 UserAgent = userAgent
             };
 
-            // serialize loginEvent for logging
-            var loginEventJson = System.Text.Json.JsonSerializer.Serialize(loginEvent);
-            Console.WriteLine($"Recording UserLoginEvent: {loginEventJson}");
 
             var command = new StoreEntityCommand<UserLoginEvent>(loginEvent)
             {
@@ -149,13 +143,8 @@ namespace IteraWebApi.Controllers
 
             var storeResult = await _userLoginEventService.StoreEntityAsync(command);
 
-            // serialize storeResult errors for logging
-            var storeResultJson = System.Text.Json.JsonSerializer.Serialize(storeResult);
-
-            Console.WriteLine($"Store UserLoginEvent result: {storeResultJson}");
             if (!storeResult.Success)
             {
-                // Log the error but do not fail the entire request
                 throw new Exception($"Failed to store login event: {storeResult.Message}");
             }
             return HandleResult(result);

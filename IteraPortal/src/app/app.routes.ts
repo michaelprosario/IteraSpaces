@@ -56,14 +56,15 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       {
-        path: 'search',
-        loadComponent: () => import('./features/users/user-search/user-search.component')
-          .then(m => m.UserSearchComponent)
-      },
-      {
         path: ':id',
         loadComponent: () => import('./features/profile/profile.component')
           .then(m => m.ProfileComponent)
+      },
+      // add route to list users
+      {
+        path: 'list',
+        loadComponent: () => import('./list-users/list-users.component')
+          .then(m => m.ListUsersComponent)
       }
     ]
   },

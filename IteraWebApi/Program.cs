@@ -107,6 +107,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IUserRoleService, UserRoleService>();
+builder.Services.AddScoped<IUsersQueryService, UsersQueryService>();
 
 // Register Generic Entity Services
 builder.Services.AddScoped(typeof(IEntityService<>), typeof(EntityService<>));
@@ -116,6 +117,7 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(AppInfra.Repositories.R
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
+builder.Services.AddScoped<IUsersQueryRepository, AppInfra.Repositories.UsersQueryRepository>();
 
 // Register AppInfra External Services
 builder.Services.AddSingleton<IAuthenticationService, FirebaseAuthenticationService>();

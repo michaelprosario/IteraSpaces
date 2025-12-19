@@ -236,14 +236,12 @@ namespace AppCore.UnitTests.Services
                     Id = "ur-1",
                     UserId = userId,
                     RoleId = "role-1",
-                    Role = new Role { Id = "role-1", Name = "Admin", Description = "Administrator" }
                 },
                 new UserRole
                 {
                     Id = "ur-2",
                     UserId = userId,
                     RoleId = "role-2",
-                    Role = new Role { Id = "role-2", Name = "User", Description = "Regular User" }
                 }
             };
 
