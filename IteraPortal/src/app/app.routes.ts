@@ -61,6 +61,11 @@ export const routes: Routes = [
           .then(m => m.ListUsers)
       },
       {
+        path: 'edit/:id',
+        loadComponent: () => import('./edit-user/edit-user')
+          .then(m => m.EditUser)
+      },
+      {
         path: ':id',
         loadComponent: () => import('./features/profile/profile.component')
           .then(m => m.ProfileComponent)

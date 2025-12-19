@@ -55,8 +55,7 @@
                         </td>
                         <td class="last-activity">{{ formatDate(user.lastLoginAt) }}</td>
                         <td class="actions">
-                            <button class="btn-view">View</button>
-                            <button class="btn-edit">Edit</button>
+                            <button class="btn-edit" (click)="onEditUser(user.id)">Edit</button>
                         </td>
                     </tr>
                     <tr *ngIf="users.length === 0">

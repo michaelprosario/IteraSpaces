@@ -2,6 +2,7 @@ import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { firstValueFrom } from 'rxjs';
 
@@ -70,6 +71,7 @@ export interface SearchQuery {
 export class ListUsers implements OnInit {
   private http = inject(HttpClient);
   private cdr = inject(ChangeDetectorRef);
+  private router = inject(Router);
   
   users: UserData[] = [];
   searchTerm: string = '';
@@ -203,5 +205,9 @@ export class ListUsers implements OnInit {
       case 2: return 'Disabled';
       default: return 'Unknown';
     }
+  }
+
+  onEditUser(userId: string) {
+    this.router.navigate(['/users/edit', userId]);
   }
 }

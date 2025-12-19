@@ -1,0 +1,185 @@
+<div class="container">
+    <div class="header">
+        <h2>Edit User</h2>
+    </div>
+
+    <!-- Loading indicator -->
+    <div *ngIf="isLoading" class="loading-indicator">
+        <p>Loading user details...</p>
+    </div>
+
+    <!-- Error message -->
+    <div *ngIf="errorMessage && !isLoading" class="error-message">
+        <p>{{ errorMessage }}</p>
+        <button class="btn-secondary" (click)="onCancel()">Back to Users</button>
+    </div>
+
+    <!-- Success message -->
+    <div *ngIf="successMessage" class="success-message">
+        <p>{{ successMessage }}</p>
+    </div>
+
+    <!-- Edit Form -->
+    <div *ngIf="user && !isLoading" class="edit-form">
+
+        <!-- Editable fields -->
+        <div class="editable-section">
+            <form>
+                <div class="form-group">
+                    <label for="displayName">Display Name *</label>
+                    <input 
+                        type="text" 
+                        id="displayName" 
+                        [(ngModel)]="displayName" 
+                        name="displayName"
+                        required
+                        class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label for="profilePhotoUrl">Profile Photo URL</label>
+                    <input 
+                        type="url" 
+                        id="profilePhotoUrl" 
+                        [(ngModel)]="profilePhotoUrl" 
+                        name="profilePhotoUrl"
+                        class="form-input"
+                        placeholder="https://example.com/photo.jpg">
+                </div>
+
+                <div class="form-group">
+                    <label for="bio">Bio</label>
+                    <textarea 
+                        id="bio" 
+                        [(ngModel)]="bio" 
+                        name="bio"
+                        rows="4"
+                        class="form-textarea"
+                        placeholder="Tell us about yourself..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="location">Location</label>
+                    <input 
+                        type="text" 
+                        id="location" 
+                        [(ngModel)]="location" 
+                        name="location"
+                        class="form-input"
+                        placeholder="City, Country">
+                </div>
+
+                <div class="form-group">
+                    <label for="skills">Skills (comma-separated)</label>
+                    <input 
+                        type="text" 
+                        id="skills" 
+                        [(ngModel)]="skills" 
+                        name="skills"
+                        class="form-input"
+                        placeholder="JavaScript, TypeScript, Angular">
+                </div>
+
+                <div class="form-group">
+                    <label for="interests">Interests (comma-separated)</label>
+                    <input 
+                        type="text" 
+                        id="interests" 
+                        [(ngModel)]="interests" 
+                        name="interests"
+                        class="form-input"
+                        placeholder="Web Development, AI, Cloud Computing">
+                </div>
+
+                <div class="form-group">
+                    <label for="areasOfExpertise">Areas of Expertise (comma-separated)</label>
+                    <input 
+                        type="text" 
+                        id="areasOfExpertise" 
+                        [(ngModel)]="areasOfExpertise" 
+                        name="areasOfExpertise"
+                        class="form-input"
+                        placeholder="Frontend Development, System Design">
+                </div>
+
+                <h4>Social Links</h4>
+                <div class="form-group">
+                    <label for="linkedIn">LinkedIn</label>
+                    <input 
+                        type="url" 
+                        id="linkedIn" 
+                        [(ngModel)]="linkedIn" 
+                        name="linkedIn"
+                        class="form-input"
+                        placeholder="https://linkedin.com/in/username">
+                </div>
+
+                <div class="form-group">
+                    <label for="github">GitHub</label>
+                    <input 
+                        type="url" 
+                        id="github" 
+                        [(ngModel)]="github" 
+                        name="github"
+                        class="form-input"
+                        placeholder="https://github.com/username">
+                </div>
+
+                <div class="form-group">
+                    <label for="twitter">Twitter</label>
+                    <input 
+                        type="url" 
+                        id="twitter" 
+                        [(ngModel)]="twitter" 
+                        name="twitter"
+                        class="form-input"
+                        placeholder="https://twitter.com/username">
+                </div>
+
+                <div class="form-actions">
+                    <button 
+                        type="button" 
+                        class="btn-primary" 
+                        (click)="onSave()" 
+                        [disabled]="isSaving || !displayName">
+                        {{ isSaving ? 'Saving...' : 'Save Changes' }}
+                    </button>
+                    <button 
+                        type="button" 
+                        class="btn-secondary" 
+                        (click)="onCancel()" 
+                        [disabled]="isSaving">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <br>
+        <h3>User Details</h3>
+
+        <div class="read-only-section">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="text" [value]="user.email" readonly class="read-only-input">
+                </div>
+                <div class="form-group">
+                    <label>Firebase UID</label>
+                    <input type="text" [value]="user.firebaseUid" readonly class="read-only-input">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Status</label>
+                    <input type="text" [value]="getStatusText(user.status)" readonly class="read-only-input">
+                </div>
+                <div class="form-group">
+                    <label>Last Login</label>
+                    <input type="text" [value]="user.lastLoginAt || 'Never'" readonly class="read-only-input">
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
