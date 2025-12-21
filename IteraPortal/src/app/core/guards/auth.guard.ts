@@ -24,7 +24,22 @@ export const authGuard: CanActivateFn = async (route, state) => {
   if (!authService.currentUser()) {
     try {
       const userEmail = (firebaseUser as any).email;
-      const userProfile = await userProfileService.getUserByEmail(userEmail);
+      const user = await userProfileService.getUserByEmail(userEmail);
+      // Convert User to UserProfile
+      const userProfile: any = {
+        id: user.id!,
+        email: user.email!,
+        displayName: user.displayName || '',
+        photoUrl: user.profilePhotoUrl,
+        firebaseUid: user.firebaseUid!,
+        bio: user.bio,
+        location: user.location,
+        skills: user.skills,
+        interests: user.interests,
+        areasOfExpertise: user.areasOfExpertise,
+        socialLinks: user.socialLinks,
+        isActive: user.status === 0
+      };
       authService.currentUser.set(userProfile);
     } catch (error) {
       console.error('Error loading user profile in auth guard:', error);

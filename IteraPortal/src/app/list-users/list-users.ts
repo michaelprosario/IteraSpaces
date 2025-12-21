@@ -1,10 +1,9 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { environment } from '../../environments/environment';
-import { firstValueFrom } from 'rxjs';
+import { UserProfileService } from '../core/services/user-profile.service';
+import { User, PagedResults } from '../core/services/users.service';
 
 export interface UserPrivacySettings {
   profileVisible: boolean;
@@ -13,53 +12,8 @@ export interface UserPrivacySettings {
   allowFollowers: boolean;
 }
 
-export interface UserData {
-  createdAt: string;
-  createdBy: string;
-  deletedAt?: string;
-  deletedBy?: string;
-  id: string;
-  isDeleted: boolean;
-  updatedAt?: string;
-  updatedBy?: string;
-  email: string;
-  displayName: string;
-  firebaseUid: string;
-  emailVerified: boolean;
-  profilePhotoUrl?: string;
-  bio?: string;
-  location?: string;
-  skills?: string[];
-  interests?: string[];
-  areasOfExpertise?: string[];
-  socialLinks?: { [key: string]: string };
-  privacySettings?: UserPrivacySettings;
-  status: number;
-  lastLoginAt?: string;
-}
-
-export interface ValidationError {
-  propertyName: string;
-  errorMessage: string;
-}
-
-export interface GetUsersResult {
-  success: boolean;
-  data: UserData[];
-  message?: string;
-  validationErrors?: ValidationError[];
-  errorCode?: string;
-  totalPages: number;
-  currentPage: number;
-  pageSize: number;
-  totalCount: number;
-}
-
-export interface SearchQuery {
-  searchTerm?: string;
-  pageNumber: number;
-  pageSize: number;
-}
+// Re-export User type from users.service as UserData for backward compatibility
+export type UserData = User;
 
 @Component({
   selector: 'app-list-users',
@@ -69,7 +23,7 @@ export interface SearchQuery {
   styleUrl: './list-users.scss',
 })
 export class ListUsers implements OnInit {
-  private http = inject(HttpClient);
+  private userProfileService = inject(UserProfileService);
   private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
   
@@ -92,15 +46,10 @@ export class ListUsers implements OnInit {
     this.cdr.detectChanges();
     
     try {
-      const query: SearchQuery = {
-        searchTerm: this.searchTerm || '',
-        pageNumber: this.currentPage,
-        pageSize: this.pageSize
-      };
-
-      const url = `${environment.apiUrl}/Users/GetUsersAsync`;
-      const result = await firstValueFrom(
-        this.http.post<GetUsersResult>(url, query)
+      const result: PagedResults<User> = await this.userProfileService.searchUsers(
+        this.searchTerm || '',
+        this.currentPage,
+        this.pageSize
       );
 
       if (result.success) {
@@ -172,10 +121,10 @@ export class ListUsers implements OnInit {
     return pages;
   }
 
-  formatDate(dateString?: string): string {
-    if (!dateString) return 'Never';
+  formatDate(dateValue?: string | Date): string {
+    if (!dateValue) return 'Never';
     
-    const date = new Date(dateString);
+    const date = dateValue instanceof Date ? dateValue : new Date(dateValue);
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
@@ -188,7 +137,8 @@ export class ListUsers implements OnInit {
     return date.toLocaleDateString();
   }
 
-  getStatusBadgeClass(status: number): string {
+  getStatusBadgeClass(status?: number): string {
+    if (status === undefined) return 'status-unknown';
     // Assuming status: 0 = Active, 1 = Inactive, 2 = Disabled, etc.
     switch (status) {
       case 0: return 'status-active';
@@ -198,7 +148,8 @@ export class ListUsers implements OnInit {
     }
   }
 
-  getStatusText(status: number): string {
+  getStatusText(status?: number): string {
+    if (status === undefined) return 'Unknown';
     switch (status) {
       case 0: return 'Active';
       case 1: return 'Inactive';
@@ -207,7 +158,8 @@ export class ListUsers implements OnInit {
     }
   }
 
-  onEditUser(userId: string) {
+  onEditUser(userId?: string) {
+    if (!userId) return;
     this.router.navigate(['/users/edit', userId]);
   }
 }

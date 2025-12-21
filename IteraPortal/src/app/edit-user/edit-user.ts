@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserProfileService } from '../core/services/user-profile.service';
-import { UpdateUserProfileCommand } from '../core/services/api.service';
+import { UpdateUserProfileCommand } from '../core/services/users.service';
 
 export interface UserData {
   id: string;

@@ -50,20 +50,10 @@ export class ApiService {
   private http = inject(HttpClient);
   private baseUrl = environment.apiUrl;
 
-  async get<T>(endpoint: string): Promise<T> {
-    try {
-      const response = await firstValueFrom(
-        this.http.get<AppResult<T>>(`${this.baseUrl}${endpoint}`)
-          .pipe(catchError(this.handleError))
-      );
-      // Unwrap AppResult and return the data
-      return response.data;
-    } catch (error) {
-      throw this.processError(error);
-    }
-  }
-
-  async post<T>(endpoint: string, data: any): Promise<T> {
+  /**
+   * Main POST method for API calls - all WebAPI endpoints use POST
+   */
+  async post<T>(endpoint: string, data: any = {}): Promise<T> {
     try {
       const response = await firstValueFrom(
         this.http.post<AppResult<T>>(`${this.baseUrl}${endpoint}`, data)
@@ -76,48 +66,19 @@ export class ApiService {
     }
   }
 
-  async put<T>(endpoint: string, data: any): Promise<T> {
+  /**
+   * POST method for API calls that return data directly (not wrapped in AppResult)
+   */
+  async postDirect<T>(endpoint: string, data: any = {}): Promise<T> {
     try {
       const response = await firstValueFrom(
-        this.http.put<AppResult<T>>(`${this.baseUrl}${endpoint}`, data)
+        this.http.post<T>(`${this.baseUrl}${endpoint}`, data)
           .pipe(catchError(this.handleError))
       );
-      // Unwrap AppResult and return the data
-      return response.data;
+      return response;
     } catch (error) {
       throw this.processError(error);
     }
-  }
-
-  async delete<T>(endpoint: string): Promise<T> {
-    try {
-      const response = await firstValueFrom(
-        this.http.delete<AppResult<T>>(`${this.baseUrl}${endpoint}`)
-          .pipe(catchError(this.handleError))
-      );
-      // Unwrap AppResult and return the data
-      return response.data;
-    } catch (error) {
-      throw this.processError(error);
-    }
-  }
-
-  // User Management Methods based on OpenAPI spec
-  async searchUsers(params: SearchUsersParams): Promise<any> {
-    const queryParams = new URLSearchParams();
-    if (params.searchTerm) queryParams.append('searchTerm', params.searchTerm);
-    if (params.pageNumber) queryParams.append('pageNumber', params.pageNumber.toString());
-    if (params.pageSize) queryParams.append('pageSize', params.pageSize.toString());
-    
-    return this.get(`/Users/search?${queryParams.toString()}`);
-  }
-
-  async disableUser(userId: string, reason: string, disabledBy: string): Promise<any> {
-    return this.post(`/Users/${userId}/disable`, { userId, reason, disabledBy });
-  }
-
-  async enableUser(userId: string): Promise<any> {
-    return this.post(`/Users/${userId}/enable`, {});
   }
 
   private handleError(error: HttpErrorResponse): Observable<never> {

@@ -30,7 +30,22 @@ export const authStartupGuard: CanActivateFn = async (route, state) => {
     const user = await userService.getUserByEmail(firebaseUser.email!);
     
     // User exists in DB, store profile in service for session
-    authService.currentUser.set(user);
+    // Convert User to UserProfile
+    const userProfile: any = {
+      id: user.id!,
+      email: user.email!,
+      displayName: user.displayName || '',
+      photoUrl: user.profilePhotoUrl,
+      firebaseUid: user.firebaseUid!,
+      bio: user.bio,
+      location: user.location,
+      skills: user.skills,
+      interests: user.interests,
+      areasOfExpertise: user.areasOfExpertise,
+      socialLinks: user.socialLinks,
+      isActive: user.status === 0
+    };
+    authService.currentUser.set(userProfile);
     
     // Redirect to dashboard
     router.navigate(['/dashboard']);

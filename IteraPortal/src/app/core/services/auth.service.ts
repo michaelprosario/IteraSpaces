@@ -2,7 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { Auth, signInWithPopup, GoogleAuthProvider, signOut, user, User } from '@angular/fire/auth';
 import { Observable, from } from 'rxjs';
 import { Router } from '@angular/router';
-import { ApiService } from './api.service';
+import { UsersService, User as AppUser, RegisterUserCommand, GetUserByEmailQuery, GetUserByIdQuery, UpdateUserProfileCommand as UsersUpdateProfileCommand, UpdatePrivacySettingsCommand, RecordLoginCommand, UserPrivacySettings as UsersPrivacySettings } from './users.service';
 
 export interface UserProfile {
   id: string;
@@ -44,7 +44,7 @@ export interface UserPrivacySettings {
 export class AuthService {
   private auth = inject(Auth);
   private router = inject(Router);
-  private apiService = inject(ApiService);
+  private usersService = inject(UsersService);
   
   user$ = user(this.auth);
   currentUser = signal<UserProfile | null>(null);
@@ -104,12 +104,31 @@ export class AuthService {
     displayName: string;
     photoUrl?: string;
   }): Promise<UserProfile> {
-    // Use the actual API endpoint: POST /api/Users/register
-    return this.apiService.post<UserProfile>('/Users/register', {
+    // Use the actual API endpoint: POST /api/Users/RegisterUserAsync
+    const command: RegisterUserCommand = {
       email: userData.email,
       displayName: userData.displayName,
       firebaseUid: userData.firebaseUid
-    });
+    };
+    const user = await this.usersService.registerUser(command);
+    return this.mapToUserProfile(user);
+  }
+
+  private mapToUserProfile(user: AppUser): UserProfile {
+    return {
+      id: user.id!,
+      email: user.email!,
+      displayName: user.displayName!,
+      photoUrl: user.profilePhotoUrl,
+      firebaseUid: user.firebaseUid!,
+      bio: user.bio,
+      location: user.location,
+      skills: user.skills,
+      interests: user.interests,
+      areasOfExpertise: user.areasOfExpertise,
+      socialLinks: user.socialLinks,
+      isActive: user.status === 0
+    };
   }
 
   async loadUserProfile(userId: string): Promise<void> {
@@ -119,9 +138,10 @@ export class AuthService {
     }
 
     try {
-      // Use the actual API endpoint: GET /api/Users/{userId}
-      const profile = await this.apiService.get<UserProfile>(`/Users/${userId}`);
-      this.currentUser.set(profile);
+      // Use the actual API endpoint: POST /api/Users/GetUserByIdAsync
+      const query: GetUserByIdQuery = { userId };
+      const user = await this.usersService.getUserById(query);
+      this.currentUser.set(this.mapToUserProfile(user));
     } catch (error) {
       console.error('Error loading user profile:', error);
       this.currentUser.set(null);
@@ -129,22 +149,40 @@ export class AuthService {
   }
 
   async getUserByEmail(email: string): Promise<UserProfile> {
-    // Use the actual API endpoint: GET /api/Users/by-email/{email}
-    return this.apiService.get<UserProfile>(`/Users/by-email/${email}`);
+    // Use the actual API endpoint: POST /api/Users/GetUserByEmailAsync
+    const query: GetUserByEmailQuery = { email };
+    const user = await this.usersService.getUserByEmail(query);
+    return this.mapToUserProfile(user);
   }
 
   async updateUserProfile(userId: string, profileData: UpdateUserProfileCommand): Promise<void> {
-    // Use the actual API endpoint: PUT /api/Users/{userId}/profile
-    await this.apiService.put(`/Users/${userId}/profile`, profileData);
+    // Use the actual API endpoint: POST /api/Users/UpdateUserProfileAsync
+    const command: UsersUpdateProfileCommand = {
+      userId,
+      displayName: profileData.displayName,
+      bio: profileData.bio,
+      location: profileData.location,
+      profilePhotoUrl: profileData.profilePhotoUrl,
+      skills: profileData.skills,
+      interests: profileData.interests,
+      areasOfExpertise: profileData.areasOfExpertise,
+      socialLinks: profileData.socialLinks
+    };
+    await this.usersService.updateUserProfile(command);
   }
 
   async updatePrivacySettings(userId: string, settings: UserPrivacySettings): Promise<void> {
-    // Use the actual API endpoint: PUT /api/Users/{userId}/privacy
-    await this.apiService.put(`/Users/${userId}/privacy`, settings);
+    // Use the actual API endpoint: POST /api/Users/UpdatePrivacySettingsAsync
+    const command: UpdatePrivacySettingsCommand = {
+      userId,
+      privacySettings: settings
+    };
+    await this.usersService.updatePrivacySettings(command);
   }
 
   async recordLogin(userId: string): Promise<void> {
-    // Use the actual API endpoint: POST /api/Users/{userId}/login
-    await this.apiService.post(`/Users/${userId}/login`, {});
+    // Use the actual API endpoint: POST /api/Users/RecordLoginAsync
+    const command: RecordLoginCommand = { userId };
+    await this.usersService.recordLogin(command);
   }
 }
