@@ -22,8 +22,8 @@ public class LeanTopicsController : ControllerBase
     /// <summary>
     /// Store a topic (create or update)
     /// </summary>
-    [HttpPost]
-    public async Task<IActionResult> StoreTopic([FromBody] LeanTopic topic)
+    [HttpPost("StoreEntityAsync")]
+    public async Task<IActionResult> StoreEntityAsync([FromBody] LeanTopic topic)
     {
         var userId = "SYSTEM"; // TODO: Get from auth context
 
@@ -60,10 +60,9 @@ public class LeanTopicsController : ControllerBase
     /// <summary>
     /// Get topic by ID
     /// </summary>
-    [HttpGet("{topicId}")]
-    public async Task<IActionResult> GetTopicById(string topicId)
+    [HttpPost("GetEntityByIdAsync")]
+    public async Task<IActionResult> GetEntityByIdAsync([FromBody] GetEntityByIdQuery query)
     {
-        var query = new GetEntityByIdQuery(topicId);
         var result = await _topicService.GetEntityByIdAsync(query);
         return HandleResult(result);
     }
@@ -71,10 +70,9 @@ public class LeanTopicsController : ControllerBase
     /// <summary>
     /// Vote for a topic
     /// </summary>
-    [HttpPost("{topicId}/vote")]
-    public async Task<IActionResult> VoteForTopic(string topicId, [FromBody] VoteForLeanTopicCommand command)
+    [HttpPost("VoteForLeanTopicAsync")]
+    public async Task<IActionResult> VoteForLeanTopicAsync([FromBody] VoteForLeanTopicCommand command)
     {
-        command.LeanTopicId = topicId;
         var result = await _topicService.VoteForLeanTopicAsync(command);
         return HandleResult(result);
     }
@@ -82,10 +80,9 @@ public class LeanTopicsController : ControllerBase
     /// <summary>
     /// Set topic status
     /// </summary>
-    [HttpPut("{topicId}/status")]
-    public async Task<IActionResult> SetTopicStatus(string topicId, [FromBody] SetTopicStatusCommand command)
+    [HttpPost("SetTopicStatusAsync")]
+    public async Task<IActionResult> SetTopicStatusAsync([FromBody] SetTopicStatusCommand command)
     {
-        command.TopicId = topicId;
         var result = await _topicService.SetTopicStatusAsync(command);
         return HandleResult(result);
     }
@@ -93,15 +90,11 @@ public class LeanTopicsController : ControllerBase
     /// <summary>
     /// Delete a topic (soft delete)
     /// </summary>
-    [HttpDelete("{topicId}")]
-    public async Task<IActionResult> DeleteTopic(string topicId)
+    [HttpPost("DeleteEntityAsync")]
+    public async Task<IActionResult> DeleteEntityAsync([FromBody] DeleteEntityCommand command)
     {
         var userId = "SYSTEM"; // TODO: Get from auth context
-
-        var command = new DeleteEntityCommand(topicId)
-        {
-            UserId = userId
-        };
+        command.UserId = userId;
 
         var result = await _topicService.DeleteEntityAsync(command);
         return HandleResult(result);

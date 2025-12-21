@@ -19,8 +19,8 @@ namespace IteraWebApi.Controllers
         /// <summary>
         /// Store a blog (create or update)
         /// </summary>
-        [HttpPost]
-        public async Task<IActionResult> StoreBlog([FromBody] Blog blog)
+        [HttpPost("StoreEntityAsync")]
+        public async Task<IActionResult> StoreEntityAsync([FromBody] Blog blog)
         {
             // TODO: Get current user ID from authentication context
             var userId = "SYSTEM"; // Placeholder
@@ -60,10 +60,9 @@ namespace IteraWebApi.Controllers
         /// <summary>
         /// Get blog by ID
         /// </summary>
-        [HttpGet("{blogId}")]
-        public async Task<IActionResult> GetBlogById(string blogId)
+        [HttpPost("GetEntityByIdAsync")]
+        public async Task<IActionResult> GetEntityByIdAsync([FromBody] GetEntityByIdQuery query)
         {
-            var query = new GetEntityByIdQuery(blogId);
             var result = await _blogService.GetEntityByIdAsync(query);
             return HandleResult(result);
         }
@@ -71,16 +70,12 @@ namespace IteraWebApi.Controllers
         /// <summary>
         /// Delete a blog (soft delete)
         /// </summary>
-        [HttpDelete("{blogId}")]
-        public async Task<IActionResult> DeleteBlog(string blogId)
+        [HttpPost("DeleteEntityAsync")]
+        public async Task<IActionResult> DeleteEntityAsync([FromBody] DeleteEntityCommand command)
         {
             // TODO: Get current user ID from authentication context
             var userId = "SYSTEM"; // Placeholder
-
-            var command = new DeleteEntityCommand(blogId)
-            {
-                UserId = userId
-            };
+            command.UserId = userId;
 
             var result = await _blogService.DeleteEntityAsync(command);
             return HandleResult(result);

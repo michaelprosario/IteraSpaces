@@ -5,7 +5,7 @@
     "version": "1.0"
   },
   "paths": {
-    "/api/Blogs": {
+    "/api/Blogs/StoreEntityAsync": {
       "post": {
         "tags": [
           "Blogs"
@@ -36,41 +36,61 @@
         }
       }
     },
-    "/api/Blogs/{blogId}": {
-      "get": {
+    "/api/Blogs/GetEntityByIdAsync": {
+      "post": {
         "tags": [
           "Blogs"
         ],
-        "parameters": [
-          {
-            "name": "blogId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetEntityByIdQuery"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetEntityByIdQuery"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetEntityByIdQuery"
+              }
             }
           }
-        ],
+        },
         "responses": {
           "200": {
             "description": "OK"
           }
         }
-      },
-      "delete": {
+      }
+    },
+    "/api/Blogs/DeleteEntityAsync": {
+      "post": {
         "tags": [
           "Blogs"
         ],
-        "parameters": [
-          {
-            "name": "blogId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteEntityCommand"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteEntityCommand"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteEntityCommand"
+              }
             }
           }
-        ],
+        },
         "responses": {
           "200": {
             "description": "OK"
@@ -78,7 +98,7 @@
         }
       }
     },
-    "/api/LeanParticipants": {
+    "/api/LeanParticipants/AddParticipantAsync": {
       "post": {
         "tags": [
           "LeanParticipants"
@@ -109,41 +129,61 @@
         }
       }
     },
-    "/api/LeanParticipants/{participantId}": {
-      "get": {
+    "/api/LeanParticipants/GetEntityByIdAsync": {
+      "post": {
         "tags": [
           "LeanParticipants"
         ],
-        "parameters": [
-          {
-            "name": "participantId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetEntityByIdQuery"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetEntityByIdQuery"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetEntityByIdQuery"
+              }
             }
           }
-        ],
+        },
         "responses": {
           "200": {
             "description": "OK"
           }
         }
-      },
-      "delete": {
+      }
+    },
+    "/api/LeanParticipants/DeleteEntityAsync": {
+      "post": {
         "tags": [
           "LeanParticipants"
         ],
-        "parameters": [
-          {
-            "name": "participantId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteEntityCommand"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteEntityCommand"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteEntityCommand"
+              }
             }
           }
-        ],
+        },
         "responses": {
           "200": {
             "description": "OK"
@@ -151,7 +191,7 @@
         }
       }
     },
-    "/api/LeanSessions": {
+    "/api/LeanSessions/StoreEntityAsync": {
       "post": {
         "tags": [
           "LeanSessions"
@@ -180,138 +220,32 @@
             "description": "OK"
           }
         }
-      },
-      "get": {
-        "tags": [
-          "LeanSessions"
-        ],
-        "parameters": [
-          {
-            "name": "searchTerm",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "status",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/SessionStatus"
-            }
-          },
-          {
-            "name": "facilitatorUserId",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "pageNumber",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 1
-            }
-          },
-          {
-            "name": "pageSize",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 20
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
       }
     },
-    "/api/LeanSessions/{sessionId}": {
-      "get": {
-        "tags": [
-          "LeanSessions"
-        ],
-        "parameters": [
-          {
-            "name": "sessionId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "LeanSessions"
-        ],
-        "parameters": [
-          {
-            "name": "sessionId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/LeanSessions/{sessionId}/details": {
-      "get": {
-        "tags": [
-          "LeanSessions"
-        ],
-        "parameters": [
-          {
-            "name": "sessionId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/LeanSessions/{sessionId}/close": {
+    "/api/LeanSessions/GetEntityByIdAsync": {
       "post": {
         "tags": [
           "LeanSessions"
         ],
-        "parameters": [
-          {
-            "name": "sessionId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetEntityByIdQuery"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetEntityByIdQuery"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetEntityByIdQuery"
+              }
             }
           }
-        ],
+        },
         "responses": {
           "200": {
             "description": "OK"
@@ -319,20 +253,103 @@
         }
       }
     },
-    "/api/LeanSessions/{sessionId}/notes": {
+    "/api/LeanSessions/GetLeanSessionAsync": {
       "post": {
         "tags": [
           "LeanSessions"
         ],
-        "parameters": [
-          {
-            "name": "sessionId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetLeanSessionQuery"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetLeanSessionQuery"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetLeanSessionQuery"
+              }
             }
           }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/LeanSessions/GetLeanSessionsAsync": {
+      "post": {
+        "tags": [
+          "LeanSessions"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetLeanSessionsQuery"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetLeanSessionsQuery"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetLeanSessionsQuery"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/LeanSessions/CloseSessionAsync": {
+      "post": {
+        "tags": [
+          "LeanSessions"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CloseSessionCommand"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CloseSessionCommand"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CloseSessionCommand"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/LeanSessions/StoreNoteAsync": {
+      "post": {
+        "tags": [
+          "LeanSessions"
         ],
         "requestBody": {
           "content": {
@@ -360,7 +377,38 @@
         }
       }
     },
-    "/api/LeanTopics": {
+    "/api/LeanSessions/DeleteEntityAsync": {
+      "post": {
+        "tags": [
+          "LeanSessions"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteEntityCommand"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteEntityCommand"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteEntityCommand"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/LeanTopics/StoreEntityAsync": {
       "post": {
         "tags": [
           "LeanTopics"
@@ -391,78 +439,26 @@
         }
       }
     },
-    "/api/LeanTopics/{topicId}": {
-      "get": {
-        "tags": [
-          "LeanTopics"
-        ],
-        "parameters": [
-          {
-            "name": "topicId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "LeanTopics"
-        ],
-        "parameters": [
-          {
-            "name": "topicId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/LeanTopics/{topicId}/vote": {
+    "/api/LeanTopics/GetEntityByIdAsync": {
       "post": {
         "tags": [
           "LeanTopics"
         ],
-        "parameters": [
-          {
-            "name": "topicId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/VoteForLeanTopicCommand"
+                "$ref": "#/components/schemas/GetEntityByIdQuery"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/VoteForLeanTopicCommand"
+                "$ref": "#/components/schemas/GetEntityByIdQuery"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/VoteForLeanTopicCommand"
+                "$ref": "#/components/schemas/GetEntityByIdQuery"
               }
             }
           }
@@ -474,20 +470,41 @@
         }
       }
     },
-    "/api/LeanTopics/{topicId}/status": {
-      "put": {
+    "/api/LeanTopics/VoteForLeanTopicAsync": {
+      "post": {
         "tags": [
           "LeanTopics"
         ],
-        "parameters": [
-          {
-            "name": "topicId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VoteForLeanTopicCommand"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VoteForLeanTopicCommand"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/VoteForLeanTopicCommand"
+              }
             }
           }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/LeanTopics/SetTopicStatusAsync": {
+      "post": {
+        "tags": [
+          "LeanTopics"
         ],
         "requestBody": {
           "content": {
@@ -515,46 +532,84 @@
         }
       }
     },
-    "/api/UserRoles/users/{userId}/roles": {
-      "get": {
+    "/api/LeanTopics/DeleteEntityAsync": {
+      "post": {
+        "tags": [
+          "LeanTopics"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteEntityCommand"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteEntityCommand"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteEntityCommand"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/UserRoles/GetUserRolesAsync": {
+      "post": {
+        "tags": [
+          "UserRoles"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetUserRolesQuery"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetUserRolesQuery"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetUserRolesQuery"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/UserRoles/UserHasRoleAsync": {
+      "post": {
         "tags": [
           "UserRoles"
         ],
         "parameters": [
           {
             "name": "userId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/UserRoles/users/{userId}/roles/{roleId}": {
-      "get": {
-        "tags": [
-          "UserRoles"
-        ],
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
+            "in": "query",
             "schema": {
               "type": "string"
             }
           },
           {
             "name": "roleId",
-            "in": "path",
-            "required": true,
+            "in": "query",
             "schema": {
               "type": "string"
             }
@@ -567,8 +622,8 @@
         }
       }
     },
-    "/api/UserRoles/roles": {
-      "get": {
+    "/api/UserRoles/GetAllRolesAsync": {
+      "post": {
         "tags": [
           "UserRoles"
         ],
@@ -579,7 +634,7 @@
         }
       }
     },
-    "/api/UserRoles/users/roles": {
+    "/api/UserRoles/AssignRoleToUserAsync": {
       "post": {
         "tags": [
           "UserRoles"
@@ -608,8 +663,10 @@
             "description": "OK"
           }
         }
-      },
-      "delete": {
+      }
+    },
+    "/api/UserRoles/RemoveRoleFromUserAsync": {
+      "post": {
         "tags": [
           "UserRoles"
         ],
@@ -639,21 +696,30 @@
         }
       }
     },
-    "/api/UserRoles/roles/{roleId}/users": {
-      "get": {
+    "/api/UserRoles/GetUsersInRoleAsync": {
+      "post": {
         "tags": [
           "UserRoles"
         ],
-        "parameters": [
-          {
-            "name": "roleId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetUsersInRoleQuery"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetUsersInRoleQuery"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetUsersInRoleQuery"
+              }
             }
           }
-        ],
+        },
         "responses": {
           "200": {
             "description": "OK"
@@ -661,7 +727,7 @@
         }
       }
     },
-    "/api/Users/register": {
+    "/api/Users/RegisterUserAsync": {
       "post": {
         "tags": [
           "Users"
@@ -692,146 +758,134 @@
         }
       }
     },
-    "/api/Users/{userId}": {
-      "get": {
-        "tags": [
-          "Users"
-        ],
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Users/by-email/{email}": {
-      "get": {
-        "tags": [
-          "Users"
-        ],
-        "parameters": [
-          {
-            "name": "email",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Users/{userId}/profile": {
-      "put": {
-        "tags": [
-          "Users"
-        ],
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateUserProfileCommand"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateUserProfileCommand"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateUserProfileCommand"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Users/{userId}/privacy": {
-      "put": {
-        "tags": [
-          "Users"
-        ],
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UserPrivacySettings"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UserPrivacySettings"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/UserPrivacySettings"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Users/{userId}/disable": {
+    "/api/Users/GetUserByIdAsync": {
       "post": {
         "tags": [
           "Users"
         ],
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetUserByIdQuery"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetUserByIdQuery"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetUserByIdQuery"
+              }
             }
           }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Users/GetUserByEmailAsync": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetUserByEmailQuery"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetUserByEmailQuery"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetUserByEmailQuery"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Users/UpdateUserProfileAsync": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserProfileCommand"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserProfileCommand"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserProfileCommand"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Users/UpdatePrivacySettingsAsync": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePrivacySettingsCommand"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePrivacySettingsCommand"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePrivacySettingsCommand"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Users/DisableUserAsync": {
+      "post": {
+        "tags": [
+          "Users"
         ],
         "requestBody": {
           "content": {
@@ -859,21 +913,30 @@
         }
       }
     },
-    "/api/Users/{userId}/enable": {
+    "/api/Users/EnableUserAsync": {
       "post": {
         "tags": [
           "Users"
         ],
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnableUserCommand"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnableUserCommand"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnableUserCommand"
+              }
             }
           }
-        ],
+        },
         "responses": {
           "200": {
             "description": "OK"
@@ -929,21 +992,30 @@
         }
       }
     },
-    "/api/Users/{userId}/login": {
+    "/api/Users/RecordLoginAsync": {
       "post": {
         "tags": [
           "Users"
         ],
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecordLoginCommand"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecordLoginCommand"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecordLoginCommand"
+              }
             }
           }
-        ],
+        },
         "responses": {
           "200": {
             "description": "OK"
@@ -1031,6 +1103,34 @@
         },
         "additionalProperties": false
       },
+      "CloseSessionCommand": {
+        "type": "object",
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "nullable": true
+          },
+          "userId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DeleteEntityCommand": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "nullable": true
+          },
+          "entityId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "DisableUserCommand": {
         "type": "object",
         "properties": {
@@ -1043,6 +1143,109 @@
             "nullable": true
           },
           "disabledBy": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "EnableUserCommand": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "nullable": true
+          },
+          "enabledBy": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetEntityByIdQuery": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "nullable": true
+          },
+          "entityId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetLeanSessionQuery": {
+        "type": "object",
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetLeanSessionsQuery": {
+        "type": "object",
+        "properties": {
+          "searchTerm": {
+            "type": "string",
+            "nullable": true
+          },
+          "pageNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SessionStatus"
+          },
+          "facilitatorUserId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetUserByEmailQuery": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetUserByIdQuery": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetUserRolesQuery": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetUsersInRoleQuery": {
+        "type": "object",
+        "properties": {
+          "roleId": {
             "type": "string",
             "nullable": true
           }
@@ -1289,6 +1492,16 @@
         "type": "integer",
         "format": "int32"
       },
+      "RecordLoginCommand": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "RegisterUserCommand": {
         "type": "object",
         "properties": {
@@ -1409,6 +1622,19 @@
         ],
         "type": "integer",
         "format": "int32"
+      },
+      "UpdatePrivacySettingsCommand": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "nullable": true
+          },
+          "privacySettings": {
+            "$ref": "#/components/schemas/UserPrivacySettings"
+          }
+        },
+        "additionalProperties": false
       },
       "UpdateUserProfileCommand": {
         "type": "object",

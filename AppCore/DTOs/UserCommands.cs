@@ -36,6 +36,17 @@ namespace AppCore.DTOs
         public string DisabledBy { get; set; } = string.Empty;
     }
 
+    public class EnableUserCommand
+    {
+        public string UserId { get; set; } = string.Empty;
+        public string EnabledBy { get; set; } = string.Empty;
+    }
+
+    public class RecordLoginCommand
+    {
+        public string UserId { get; set; } = string.Empty;
+    }
+
     public class UpdateUserRequest
     {
         public string? Email { get; set; }

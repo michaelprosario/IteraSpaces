@@ -25,8 +25,8 @@ public class LeanSessionsController : ControllerBase
     /// <summary>
     /// Store a lean session (create or update)
     /// </summary>
-    [HttpPost]
-    public async Task<IActionResult> StoreSession([FromBody] LeanSession session)
+    [HttpPost("StoreEntityAsync")]
+    public async Task<IActionResult> StoreEntityAsync([FromBody] LeanSession session)
     {
         var userId = "SYSTEM"; // TODO: Get from auth context
 
@@ -63,10 +63,9 @@ public class LeanSessionsController : ControllerBase
     /// <summary>
     /// Get session by ID
     /// </summary>
-    [HttpGet("{sessionId}")]
-    public async Task<IActionResult> GetSessionById(string sessionId)
+    [HttpPost("GetEntityByIdAsync")]
+    public async Task<IActionResult> GetEntityByIdAsync([FromBody] GetEntityByIdQuery query)
     {
-        var query = new GetEntityByIdQuery(sessionId);
         var result = await _sessionService.GetEntityByIdAsync(query);
         return HandleResult(result);
     }
@@ -74,10 +73,9 @@ public class LeanSessionsController : ControllerBase
     /// <summary>
     /// Get detailed session with topics, votes, and users
     /// </summary>
-    [HttpGet("{sessionId}/details")]
-    public async Task<IActionResult> GetSessionDetails(string sessionId)
+    [HttpPost("GetLeanSessionAsync")]
+    public async Task<IActionResult> GetLeanSessionAsync([FromBody] GetLeanSessionQuery query)
     {
-        var query = new GetLeanSessionQuery { SessionId = sessionId };
         var result = await _queryService.GetLeanSessionAsync(query);
         return HandleResult(result);
     }
@@ -85,23 +83,9 @@ public class LeanSessionsController : ControllerBase
     /// <summary>
     /// Search sessions with filters
     /// </summary>
-    [HttpGet]
-    public async Task<IActionResult> SearchSessions(
-        [FromQuery] string? searchTerm,
-        [FromQuery] SessionStatus? status,
-        [FromQuery] string? facilitatorUserId,
-        [FromQuery] int pageNumber = 1,
-        [FromQuery] int pageSize = 20)
+    [HttpPost("GetLeanSessionsAsync")]
+    public async Task<IActionResult> GetLeanSessionsAsync([FromBody] GetLeanSessionsQuery query)
     {
-        var query = new GetLeanSessionsQuery
-        {
-            SearchTerm = searchTerm ?? string.Empty,
-            Status = status,
-            FacilitatorUserId = facilitatorUserId,
-            PageNumber = pageNumber,
-            PageSize = pageSize
-        };
-
         var result = await _queryService.GetLeanSessionsAsync(query);
         return Ok(result);
     }
@@ -109,17 +93,9 @@ public class LeanSessionsController : ControllerBase
     /// <summary>
     /// Close a session
     /// </summary>
-    [HttpPost("{sessionId}/close")]
-    public async Task<IActionResult> CloseSession(string sessionId)
+    [HttpPost("CloseSessionAsync")]
+    public async Task<IActionResult> CloseSessionAsync([FromBody] CloseSessionCommand command)
     {
-        var userId = "SYSTEM"; // TODO: Get from auth context
-
-        var command = new CloseSessionCommand
-        {
-            SessionId = sessionId,
-            UserId = userId
-        };
-
         var result = await _sessionService.CloseSessionAsync(command);
         return HandleResult(result);
     }
@@ -127,10 +103,9 @@ public class LeanSessionsController : ControllerBase
     /// <summary>
     /// Add a note to a session
     /// </summary>
-    [HttpPost("{sessionId}/notes")]
-    public async Task<IActionResult> StoreNote(string sessionId, [FromBody] StoreLeanSessionNoteCommand command)
+    [HttpPost("StoreNoteAsync")]
+    public async Task<IActionResult> StoreNoteAsync([FromBody] StoreLeanSessionNoteCommand command)
     {
-        command.LeanSessionId = sessionId;
         var result = await _sessionService.StoreNoteAsync(command);
         return HandleResult(result);
     }
@@ -138,15 +113,11 @@ public class LeanSessionsController : ControllerBase
     /// <summary>
     /// Delete a session (soft delete)
     /// </summary>
-    [HttpDelete("{sessionId}")]
-    public async Task<IActionResult> DeleteSession(string sessionId)
+    [HttpPost("DeleteEntityAsync")]
+    public async Task<IActionResult> DeleteEntityAsync([FromBody] DeleteEntityCommand command)
     {
         var userId = "SYSTEM"; // TODO: Get from auth context
-
-        var command = new DeleteEntityCommand(sessionId)
-        {
-            UserId = userId
-        };
+        command.UserId = userId;
 
         var result = await _sessionService.DeleteEntityAsync(command);
         return HandleResult(result);

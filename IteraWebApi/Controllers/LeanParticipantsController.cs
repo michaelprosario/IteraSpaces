@@ -21,8 +21,8 @@ public class LeanParticipantsController : ControllerBase
     /// <summary>
     /// Add a participant to a session
     /// </summary>
-    [HttpPost]
-    public async Task<IActionResult> AddParticipant([FromBody] LeanParticipant participant)
+    [HttpPost("AddParticipantAsync")]
+    public async Task<IActionResult> AddParticipantAsync([FromBody] LeanParticipant participant)
     {
         var userId = "SYSTEM"; // TODO: Get from auth context
 
@@ -59,10 +59,9 @@ public class LeanParticipantsController : ControllerBase
     /// <summary>
     /// Get participant by ID
     /// </summary>
-    [HttpGet("{participantId}")]
-    public async Task<IActionResult> GetParticipantById(string participantId)
+    [HttpPost("GetEntityByIdAsync")]
+    public async Task<IActionResult> GetEntityByIdAsync([FromBody] GetEntityByIdQuery query)
     {
-        var query = new GetEntityByIdQuery(participantId);
         var result = await _participantService.GetEntityByIdAsync(query);
         return HandleResult(result);
     }
@@ -70,15 +69,11 @@ public class LeanParticipantsController : ControllerBase
     /// <summary>
     /// Remove a participant from a session (soft delete)
     /// </summary>
-    [HttpDelete("{participantId}")]
-    public async Task<IActionResult> RemoveParticipant(string participantId)
+    [HttpPost("DeleteEntityAsync")]
+    public async Task<IActionResult> DeleteEntityAsync([FromBody] DeleteEntityCommand command)
     {
         var userId = "SYSTEM"; // TODO: Get from auth context
-
-        var command = new DeleteEntityCommand(participantId)
-        {
-            UserId = userId
-        };
+        command.UserId = userId;
 
         var result = await _participantService.DeleteEntityAsync(command);
         return HandleResult(result);

@@ -23,12 +23,11 @@ namespace IteraWebApi.Controllers
         /// <summary>
         /// Get all roles for a specific user
         /// </summary>
-        /// <param name="userId">The user ID</param>
+        /// <param name="query">Query containing the user ID</param>
         /// <returns>List of roles assigned to the user</returns>
-        [HttpGet("users/{userId}/roles")]
-        public async Task<IActionResult> GetUserRoles(string userId)
+        [HttpPost("GetUserRolesAsync")]
+        public async Task<IActionResult> GetUserRolesAsync([FromBody] GetUserRolesQuery query)
         {
-            var query = new GetUserRolesQuery { UserId = userId };
             var result = await _userRoleService.GetUserRolesAsync(query);
             return HandleResult(result);
         }
@@ -39,8 +38,8 @@ namespace IteraWebApi.Controllers
         /// <param name="userId">The user ID</param>
         /// <param name="roleId">The role ID</param>
         /// <returns>Boolean indicating if user has the role</returns>
-        [HttpGet("users/{userId}/roles/{roleId}")]
-        public async Task<IActionResult> UserHasRole(string userId, string roleId)
+        [HttpPost("UserHasRoleAsync")]
+        public async Task<IActionResult> UserHasRoleAsync(string userId, string roleId)
         {
             var result = await _userRoleService.UserHasRoleAsync(userId, roleId);
             return HandleResult(result);
@@ -50,8 +49,8 @@ namespace IteraWebApi.Controllers
         /// Get all available roles in the system
         /// </summary>
         /// <returns>List of all roles</returns>
-        [HttpGet("roles")]
-        public async Task<IActionResult> GetAllRoles()
+        [HttpPost("GetAllRolesAsync")]
+        public async Task<IActionResult> GetAllRolesAsync()
         {
             var result = await _roleService.GetAllRolesAsync();
             return HandleResult(result);
@@ -62,8 +61,8 @@ namespace IteraWebApi.Controllers
         /// </summary>
         /// <param name="command">Assignment details</param>
         /// <returns>The created user role association</returns>
-        [HttpPost("users/roles")]
-        public async Task<IActionResult> AssignRoleToUser([FromBody] AssignRoleToUserCommand command)
+        [HttpPost("AssignRoleToUserAsync")]
+        public async Task<IActionResult> AssignRoleToUserAsync([FromBody] AssignRoleToUserCommand command)
         {
             var result = await _userRoleService.AssignRoleToUserAsync(command);
             return HandleResult(result);
@@ -74,8 +73,8 @@ namespace IteraWebApi.Controllers
         /// </summary>
         /// <param name="command">Removal details</param>
         /// <returns>Success indicator</returns>
-        [HttpDelete("users/roles")]
-        public async Task<IActionResult> RemoveRoleFromUser([FromBody] RemoveRoleFromUserCommand command)
+        [HttpPost("RemoveRoleFromUserAsync")]
+        public async Task<IActionResult> RemoveRoleFromUserAsync([FromBody] RemoveRoleFromUserCommand command)
         {
             var result = await _userRoleService.RemoveRoleFromUserAsync(command);
             return HandleResult(result);
@@ -84,12 +83,11 @@ namespace IteraWebApi.Controllers
         /// <summary>
         /// Get all users that have a specific role
         /// </summary>
-        /// <param name="roleId">The role ID</param>
+        /// <param name="query">Query containing the role ID</param>
         /// <returns>List of users with the specified role</returns>
-        [HttpGet("roles/{roleId}/users")]
-        public async Task<IActionResult> GetUsersInRole(string roleId)
+        [HttpPost("GetUsersInRoleAsync")]
+        public async Task<IActionResult> GetUsersInRoleAsync([FromBody] GetUsersInRoleQuery query)
         {
-            var query = new GetUsersInRoleQuery { RoleId = roleId };
             var result = await _userRoleService.GetUsersInRoleAsync(query);
             return HandleResult(result);
         }
