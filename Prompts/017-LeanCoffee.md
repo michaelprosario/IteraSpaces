@@ -1,0 +1,5 @@
+- review requirements and specs in Designs/lean_coffee.md
+- Implement backend webapi actions for the following services:
+    - LeanSessionServices
+    - LeanSessionParticipantServices
+    - LeanTopicServices

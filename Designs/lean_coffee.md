@@ -163,7 +163,7 @@ public enum NoteType
 5. **Session isolation** - All entities are scoped to a session for multi-tenancy
 6. **Real-time ready** - Structure supports WebSocket updates
 
-crud
+
 
 ### Store,Delete,Get
 
@@ -171,7 +171,7 @@ crud
 - Task<AppResult<LeanSession>> Store(StoreEntityCommand<T> command)
 - Task<AppResult<LeanSession>> Delete(GeLeanSessionQuery query)
 - Task<AppResult<LeanSession>> Get(GetEntityQuery query)
-- Task<AppResult<TEntity>> StoreDiscussionNote(StoreDiscussionNoteCommand command)
+- Task<AppResult<LeanSessionNote>> StoreNote(StoreLeanSessionNoteCommand command)
 - Task<AppResult<LeanSession>> CloseSession(StoreEntityCommand<T> command)
 
 ## LeanSessionParticipantServices
@@ -184,6 +184,7 @@ crud
 - Task<AppResult<LeanTopic>> Delete(GetEntityQuery query)
 - Task<AppResult<LeanTopic>> Get(GetEntityQuery query)
 - Task<AppResult<LeanTopicVote>> VoteForLeanTopic(VoteForLeanTopicCommand command)
+- Task<AppResult<LeanTopic>> SetTopicStatus(SetTopicStatusCommand command)
 
 ## LeanSessionQueryServices
 - Task<PagedResults<LeanSession>> GetLeanSessions(GetLeanSessionsQuery query)
@@ -193,3 +194,5 @@ crud
 - SessionName: string
 - CurrentTopic: LeanTopic
 - TopicBacklog: List<LeanTopic>
+- TopicVotes: List<LeanTopicVote>
+- Users: List<User>

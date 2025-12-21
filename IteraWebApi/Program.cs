@@ -62,6 +62,11 @@ builder.Services.AddMarten(options =>
     options.Schema.For<AppCore.Entities.UserRole>().Identity(x => x.Id);
     options.Schema.For<AppCore.Entities.Blog>().Identity(x => x.Id);
     options.Schema.For<AppCore.Entities.UserLoginEvent>().Identity(x => x.Id);
+    options.Schema.For<AppCore.Entities.LeanSession>().Identity(x => x.Id);
+    options.Schema.For<AppCore.Entities.LeanParticipant>().Identity(x => x.Id);
+    options.Schema.For<AppCore.Entities.LeanTopic>().Identity(x => x.Id);
+    options.Schema.For<AppCore.Entities.LeanTopicVote>().Identity(x => x.Id);
+    options.Schema.For<AppCore.Entities.LeanSessionNote>().Identity(x => x.Id);
     
     // Add indexes for commonly queried fields
     options.Schema.For<AppCore.Entities.User>()
@@ -74,6 +79,22 @@ builder.Services.AddMarten(options =>
     options.Schema.For<AppCore.Entities.UserRole>()
         .Index(x => x.UserId)
         .Index(x => x.RoleId);
+    
+    options.Schema.For<AppCore.Entities.LeanSession>()
+        .Index(x => x.FacilitatorUserId)
+        .Index(x => x.Status);
+    
+    options.Schema.For<AppCore.Entities.LeanParticipant>()
+        .Index(x => x.LeanSessionId)
+        .Index(x => x.UserId);
+    
+    options.Schema.For<AppCore.Entities.LeanTopic>()
+        .Index(x => x.LeanSessionId)
+        .Index(x => x.Status);
+    
+    options.Schema.For<AppCore.Entities.LeanTopicVote>()
+        .Index(x => x.LeanTopicId)
+        .Index(x => x.LeanSessionId);
 });
 
 // Add CORS
@@ -108,6 +129,10 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IUserRoleService, UserRoleService>();
 builder.Services.AddScoped<IUsersQueryService, UsersQueryService>();
+builder.Services.AddScoped<LeanSessionService>();
+builder.Services.AddScoped<LeanParticipantService>();
+builder.Services.AddScoped<LeanTopicService>();
+builder.Services.AddScoped<LeanSessionQueryService>();
 
 // Register Generic Entity Services
 builder.Services.AddScoped(typeof(IEntityService<>), typeof(EntityService<>));
@@ -118,6 +143,11 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
 builder.Services.AddScoped<IUsersQueryRepository, AppInfra.Repositories.UsersQueryRepository>();
+builder.Services.AddScoped<ILeanSessionRepository, AppInfra.Repositories.LeanSessionRepository>();
+builder.Services.AddScoped<ILeanParticipantRepository, AppInfra.Repositories.LeanParticipantRepository>();
+builder.Services.AddScoped<ILeanTopicRepository, AppInfra.Repositories.LeanTopicRepository>();
+builder.Services.AddScoped<ILeanTopicVoteRepository, AppInfra.Repositories.LeanTopicVoteRepository>();
+builder.Services.AddScoped<ILeanSessionNoteRepository, AppInfra.Repositories.LeanSessionNoteRepository>();
 
 // Register AppInfra External Services
 builder.Services.AddSingleton<IAuthenticationService, FirebaseAuthenticationService>();
