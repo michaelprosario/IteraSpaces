@@ -95,7 +95,7 @@ export class LeanSessionsService {
   }
 
   async getLeanSessions(query: GetLeanSessionsQuery): Promise<any> {
-    return this.apiService.post<any>('/api/LeanSessions/GetLeanSessionsAsync', query);
+    return this.apiService.postDirect<any>('/api/LeanSessions/GetLeanSessionsAsync', query);
   }
 
   async closeSession(command: CloseSessionCommand): Promise<void> {

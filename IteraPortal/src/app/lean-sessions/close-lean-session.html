@@ -1,0 +1,67 @@
+<div class="container">
+    <div class="header">
+        <h2>Close Lean Session</h2>
+    </div>
+
+    <!-- Loading indicator -->
+    <div *ngIf="isLoading" class="loading-indicator">
+        <p>Loading session details...</p>
+    </div>
+
+    <!-- Error message -->
+    <div *ngIf="errorMessage && !isLoading" class="error-message">
+        <p>{{ errorMessage }}</p>
+        <button class="btn-secondary" (click)="onCancel()">Back</button>
+    </div>
+
+    <!-- Success message -->
+    <div *ngIf="successMessage" class="success-message">
+        <p>{{ successMessage }}</p>
+    </div>
+
+    <!-- Close Confirmation -->
+    <div *ngIf="session && !isLoading && !successMessage" class="confirmation-container">
+        <div class="warning-box">
+            <svg class="warning-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+            </svg>
+            <h3>Close This Session?</h3>
+            <p>Are you sure you want to close this session? This action will mark the session as completed.</p>
+        </div>
+
+        <div class="session-summary">
+            <h4>Session Details</h4>
+            <div class="summary-item">
+                <span class="summary-label">Title:</span>
+                <span class="summary-value">{{ session.title || 'Untitled' }}</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Description:</span>
+                <span class="summary-value">{{ session.description || 'No description' }}</span>
+            </div>
+            <div class="summary-item" *ngIf="session.scheduledStartTime">
+                <span class="summary-label">Scheduled Start:</span>
+                <span class="summary-value">{{ session.scheduledStartTime | date:'medium' }}</span>
+            </div>
+            <div class="summary-item" *ngIf="session.actualStartTime">
+                <span class="summary-label">Actual Start:</span>
+                <span class="summary-value">{{ session.actualStartTime | date:'medium' }}</span>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button 
+                class="btn-danger" 
+                (click)="onConfirmClose()" 
+                [disabled]="isClosing">
+                {{ isClosing ? 'Closing...' : 'Yes, Close Session' }}
+            </button>
+            <button 
+                class="btn-secondary" 
+                (click)="onCancel()" 
+                [disabled]="isClosing">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>

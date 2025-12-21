@@ -16,3 +16,28 @@
 - Update IteraPortal/src/app/core/services services related to webapi
 - Create new service for each webapi controller
 - Correct all related caller code to webapi services
+
+====
+
+In IteraPortal, implement the following features
+- Add LeanSession
+- Update LeanSession
+- Close LeanSession
+- View LeanSession
+- List LeanSessions
+
+From the dashboard, I should be able to navigate to:
+- Add LeanSession
+- View Lean Sessions 
+
+Follow code and naming patterns in edit-user and list-user screens
+
+====
+
+Setup backend services to manage real time communication of lean session state to related participants
+
+LeanSessionStateMessenger
+
+- SetCurrentTopic
+- UpdateSessionStateTopicBacklog
+- SetTopicState

@@ -74,6 +74,37 @@ export const routes: Routes = [
     ]
   },
   {
+    path: 'lean-sessions',
+    canActivate: [authGuard],
+    children: [
+      {
+        path: 'list',
+        loadComponent: () => import('./lean-sessions/list-lean-sessions')
+          .then(m => m.ListLeanSessions)
+      },
+      {
+        path: 'add',
+        loadComponent: () => import('./lean-sessions/add-lean-session')
+          .then(m => m.AddLeanSession)
+      },
+      {
+        path: 'edit/:id',
+        loadComponent: () => import('./lean-sessions/edit-lean-session')
+          .then(m => m.EditLeanSession)
+      },
+      {
+        path: 'view/:id',
+        loadComponent: () => import('./lean-sessions/view-lean-session')
+          .then(m => m.ViewLeanSession)
+      },
+      {
+        path: 'close/:id',
+        loadComponent: () => import('./lean-sessions/close-lean-session')
+          .then(m => m.CloseLeanSession)
+      }
+    ]
+  },
+  {
     path: '**',
     redirectTo: '/login'
   }

@@ -42,4 +42,12 @@ export class DashboardComponent {
     this.router.navigate(['/users/list']);
   }
 
+  navigateToAddLeanSession(): void {
+    this.router.navigate(['/lean-sessions/add']);
+  }
+
+  navigateToListLeanSessions(): void {
+    this.router.navigate(['/lean-sessions/list']);
+  }
+
 }

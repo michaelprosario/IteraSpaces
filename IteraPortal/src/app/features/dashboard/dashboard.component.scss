@@ -88,4 +88,12 @@
   &:hover {
     background: #5568d3;
   }
+
+  &.lean-session-btn {
+    background: #28a745;
+
+    &:hover {
+      background: #218838;
+    }
+  }
 }
