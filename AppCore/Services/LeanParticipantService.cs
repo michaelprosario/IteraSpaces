@@ -48,4 +48,82 @@ public class LeanParticipantService : EntityService<LeanParticipant>
 
         return await base.AddEntityAsync(command);
     }
+
+    public async Task<AppResult<LeanParticipant>> JoinSessionAsync(string sessionId, string userId, ParticipantRole role)
+    {
+        // Check if session exists
+        var session = await _sessionRepository.GetById(sessionId);
+        if (session == null)
+        {
+            return AppResult<LeanParticipant>.FailureResult(
+                "Session not found",
+                "SESSION_NOT_FOUND");
+        }
+
+        // Check if already an active participant
+        var existingParticipant = await _participantRepository.GetBySessionAndUserIdAsync(sessionId, userId);
+        if (existingParticipant != null)
+        {
+            // Reactivate if previously left
+            if (!existingParticipant.IsActive)
+            {
+                existingParticipant.IsActive = true;
+                existingParticipant.LeftAt = null;
+                existingParticipant.UpdatedAt = DateTime.UtcNow;
+                await _participantRepository.Update(existingParticipant);
+            }
+            return AppResult<LeanParticipant>.SuccessResult(existingParticipant);
+        }
+
+        // Create new participant
+        var participant = new LeanParticipant
+        {
+            Id = Guid.NewGuid().ToString(),
+            LeanSessionId = sessionId,
+            UserId = userId,
+            Role = role,
+            JoinedAt = DateTime.UtcNow,
+            IsActive = true,
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = userId
+        };
+
+        await _participantRepository.Add(participant);
+        
+        return AppResult<LeanParticipant>.SuccessResult(
+            participant,
+            "Participant joined successfully");
+    }
+
+    public async Task<AppResult<LeanParticipant>> LeaveSessionAsync(string sessionId, string userId)
+    {
+        var participant = await _participantRepository.GetBySessionAndUserIdAsync(sessionId, userId);
+        if (participant == null || !participant.IsActive)
+        {
+            return AppResult<LeanParticipant>.FailureResult(
+                "Active participant not found",
+                "PARTICIPANT_NOT_FOUND");
+        }
+
+        participant.IsActive = false;
+        participant.LeftAt = DateTime.UtcNow;
+        participant.UpdatedAt = DateTime.UtcNow;
+        await _participantRepository.Update(participant);
+
+        return AppResult<LeanParticipant>.SuccessResult(
+            participant,
+            "Participant left session");
+    }
+
+    public async Task<AppResult<IEnumerable<LeanParticipant>>> GetActiveParticipantsAsync(string sessionId)
+    {
+        var participants = await _participantRepository.GetActiveParticipantsBySessionAsync(sessionId);
+        return AppResult<IEnumerable<LeanParticipant>>.SuccessResult(participants);
+    }
+
+    public async Task<AppResult<bool>> IsUserInSessionAsync(string sessionId, string userId)
+    {
+        var participant = await _participantRepository.GetBySessionAndUserIdAsync(sessionId, userId);
+        return AppResult<bool>.SuccessResult(participant != null && participant.IsActive);
+    }
 }

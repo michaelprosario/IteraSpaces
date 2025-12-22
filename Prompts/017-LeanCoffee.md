@@ -41,3 +41,10 @@ LeanSessionStateMessenger
 - SetCurrentTopic
 - UpdateSessionStateTopicBacklog
 - SetTopicState
+
+====
+- review Designs/lean_coffee.md
+- review the domain services for leanSession, leanTopics and participants
+- draft an html/css prototype of the LeanSessionView
+- use bootstrap
+- Topics in session should be visualized in a kanban style

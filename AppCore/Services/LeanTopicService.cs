@@ -119,4 +119,48 @@ public class LeanTopicService : EntityService<LeanTopic>
             topic,
             "Topic status updated successfully");
     }
+
+    public async Task<AppResult<LeanTopic>> RemoveVoteAsync(string topicId, string userId)
+    {
+        // Check if vote exists
+        var existingVote = await _voteRepository.GetByTopicAndUserIdAsync(topicId, userId);
+        if (existingVote == null)
+        {
+            return AppResult<LeanTopic>.FailureResult(
+                "Vote not found",
+                "VOTE_NOT_FOUND");
+        }
+
+        // Remove vote
+        await _voteRepository.Delete(existingVote);
+
+        // Update topic vote count
+        var topic = await _topicRepository.GetById(topicId);
+        if (topic != null)
+        {
+            topic.VoteCount = await _voteRepository.GetVoteCountForTopicAsync(topicId);
+            topic.UpdatedAt = DateTime.UtcNow;
+            await _topicRepository.Update(topic);
+            
+            return AppResult<LeanTopic>.SuccessResult(
+                topic,
+                "Vote removed successfully");
+        }
+
+        return AppResult<LeanTopic>.FailureResult(
+            "Topic not found after vote removal",
+            "TOPIC_NOT_FOUND");
+    }
+
+    public async Task<AppResult<bool>> HasUserVotedAsync(string topicId, string userId)
+    {
+        var vote = await _voteRepository.GetByTopicAndUserIdAsync(topicId, userId);
+        return AppResult<bool>.SuccessResult(vote != null);
+    }
+
+    public async Task<AppResult<IEnumerable<LeanTopicVote>>> GetUserVotesForSessionAsync(string sessionId, string userId)
+    {
+        var votes = await _voteRepository.GetBySessionAndUserIdAsync(sessionId, userId);
+        return AppResult<IEnumerable<LeanTopicVote>>.SuccessResult(votes);
+    }
 }

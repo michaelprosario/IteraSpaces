@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using AppCore.Common;
+using AppCore.DTOs;
 using AppCore.Entities;
 using AppCore.Services;
+using IteraWebApi.Hubs;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,10 +15,14 @@ namespace IteraWebApi.Controllers;
 public class LeanParticipantsController : ControllerBase
 {
     private readonly LeanParticipantService _participantService;
+    private readonly IHubContext<LeanSessionHub> _hubContext;
 
-    public LeanParticipantsController(LeanParticipantService participantService)
+    public LeanParticipantsController(
+        LeanParticipantService participantService,
+        IHubContext<LeanSessionHub> hubContext)
     {
         _participantService = participantService;
+        _hubContext = hubContext;
     }
 
     /// <summary>
@@ -76,6 +83,65 @@ public class LeanParticipantsController : ControllerBase
         command.UserId = userId;
 
         var result = await _participantService.DeleteEntityAsync(command);
+        return HandleResult(result);
+    }
+
+    /// <summary>
+    /// Join a session
+    /// </summary>
+    [HttpPost("JoinSession")]
+    public async Task<IActionResult> JoinSession([FromBody] JoinSessionCommand command)
+    {
+        var result = await _participantService.JoinSessionAsync(
+            command.SessionId, 
+            command.UserId, 
+            command.Role);
+        
+        if (result.Success && result.Data != null)
+        {
+            await _hubContext.Clients.Group($"session_{command.SessionId}")
+                .SendAsync("ParticipantJoined", new 
+                { 
+                    sessionId = command.SessionId,
+                    userId = command.UserId,
+                    timestamp = System.DateTime.UtcNow 
+                });
+        }
+
+        return HandleResult(result);
+    }
+
+    /// <summary>
+    /// Leave a session
+    /// </summary>
+    [HttpPost("LeaveSession")]
+    public async Task<IActionResult> LeaveSession([FromBody] LeaveSessionCommand command)
+    {
+        var result = await _participantService.LeaveSessionAsync(
+            command.SessionId, 
+            command.UserId);
+        
+        if (result.Success && result.Data != null)
+        {
+            await _hubContext.Clients.Group($"session_{command.SessionId}")
+                .SendAsync("ParticipantLeft", new 
+                { 
+                    sessionId = command.SessionId,
+                    userId = command.UserId,
+                    timestamp = System.DateTime.UtcNow 
+                });
+        }
+
+        return HandleResult(result);
+    }
+
+    /// <summary>
+    /// Get active participants for a session
+    /// </summary>
+    [HttpPost("GetActiveParticipants")]
+    public async Task<IActionResult> GetActiveParticipants([FromBody] GetActiveParticipantsQuery query)
+    {
+        var result = await _participantService.GetActiveParticipantsAsync(query.SessionId);
         return HandleResult(result);
     }
 

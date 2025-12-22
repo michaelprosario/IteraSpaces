@@ -107,4 +107,36 @@ public class LeanSessionService : EntityService<LeanSession>
             session,
             "Session closed successfully");
     }
+
+    public async Task<AppResult<LeanSession>> ChangeSessionStatusAsync(string sessionId, SessionStatus newStatus, string userId)
+    {
+        var session = await _sessionRepository.GetById(sessionId);
+        if (session == null)
+        {
+            return AppResult<LeanSession>.FailureResult(
+                "Session not found",
+                "SESSION_NOT_FOUND");
+        }
+
+        session.Status = newStatus;
+        
+        // Set timestamps based on status
+        if (newStatus == SessionStatus.InProgress && !session.ActualStartTime.HasValue)
+        {
+            session.ActualStartTime = DateTime.UtcNow;
+        }
+        else if (newStatus == SessionStatus.Completed && !session.ActualEndTime.HasValue)
+        {
+            session.ActualEndTime = DateTime.UtcNow;
+        }
+
+        session.UpdatedAt = DateTime.UtcNow;
+        session.UpdatedBy = userId;
+        
+        await _sessionRepository.Update(session);
+
+        return AppResult<LeanSession>.SuccessResult(
+            session,
+            $"Session status changed to {newStatus}");
+    }
 }

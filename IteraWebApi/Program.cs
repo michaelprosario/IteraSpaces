@@ -108,9 +108,17 @@ builder.Services.AddCors(options =>
                 "https://congenial-parakeet-v65x4jqr6p2v96-4200.app.github.dev")
               .AllowAnyHeader()
               .AllowAnyMethod()
-              .AllowCredentials()
+              .AllowCredentials() // Required for SignalR
               .SetIsOriginAllowedToAllowWildcardSubdomains();
     });
+});
+
+// Add SignalR
+builder.Services.AddSignalR(options =>
+{
+    options.EnableDetailedErrors = builder.Environment.IsDevelopment();
+    options.KeepAliveInterval = TimeSpan.FromSeconds(15);
+    options.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
 });
 
 // Add services to the container.
@@ -176,5 +184,8 @@ app.UseAuthorization();
 
 // Map controllers
 app.MapControllers();
+
+// Map SignalR Hub
+app.MapHub<IteraWebApi.Hubs.LeanSessionHub>("/hubs/lean-session");
 
 app.Run();

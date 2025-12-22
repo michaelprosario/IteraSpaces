@@ -43,4 +43,13 @@ public class LeanParticipantRepository : Repository<LeanParticipant>, ILeanParti
                 p.UserId == userId && 
                 !p.IsDeleted);
     }
+
+    public async Task<IEnumerable<LeanParticipant>> GetActiveParticipantsBySessionAsync(string sessionId)
+    {
+        using var session = _documentStore.QuerySession();
+        return await session.Query<LeanParticipant>()
+            .Where(p => p.LeanSessionId == sessionId && p.IsActive && !p.IsDeleted)
+            .OrderBy(p => p.JoinedAt)
+            .ToListAsync();
+    }
 }
