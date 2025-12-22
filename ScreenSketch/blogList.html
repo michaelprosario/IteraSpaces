@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InnovaHub - Blog</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-dark: #011638;
+            --secondary-dark: #2E294E;
+            --accent-purple: #9055A2;
+            --light-mauve: #D499B9;
+            --light-pink: #E8C1C5;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: white;
+        }
+
+        .navbar {
+            background-color: var(--secondary-dark);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .navbar-brand {
+            font-weight: 600;
+            color: white;
+        }
+
+        .navbar-brand i {
+            color: var(--accent-purple);
+            margin-right: 5px;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+            margin: 0 10px;
+        }
+
+        .nav-link:hover {
+            color: white;
+        }
+
+        .btn-create {
+            background-color: var(--accent-purple);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        .btn-create:hover {
+            background-color: var(--light-mauve);
+            color: white;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--light-mauve);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .blog-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .blog-header {
+            margin-bottom: 30px;
+        }
+
+        .blog-title {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--primary-dark);
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 20px 12px 45px;
+            border: 2px solid var(--light-mauve);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            background-color: white;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--accent-purple);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--accent-purple);
+        }
+
+        .blog-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(1, 22, 56, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .blog-card:hover {
+            box-shadow: 0 4px 16px rgba(144, 85, 162, 0.2);
+            border-color: var(--light-mauve);
+        }
+
+        .blog-content {
+            flex: 1;
+            padding-right: 30px;
+        }
+
+        .blog-card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 15px;
+        }
+
+        .blog-card-excerpt {
+            color: var(--secondary-dark);
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .btn-read-more {
+            background-color: var(--accent-purple);
+            color: white;
+            border: none;
+            padding: 8px 24px;
+            border-radius: 6px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .btn-read-more:hover {
+            background-color: var(--light-mauve);
+            color: white;
+        }
+
+        .blog-image {
+            width: 280px;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
+        .pagination .page-link {
+            color: var(--secondary-dark);
+            border: 2px solid var(--light-mauve);
+            margin: 0 5px;
+            border-radius: 6px;
+            padding: 8px 12px;
+            background-color: white;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: var(--accent-purple);
+            color: white;
+            border-color: var(--accent-purple);
+        }
+
+        .pagination .page-link:hover {
+            background-color: var(--light-mauve);
+            color: white;
+            border-color: var(--light-mauve);
+        }
+
+        @media (max-width: 768px) {
+            .blog-card {
+                flex-direction: column;
+            }
+
+            .blog-content {
+                padding-right: 0;
+                margin-bottom: 20px;
+            }
+
+            .blog-image {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-lightbulb-fill"></i>
+                InnovaHub
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto me-4">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Challenges</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">People</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Organizations</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Blog</a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center gap-3">
+                    <div class="search-nav position-relative d-none d-lg-block">
+                        <input type="text" class="form-control" placeholder="Search" style="padding-left: 35px; width: 200px;">
+                        <i class="bi bi-search position-absolute" style="left: 10px; top: 50%; transform: translateY(-50%);"></i>
+                    </div>
+                    <button class="btn btn-create">Create Challenge</button>
+                    <div class="user-avatar">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Blog Content -->
+    <div class="blog-container">
+        <div class="blog-header">
+            <h1 class="blog-title">Blog</h1>
+            <div class="search-box">
+                <i class="bi bi-search"></i>
+                <input type="text" class="form-control" placeholder="Search blog posts">
+            </div>
+        </div>
+
+        <!-- Blog Cards -->
+        <div class="blog-posts">
+            <div class="blog-card">
+                <div class="blog-content">
+                    <h2 class="blog-card-title">The Future of Innovation: Trends and Predictions</h2>
+                    <p class="blog-card-excerpt">
+                        Explore the latest trends shaping the future of innovation, from AI and machine learning to 
+                        sustainable practices and collaborative ecosystems. Gain insights into how these trends...
+                    </p>
+                    <a href="#" class="btn-read-more">Read More</a>
+                </div>
+                <img src="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=400&h=300&fit=crop" 
+                     alt="City skyline" class="blog-image">
+            </div>
+
+            <div class="blog-card">
+                <div class="blog-content">
+                    <h2 class="blog-card-title">Design Thinking in Action: Case Studies of Successful Projects</h2>
+                    <p class="blog-card-excerpt">
+                        Discover how design thinking principles were applied to solve complex problems 
+                        across various sectors. This article presents case studies of successful projects, 
+                        highlighting the methodologies and outcomes.
+                    </p>
+                    <a href="#" class="btn-read-more">Read More</a>
+                </div>
+                <img src="https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=400&h=300&fit=crop" 
+                     alt="Design notes" class="blog-image">
+            </div>
+
+            <div class="blog-card">
+                <div class="blog-content">
+                    <h2 class="blog-card-title">Building a Culture of Innovation: Strategies for Organizations</h2>
+                    <p class="blog-card-excerpt">
+                        Learn how to build a culture of innovation within your organization. This guide provides 
+                        strategies for encouraging creativity, collaboration, and experimentation among teams...
+                    </p>
+                    <a href="#" class="btn-read-more">Read More</a>
+                </div>
+                <img src="https://images.unsplash.com/photo-1463320726281-696a485928c7?w=400&h=300&fit=crop" 
+                     alt="Plants" class="blog-image">
+            </div>
+
+            <div class="blog-card">
+                <div class="blog-content">
+                    <h2 class="blog-card-title">The Role of Technology in Driving Innovation</h2>
+                    <p class="blog-card-excerpt">
+                        Examine the impact of technology on innovation. Dive into digital tools and platforms to 
+                        streamline processes and develop new solutions. Stay informed about how these advancements are 
+                        transforming industries and creating new opportunities.
+                    </p>
+                    <a href="#" class="btn-read-more">Read More</a>
+                </div>
+                <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&h=300&fit=crop" 
+                     alt="Technology globe" class="blog-image">
+            </div>
+
+            <div class="blog-card">
+                <div class="blog-content">
+                    <h2 class="blog-card-title">Sustainable Innovation: Creating Solutions for a Better World</h2>
+                    <p class="blog-card-excerpt">
+                        Learn about the intersection of innovation and sustainability. Discover initiatives that prioritize global 
+                        challenges. This article looks at successful projects in renewable energy, waste reduction and 
+                        socially responsible...
+                    </p>
+                    <a href="#" class="btn-read-more">Read More</a>
+                </div>
+                <img src="https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=400&h=300&fit=crop" 
+                     alt="Plant in pot" class="blog-image">
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination-container">
+            <nav>
+                <ul class="pagination">
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Previous">
+                            <span aria-hidden="true">&lt;</span>
+                        </a>
+                    </li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item"><a class="page-link" href="#">...</a></li>
+                    <li class="page-item"><a class="page-link" href="#">16</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Next">
+                            <span aria-hidden="true">&gt;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

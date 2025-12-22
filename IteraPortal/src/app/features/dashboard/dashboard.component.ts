@@ -16,6 +16,15 @@ export class DashboardComponent {
 
   currentUser = this.authService.currentUser;
 
+  // after the component is initialized, record a login event
+  ngOnInit(): void {
+    const userId = this.currentUser()?.id || '';
+
+    this.authService.recordLogin(userId).catch((error) => {
+      console.error('Error recording login event:', error);
+    });
+  }
+
   async signOut(): Promise<void> {
     await this.authService.signOut();
   }
@@ -28,7 +37,17 @@ export class DashboardComponent {
     this.router.navigate(['/profile/edit']);
   }
 
-  navigateToUserSearch(): void {
-    this.router.navigate(['/users/search']);
+  // add button to navigate to list users
+  navigateToListUsers(): void {
+    this.router.navigate(['/users/list']);
   }
+
+  navigateToAddLeanSession(): void {
+    this.router.navigate(['/lean-sessions/add']);
+  }
+
+  navigateToListLeanSessions(): void {
+    this.router.navigate(['/lean-sessions/list']);
+  }
+
 }

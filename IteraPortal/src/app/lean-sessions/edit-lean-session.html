@@ -1,0 +1,130 @@
+<div class="container">
+    <div class="header">
+        <h2>Edit Lean Session</h2>
+    </div>
+
+    <!-- Loading indicator -->
+    <div *ngIf="isLoading" class="loading-indicator">
+        <p>Loading session details...</p>
+    </div>
+
+    <!-- Error message -->
+    <div *ngIf="errorMessage && !isLoading" class="error-message">
+        <p>{{ errorMessage }}</p>
+        <button class="btn-secondary" (click)="onCancel()">Back to Sessions</button>
+    </div>
+
+    <!-- Success message -->
+    <div *ngIf="successMessage" class="success-message">
+        <p>{{ successMessage }}</p>
+    </div>
+
+    <!-- Edit Form -->
+    <div *ngIf="session && !isLoading" class="form-container">
+        <form (ngSubmit)="onSave()">
+            <div class="form-group">
+                <label for="title">Title *</label>
+                <input 
+                    type="text" 
+                    id="title" 
+                    [(ngModel)]="title" 
+                    name="title"
+                    required
+                    class="form-input"
+                    placeholder="Enter session title">
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea 
+                    id="description" 
+                    [(ngModel)]="description" 
+                    name="description"
+                    rows="4"
+                    class="form-textarea"
+                    placeholder="Enter session description..."></textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="status">Status</label>
+                    <select 
+                        id="status" 
+                        [(ngModel)]="status" 
+                        name="status"
+                        class="form-select">
+                        <option *ngFor="let option of statusOptions" [value]="option.value">
+                            {{ option.label }}
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="defaultTopicDuration">Default Topic Duration (minutes)</label>
+                    <input 
+                        type="number" 
+                        id="defaultTopicDuration" 
+                        [(ngModel)]="defaultTopicDuration" 
+                        name="defaultTopicDuration"
+                        min="1"
+                        class="form-input">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="scheduledStartTime">Scheduled Start Time</label>
+                <input 
+                    type="datetime-local" 
+                    id="scheduledStartTime" 
+                    [(ngModel)]="scheduledStartTime" 
+                    name="scheduledStartTime"
+                    class="form-input">
+            </div>
+
+            <div class="form-group checkbox-group">
+                <label>
+                    <input 
+                        type="checkbox" 
+                        [(ngModel)]="isPublic" 
+                        name="isPublic">
+                    <span>Public Session</span>
+                </label>
+            </div>
+
+            <!-- Session metadata -->
+            <div class="metadata-section">
+                <h3>Session Information</h3>
+                <div class="metadata-grid">
+                    <div class="metadata-item">
+                        <span class="metadata-label">Created:</span>
+                        <span class="metadata-value">{{ session.createdAt ? (session.createdAt | date:'medium') : 'N/A' }}</span>
+                    </div>
+                    <div class="metadata-item">
+                        <span class="metadata-label">Updated:</span>
+                        <span class="metadata-value">{{ session.updatedAt ? (session.updatedAt | date:'medium') : 'N/A' }}</span>
+                    </div>
+                    <div class="metadata-item" *ngIf="session.actualStartTime">
+                        <span class="metadata-label">Actual Start:</span>
+                        <span class="metadata-value">{{ session.actualStartTime | date:'medium' }}</span>
+                    </div>
+                    <div class="metadata-item" *ngIf="session.actualEndTime">
+                        <span class="metadata-label">Actual End:</span>
+                        <span class="metadata-value">{{ session.actualEndTime | date:'medium' }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary" [disabled]="isSaving">
+                    {{ isSaving ? 'Saving...' : 'Update Session' }}
+                </button>
+                <button type="button" class="btn-secondary" (click)="onCancel()" [disabled]="isSaving">
+                    Cancel
+                </button>
+                <button type="button" class="btn-warning" (click)="onClose()" [disabled]="isSaving">
+                    Close Session
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

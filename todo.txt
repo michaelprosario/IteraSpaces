@@ -1,11 +1,93 @@
 UserServices / Test the following
 
-Task<AppResult<User>> RegisterUserAsync(RegisterUserCommand command);
-Task<AppResult<User>> GetUserByIdAsync(GetUserByIdQuery query);
-Task<AppResult<User>> GetUserByEmailAsync(GetUserByEmailQuery query);
-Task<AppResult<User>> UpdateUserProfileAsync(UpdateUserProfileCommand command);
-Task<AppResult<User>> UpdatePrivacySettingsAsync(UpdatePrivacySettingsCommand command);
-Task<AppResult<bool>> DisableUserAsync(DisableUserCommand command);
-Task<AppResult<bool>> EnableUserAsync(string userId, string enabledBy);
-Task<AppResult<List<User>>> SearchUsersAsync(SearchUsersQuery query);
-Task<AppResult<bool>> RecordLoginAsync(string userId);
+
+### backlog
+
+    next - finish this - 12/17
+
+
+- setup users list screen
+    - Task<AppResult<List<User>>> SearchUsersAsync(SearchUsersQuery query);
+- As a sys user, I should be able to enable/disable user
+    - Task<AppResult<bool>> DisableUserAsync(DisableUserCommand command);
+    - Task<AppResult<bool>> EnableUserAsync(string userId, string enabledBy);
+- A a sys user, I should be able to review user
+    - Task<AppResult<User>> GetUserByIdAsync(GetUserByIdQuery query);
+
+
+### done
+
+- Task<AppResult<bool>> RecordLoginAsync(string userId);
+
+
+
+
+
+
+=========
+
+LeanParticipants
+
+
+POST
+/api/LeanParticipants
+
+
+GET
+/api/LeanParticipants/{participantId}
+
+
+DELETE
+/api/LeanParticipants/{participantId}
+
+LeanSessions
+
+
+POST
+/api/LeanSessions
+
+
+GET
+/api/LeanSessions
+
+
+GET
+/api/LeanSessions/{sessionId}
+
+
+DELETE
+/api/LeanSessions/{sessionId}
+
+
+GET
+/api/LeanSessions/{sessionId}/details
+
+
+POST
+/api/LeanSessions/{sessionId}/close
+
+
+POST
+/api/LeanSessions/{sessionId}/notes
+
+LeanTopics
+
+
+POST
+/api/LeanTopics
+
+
+GET
+/api/LeanTopics/{topicId}
+
+
+DELETE
+/api/LeanTopics/{topicId}
+
+
+POST
+/api/LeanTopics/{topicId}/vote
+
+
+PUT
+/api/LeanTopics/{topicId}/status

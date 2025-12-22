@@ -3,81 +3,91 @@ using System.Linq;
 using System.Threading.Tasks;
 using AppCore.Entities;
 using AppCore.Interfaces;
-using AppInfra.Data;
-using Microsoft.EntityFrameworkCore;
+using Marten;
 
 namespace AppInfra.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IDocumentStore _documentStore;
 
-        public UserRepository(ApplicationDbContext context)
+        public UserRepository(IDocumentStore documentStore)
         {
-            _context = context;
+            _documentStore = documentStore;
         }
 
-        public User? GetById(string id)
+        public async Task<User?> GetById(string id)
         {
-            return _context.Users.FirstOrDefault(u => u.Id == id);
+            using var session = _documentStore.LightweightSession();
+            return await session.LoadAsync<User>(id);
         }
 
-        public User Add(User entity)
+        public async Task<User> Add(User entity)
         {
-            _context.Users.Add(entity);
-            _context.SaveChanges();
+            using var session = _documentStore.LightweightSession();
+            session.Store(entity);
+            await session.SaveChangesAsync();
             return entity;
         }
 
-        public void Update(User entity)
+        public async Task Update(User entity)
         {
-            _context.Users.Update(entity);
-            _context.SaveChanges();
+            using var session = _documentStore.LightweightSession();
+            session.Update(entity);
+            await session.SaveChangesAsync();
         }
 
-        public void Delete(User entity)
+        public async Task Delete(User entity)
         {
             // Soft delete
             entity.IsDeleted = true;
             entity.DeletedAt = System.DateTime.UtcNow;
-            Update(entity);
+            await Update(entity);
         }
 
-        public bool RecordExists(string id)
+        public async Task<bool> RecordExists(string id)
         {
-            return _context.Users.Any(u => u.Id == id);
+            using var session = _documentStore.QuerySession();
+            return await session.Query<User>().AnyAsync(u => u.Id == id);
         }
 
         public async Task<User?> GetByEmailAsync(string email)
         {
-            return await _context.Users
+            using var session = _documentStore.QuerySession();
+            return await session.Query<User>()
                 .FirstOrDefaultAsync(u => u.Email == email);
         }
 
         public async Task<User?> GetByFirebaseUidAsync(string firebaseUid)
         {
-            return await _context.Users
+            using var session = _documentStore.QuerySession();
+            return await session.Query<User>()
                 .FirstOrDefaultAsync(u => u.FirebaseUid == firebaseUid);
         }
 
         public async Task<List<User>> SearchUsersAsync(string searchTerm)
         {
-            return await _context.Users
+            using var session = _documentStore.QuerySession();
+            var users = await session.Query<User>()
                 .Where(u => u.DisplayName.Contains(searchTerm) || 
                            u.Email.Contains(searchTerm))
                 .ToListAsync();
+            return users.ToList();
         }
 
         public async Task<List<User>> GetUsersByStatusAsync(UserStatus status)
         {
-            return await _context.Users
+            using var session = _documentStore.QuerySession();
+            var users = await session.Query<User>()
                 .Where(u => u.Status == status)
                 .ToListAsync();
+            return users.ToList();
         }
 
         public async Task<bool> EmailExistsAsync(string email)
         {
-            return await _context.Users
+            using var session = _documentStore.QuerySession();
+            return await session.Query<User>()
                 .AnyAsync(u => u.Email == email);
         }
     }

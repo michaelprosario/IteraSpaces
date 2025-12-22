@@ -1,0 +1,5 @@
+- use context 7
+- Make a generic IRepository<T> using MartenDb for postgres
+- convert all ef core operations in AppInfra to leverage MartenDb for postgres
+- data repositories operations like add, update, delete, get, and query operations should use martendb
+- update webapi and Program.cs

@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User List</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0f0f0f;
+            color: #e0e0e0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            margin-bottom: 24px;
+        }
+
+        .search-section {
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: #262626;
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: #4a90e2;
+        }
+
+        .search-input::placeholder {
+            color: #666;
+        }
+
+        .filters {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .filter-label {
+            font-size: 12px;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-select {
+            padding: 8px 32px 8px 12px;
+            background: #262626;
+            border: 1px solid #333;
+            border-radius: 6px;
+            color: #e0e0e0;
+            font-size: 14px;
+            cursor: pointer;
+            outline: none;
+            min-width: 140px;
+            appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg fill="%23999" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            transition: border-color 0.2s;
+        }
+
+        .filter-select:hover {
+            border-color: #444;
+        }
+
+        .filter-select:focus {
+            border-color: #4a90e2;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid #262626;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #1a1a1a;
+        }
+
+        thead {
+            background: #212121;
+            border-bottom: 1px solid #333;
+        }
+
+        th {
+            padding: 16px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 13px;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #262626;
+            transition: background-color 0.2s;
+        }
+
+        tbody tr:hover {
+            background: #222;
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        td {
+            padding: 16px;
+            font-size: 14px;
+            color: #e0e0e0;
+        }
+
+        .user-name {
+            font-weight: 500;
+        }
+
+        .user-email {
+            color: #999;
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: capitalize;
+        }
+
+        .role-admin {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+        }
+
+        .role-moderator {
+            background: rgba(249, 115, 22, 0.15);
+            color: #f97316;
+        }
+
+        .role-user {
+            background: rgba(100, 116, 139, 0.15);
+            color: #94a3b8;
+        }
+
+        .last-activity {
+            color: #999;
+        }
+
+        .btn-view {
+            padding: 8px 16px;
+            background: #2a2a2a;
+            border: 1px solid #333;
+            border-radius: 6px;
+            color: #e0e0e0;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-view:hover {
+            background: #333;
+            border-color: #444;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 16px;
+            }
+
+            .filters {
+                flex-direction: column;
+            }
+
+            .filter-select {
+                width: 100%;
+            }
+
+            .table-container {
+                overflow-x: scroll;
+            }
+
+            table {
+                min-width: 800px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="search-section">
+                <input type="text" class="search-input" placeholder="Search users">
+            </div>
+
+            <div class="filters">
+                <div class="filter-group">
+                    <label class="filter-label">Role</label>
+                    <select class="filter-select">
+                        <option value="">All Roles</option>
+                        <option value="admin">Admin</option>
+                        <option value="moderator">Moderator</option>
+                        <option value="user">User</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Status</label>
+                    <select class="filter-select">
+                        <option value="">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Last Activity</label>
+                    <select class="filter-select">
+                        <option value="">All Time</option>
+                        <option value="today">Today</option>
+                        <option value="week">This Week</option>
+                        <option value="month">This Month</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Last Activity</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="user-name">Ethan Harper</td>
+                        <td class="user-email">ethan.harper@email.com</td>
+                        <td><span class="role-badge role-admin">Admin</span></td>
+                        <td class="last-activity">7 days ago</td>
+                        <td class="actions">
+                            <button class="btn-view">View</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="user-name">Olivia Bennett</td>
+                        <td class="user-email">olivia.bennett@email.com</td>
+                        <td><span class="role-badge role-moderator">Moderator</span></td>
+                        <td class="last-activity">1 week ago</td>
+                        <td class="actions">
+                            <button class="btn-view">View</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="user-name">Liam Carter</td>
+                        <td class="user-email">liam.carter@email.com</td>
+                        <td><span class="role-badge role-user">User</span></td>
+                        <td class="last-activity">3 days ago</td>
+                        <td class="actions">
+                            <button class="btn-view">View</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="user-name">Sophia Davis</td>
+                        <td class="user-email">sophia.davis@email.com</td>
+                        <td><span class="role-badge role-user">User</span></td>
+                        <td class="last-activity">1 week ago</td>
+                        <td class="actions">
+                            <button class="btn-view">View</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="user-name">Noah Evans</td>
+                        <td class="user-email">noah.evans@email.com</td>
+                        <td><span class="role-badge role-user">User</span></td>
+                        <td class="last-activity">2 weeks ago</td>
+                        <td class="actions">
+                            <button class="btn-view">View</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="user-name">Ava Foster</td>
+                        <td class="user-email">ava.foster@email.com</td>
+                        <td><span class="role-badge role-user">User</span></td>
+                        <td class="last-activity">1 day ago</td>
+                        <td class="actions">
+                            <button class="btn-view">View</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="user-name">Lucas Green</td>
+                        <td class="user-email">lucas.green@email.com</td>
+                        <td><span class="role-badge role-user">User</span></td>
+                        <td class="last-activity">3 days ago</td>
+                        <td class="actions">
+                            <button class="btn-view">View</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="user-name">Isabella Hayes</td>
+                        <td class="user-email">isabella.hayes@email.com</td>
+                        <td><span class="role-badge role-user">User</span></td>
+                        <td class="last-activity">1 week ago</td>
+                        <td class="actions">
+                            <button class="btn-view">View</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

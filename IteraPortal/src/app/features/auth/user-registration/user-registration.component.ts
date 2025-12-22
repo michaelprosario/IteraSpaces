@@ -3,15 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Auth } from '@angular/fire/auth';
-import { ApiService } from '../../../core/services/api.service';
+import { UsersService, RegisterUserCommand } from '../../../core/services/users.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { UserProfileService } from '../../../core/services/user-profile.service';
-
-interface RegisterUserCommand {
-  email: string;
-  displayName: string;
-  firebaseUid: string;
-}
 
 @Component({
   selector: 'app-user-registration',
@@ -24,7 +18,7 @@ export class UserRegistrationComponent implements OnInit {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private auth = inject(Auth);
-  private apiService = inject(ApiService);
+  private usersService = inject(UsersService);
   private authService = inject(AuthService);
   private userProfileService = inject(UserProfileService);
 
@@ -79,11 +73,27 @@ export class UserRegistrationComponent implements OnInit {
         firebaseUid: firebaseUser.uid
       };
 
-      await this.apiService.post('/Users/register', command);
+      // Use the new UsersService with POST /api/Users/RegisterUserAsync
+      const registeredUser = await this.usersService.registerUser(command);
       
       // Load the newly created user profile
       const userProfile = await this.userProfileService.getUserByEmail(firebaseUser.email!);
-      this.authService.currentUser.set(userProfile);
+      
+      // Map to AuthService UserProfile format
+      this.authService.currentUser.set({
+        id: registeredUser.id!,
+        email: registeredUser.email!,
+        displayName: registeredUser.displayName!,
+        photoUrl: registeredUser.profilePhotoUrl,
+        firebaseUid: registeredUser.firebaseUid!,
+        bio: registeredUser.bio,
+        location: registeredUser.location,
+        skills: registeredUser.skills,
+        interests: registeredUser.interests,
+        areasOfExpertise: registeredUser.areasOfExpertise,
+        socialLinks: registeredUser.socialLinks,
+        isActive: registeredUser.status === 0
+      });
       
       // Registration successful, redirect to dashboard
       this.router.navigate(['/dashboard']);

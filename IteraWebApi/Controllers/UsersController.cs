@@ -4,6 +4,7 @@ using AppCore.Common;
 using AppCore.DTOs;
 using AppCore.Entities;
 using AppCore.Services;
+using Marten;
 
 namespace IteraWebApi.Controllers
 {
@@ -12,17 +13,25 @@ namespace IteraWebApi.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IEntityService<UserLoginEvent> _userLoginEventService;
+        private readonly IUsersQueryService _usersQueryService;
 
-        public UsersController(IUserService userService)
+        public UsersController(
+            IUserService userService,
+            IEntityService<UserLoginEvent> userLoginEventService,
+            IUsersQueryService usersQueryService
+            )
         {
             _userService = userService;
+            _userLoginEventService = userLoginEventService;
+            _usersQueryService = usersQueryService;
         }
 
         /// <summary>
         /// Register a new user
         /// </summary>
-        [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterUserCommand command)
+        [HttpPost("RegisterUserAsync")]
+        public async Task<IActionResult> RegisterUserAsync([FromBody] RegisterUserCommand command)
         {
             var result = await _userService.RegisterUserAsync(command);
             return HandleResult(result);
@@ -31,10 +40,9 @@ namespace IteraWebApi.Controllers
         /// <summary>
         /// Get user by ID
         /// </summary>
-        [HttpGet("{userId}")]
-        public async Task<IActionResult> GetUserById(string userId)
+        [HttpPost("GetUserByIdAsync")]
+        public async Task<IActionResult> GetUserByIdAsync([FromBody] GetUserByIdQuery query)
         {
-            var query = new GetUserByIdQuery { UserId = userId };
             var result = await _userService.GetUserByIdAsync(query);
             return HandleResult(result);
         }
@@ -42,10 +50,9 @@ namespace IteraWebApi.Controllers
         /// <summary>
         /// Get user by email
         /// </summary>
-        [HttpGet("by-email/{email}")]
-        public async Task<IActionResult> GetUserByEmail(string email)
+        [HttpPost("GetUserByEmailAsync")]
+        public async Task<IActionResult> GetUserByEmailAsync([FromBody] GetUserByEmailQuery query)
         {
-            var query = new GetUserByEmailQuery { Email = email };
             var result = await _userService.GetUserByEmailAsync(query);
             return HandleResult(result);
         }
@@ -53,10 +60,9 @@ namespace IteraWebApi.Controllers
         /// <summary>
         /// Update user profile
         /// </summary>
-        [HttpPut("{userId}/profile")]
-        public async Task<IActionResult> UpdateProfile(string userId, [FromBody] UpdateUserProfileCommand command)
+        [HttpPost("UpdateUserProfileAsync")]
+        public async Task<IActionResult> UpdateUserProfileAsync([FromBody] UpdateUserProfileCommand command)
         {
-            command.UserId = userId;
             var result = await _userService.UpdateUserProfileAsync(command);
             return HandleResult(result);
         }
@@ -64,14 +70,9 @@ namespace IteraWebApi.Controllers
         /// <summary>
         /// Update user privacy settings
         /// </summary>
-        [HttpPut("{userId}/privacy")]
-        public async Task<IActionResult> UpdatePrivacySettings(string userId, [FromBody] UserPrivacySettings privacySettings)
+        [HttpPost("UpdatePrivacySettingsAsync")]
+        public async Task<IActionResult> UpdatePrivacySettingsAsync([FromBody] UpdatePrivacySettingsCommand command)
         {
-            var command = new UpdatePrivacySettingsCommand
-            {
-                UserId = userId,
-                PrivacySettings = privacySettings
-            };
             var result = await _userService.UpdatePrivacySettingsAsync(command);
             return HandleResult(result);
         }
@@ -79,10 +80,9 @@ namespace IteraWebApi.Controllers
         /// <summary>
         /// Disable a user account
         /// </summary>
-        [HttpPost("{userId}/disable")]
-        public async Task<IActionResult> DisableUser(string userId, [FromBody] DisableUserCommand command)
+        [HttpPost("DisableUserAsync")]
+        public async Task<IActionResult> DisableUserAsync([FromBody] DisableUserCommand command)
         {
-            command.UserId = userId;
             var result = await _userService.DisableUserAsync(command);
             return HandleResult(result);
         }
@@ -90,38 +90,52 @@ namespace IteraWebApi.Controllers
         /// <summary>
         /// Enable a user account
         /// </summary>
-        [HttpPost("{userId}/enable")]
-        public async Task<IActionResult> EnableUser(string userId)
+        [HttpPost("EnableUserAsync")]
+        public async Task<IActionResult> EnableUserAsync([FromBody] EnableUserCommand command)
         {
-            // TODO: Get current user ID from authentication context
-            var enabledBy = "ADMIN"; // Placeholder
-            var result = await _userService.EnableUserAsync(userId, enabledBy);
+            var result = await _userService.EnableUserAsync(command.UserId, command.EnabledBy);
             return HandleResult(result);
         }
 
         /// <summary>
         /// Search users
         /// </summary>
-        [HttpGet("search")]
-        public async Task<IActionResult> SearchUsers([FromQuery] string searchTerm, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        [HttpPost("GetUsersAsync")]
+        public async Task<PagedResults<User>> GetUsersAsync([FromBody] SearchQuery query)
         {
-            var query = new SearchUsersQuery
-            {
-                SearchTerm = searchTerm,
-                PageNumber = pageNumber,
-                PageSize = pageSize
-            };
-            var result = await _userService.SearchUsersAsync(query);
-            return HandleResult(result);
+            return await _usersQueryService.GetUsersAsync(query);
         }
 
         /// <summary>
         /// Record user login
         /// </summary>
-        [HttpPost("{userId}/login")]
-        public async Task<IActionResult> RecordLogin(string userId)
+        [HttpPost("RecordLoginAsync")]
+        public async Task<IActionResult> RecordLoginAsync([FromBody] RecordLoginCommand command)
         {
-            var result = await _userService.RecordLoginAsync(userId);
+            var result = await _userService.RecordLoginAsync(command.UserId);
+
+            // get user agent from the request headers
+            var userAgent = Request.Headers["User-Agent"].ToString();
+
+            var loginEvent = new UserLoginEvent
+            {
+                Id = Guid.NewGuid().ToString(),
+                UserId = command.UserId,
+                UserAgent = userAgent
+            };
+
+
+            var storeCommand = new StoreEntityCommand<UserLoginEvent>(loginEvent)
+            {
+                UserId = command.UserId
+            };
+
+            var storeResult = await _userLoginEventService.StoreEntityAsync(storeCommand);
+
+            if (!storeResult.Success)
+            {
+                throw new Exception($"Failed to store login event: {storeResult.Message}");
+            }
             return HandleResult(result);
         }
 

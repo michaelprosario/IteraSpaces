@@ -5,10 +5,10 @@ namespace AppCore.Interfaces
 {
     public interface IRepository<T> where T : IEntity
     {
-        T? GetById(string id);        
-        T Add(T entity);
-        void Update(T entity);
-        void Delete(T entity);
-        bool RecordExists(string id);        
+        Task<T?> GetById(string id);        
+        Task<T> Add(T entity);
+        Task Update(T entity);
+        Task Delete(T entity);
+        Task<bool> RecordExists(string id);        
     }
 }

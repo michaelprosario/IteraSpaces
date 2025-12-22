@@ -1,0 +1,110 @@
+    <div class="container">
+        <div class="header">
+            <h2>User Management</h2>
+            <div class="search-section">
+                <input 
+                    type="text" 
+                    class="search-input" 
+                    placeholder="Search users by name or email"
+                    [(ngModel)]="searchTerm"
+                    (keyup.enter)="onSearch()">
+                <button class="btn-search" (click)="onSearch()">Search</button>
+            </div>
+        </div>
+
+        <!-- Loading indicator -->
+        <div *ngIf="isLoading" class="loading-indicator">
+            <p>Loading users...</p>
+        </div>
+
+        <!-- Error message -->
+        <div *ngIf="errorMessage && !isLoading" class="error-message">
+            <p>{{ errorMessage }}</p>
+        </div>
+
+        <!-- Results summary -->
+        <div *ngIf="!isLoading && !errorMessage" class="results-summary">
+            <p>Showing {{ users.length }} of {{ totalCount }} users (Page {{ currentPage }} of {{ totalPages }})</p>
+        </div>
+
+        <div *ngIf="!isLoading && !errorMessage" class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Location</th>
+                        <th>Status</th>
+                        <th>Last Login</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let user of users">
+                        <td class="user-name">
+                            <div class="user-info">
+                                <span>{{ user.displayName || 'N/A' }}</span>
+                            </div>
+                        </td>
+                        <td class="user-email">{{ user.email }}</td>
+                        <td class="user-location">{{ user.location || '-' }}</td>
+                        <td>
+                            <span class="status-badge" [ngClass]="getStatusBadgeClass(user.status)">
+                                {{ getStatusText(user.status) }}
+                            </span>
+                        </td>
+                        <td class="last-activity">{{ formatDate(user.lastLoginAt) }}</td>
+                        <td class="actions">
+                            <button class="btn-edit" (click)="onEditUser(user.id)">Edit</button>
+                        </td>
+                    </tr>
+                    <tr *ngIf="users.length === 0">
+                        <td colspan="6" class="no-results">No users found</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div *ngIf="!isLoading && !errorMessage && totalPages > 1" class="pagination">
+            <button 
+                class="pagination-btn" 
+                (click)="previousPage()" 
+                [disabled]="currentPage === 1">
+                Previous
+            </button>
+            
+            <button 
+                *ngIf="currentPage > 3 && totalPages > 5"
+                class="pagination-btn"
+                (click)="onPageChange(1)">
+                1
+            </button>
+            
+            <span *ngIf="currentPage > 3 && totalPages > 5" class="pagination-ellipsis">...</span>
+            
+            <button 
+                *ngFor="let page of getPageNumbers()"
+                class="pagination-btn"
+                [class.active]="page === currentPage"
+                (click)="onPageChange(page)">
+                {{ page }}
+            </button>
+            
+            <span *ngIf="currentPage < totalPages - 2 && totalPages > 5" class="pagination-ellipsis">...</span>
+            
+            <button 
+                *ngIf="currentPage < totalPages - 2 && totalPages > 5"
+                class="pagination-btn"
+                (click)="onPageChange(totalPages)">
+                {{ totalPages }}
+            </button>
+            
+            <button 
+                class="pagination-btn" 
+                (click)="nextPage()" 
+                [disabled]="currentPage === totalPages">
+                Next
+            </button>
+        </div>
+    </div>

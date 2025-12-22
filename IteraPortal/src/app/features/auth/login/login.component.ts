@@ -14,6 +14,7 @@ export class LoginComponent {
   isLoading = false;
   errorMessage = '';
 
+
   async signInWithGoogle(): Promise<void> {
     this.isLoading = true;
     this.errorMessage = '';

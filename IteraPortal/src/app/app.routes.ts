@@ -56,14 +56,51 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       {
-        path: 'search',
-        loadComponent: () => import('./features/users/user-search/user-search.component')
-          .then(m => m.UserSearchComponent)
+        path: 'list',
+        loadComponent: () => import('./list-users/list-users')
+          .then(m => m.ListUsers)
+      },
+      {
+        path: 'edit/:id',
+        loadComponent: () => import('./edit-user/edit-user')
+          .then(m => m.EditUser)
       },
       {
         path: ':id',
         loadComponent: () => import('./features/profile/profile.component')
           .then(m => m.ProfileComponent)
+      },
+
+    ]
+  },
+  {
+    path: 'lean-sessions',
+    canActivate: [authGuard],
+    children: [
+      {
+        path: 'list',
+        loadComponent: () => import('./lean-sessions/list-lean-sessions')
+          .then(m => m.ListLeanSessions)
+      },
+      {
+        path: 'add',
+        loadComponent: () => import('./lean-sessions/add-lean-session')
+          .then(m => m.AddLeanSession)
+      },
+      {
+        path: 'edit/:id',
+        loadComponent: () => import('./lean-sessions/edit-lean-session')
+          .then(m => m.EditLeanSession)
+      },
+      {
+        path: 'view/:id',
+        loadComponent: () => import('./lean-sessions/view-lean-session')
+          .then(m => m.ViewLeanSession)
+      },
+      {
+        path: 'close/:id',
+        loadComponent: () => import('./lean-sessions/close-lean-session')
+          .then(m => m.CloseLeanSession)
       }
     ]
   },
