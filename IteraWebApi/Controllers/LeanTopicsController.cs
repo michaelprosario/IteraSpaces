@@ -1,10 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using AppCore.Common;
 using AppCore.DTOs;
 using AppCore.Entities;
 using AppCore.Services;
-using IteraWebApi.Hubs;
+using AppCore.Interfaces;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,16 +14,16 @@ namespace IteraWebApi.Controllers;
 public class LeanTopicsController : ControllerBase
 {
     private readonly LeanTopicService _topicService;
-    private readonly IHubContext<LeanSessionHub> _hubContext;
+    private readonly ILeanCoffeeNotificationService _notificationService;
     private readonly ILogger<LeanTopicsController> _logger;
 
     public LeanTopicsController(
         LeanTopicService topicService,
-        IHubContext<LeanSessionHub> hubContext,
+        ILeanCoffeeNotificationService notificationService,
         ILogger<LeanTopicsController> logger)
     {
         _topicService = topicService;
-        _hubContext = hubContext;
+        _notificationService = notificationService;
         _logger = logger;
     }
 
@@ -66,15 +65,10 @@ public class LeanTopicsController : ControllerBase
         
         if (result.Success && result.Data != null)
         {
-            // Notify all session participants via SignalR
-            await _hubContext.Clients.Group($"session_{result.Data.LeanSessionId}")
-                .SendAsync("TopicAdded", new 
-                { 
-                    sessionId = result.Data.LeanSessionId,
-                    topicId = result.Data.Id,
-                    topic = result.Data,
-                    timestamp = System.DateTime.UtcNow 
-                });
+            // Notify all session participants via FCM
+            await _notificationService.NotifyTopicAddedAsync(
+                result.Data.LeanSessionId, 
+                result.Data.Id);
         }
 
         return HandleResult(result);
@@ -100,22 +94,11 @@ public class LeanTopicsController : ControllerBase
         
         if (result.Success && result.Data != null)
         {
-            // Get updated topic from vote result to send current vote count
-            var topicQuery = new GetEntityByIdQuery(command.LeanTopicId);
-            var topicResult = await _topicService.GetEntityByIdAsync(topicQuery);
-            
-            if (topicResult.Success && topicResult.Data != null)
-            {
-                await _hubContext.Clients.Group($"session_{command.LeanSessionId}")
-                    .SendAsync("VoteCast", new 
-                    { 
-                        topicId = command.LeanTopicId,
-                        sessionId = command.LeanSessionId,
-                        voteCount = topicResult.Data.VoteCount,
-                        userId = command.UserId,
-                        timestamp = System.DateTime.UtcNow 
-                    });
-            }
+            // Notify all session participants via FCM
+            await _notificationService.NotifyVoteCastAsync(
+                command.LeanSessionId, 
+                command.LeanTopicId, 
+                command.UserId);
         }
 
         return HandleResult(result);
@@ -131,15 +114,10 @@ public class LeanTopicsController : ControllerBase
         
         if (result.Success && result.Data != null)
         {
-            await _hubContext.Clients.Group($"session_{command.SessionId}")
-                .SendAsync("VoteRemoved", new 
-                { 
-                    topicId = command.TopicId,
-                    sessionId = command.SessionId,
-                    voteCount = result.Data.VoteCount,
-                    userId = command.UserId,
-                    timestamp = System.DateTime.UtcNow 
-                });
+            await _notificationService.NotifyVoteRemovedAsync(
+                command.SessionId, 
+                command.TopicId, 
+                command.UserId);
         }
 
         return HandleResult(result);
@@ -155,14 +133,10 @@ public class LeanTopicsController : ControllerBase
         
         if (result.Success && result.Data != null)
         {
-            await _hubContext.Clients.Group($"session_{result.Data.LeanSessionId}")
-                .SendAsync("TopicStatusChanged", new 
-                { 
-                    topicId = command.TopicId,
-                    sessionId = result.Data.LeanSessionId,
-                    status = result.Data.Status,
-                    timestamp = System.DateTime.UtcNow 
-                });
+            await _notificationService.NotifyTopicStatusChangedAsync(
+                result.Data.LeanSessionId, 
+                command.TopicId, 
+                result.Data.Status);
         }
 
         return HandleResult(result);

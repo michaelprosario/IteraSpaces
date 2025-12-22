@@ -1,10 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using AppCore.Common;
 using AppCore.DTOs;
 using AppCore.Entities;
 using AppCore.Services;
-using IteraWebApi.Hubs;
+using AppCore.Interfaces;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,14 +14,14 @@ namespace IteraWebApi.Controllers;
 public class LeanParticipantsController : ControllerBase
 {
     private readonly LeanParticipantService _participantService;
-    private readonly IHubContext<LeanSessionHub> _hubContext;
+    private readonly ILeanCoffeeNotificationService _notificationService;
 
     public LeanParticipantsController(
         LeanParticipantService participantService,
-        IHubContext<LeanSessionHub> hubContext)
+        ILeanCoffeeNotificationService notificationService)
     {
         _participantService = participantService;
-        _hubContext = hubContext;
+        _notificationService = notificationService;
     }
 
     /// <summary>
@@ -99,13 +98,9 @@ public class LeanParticipantsController : ControllerBase
         
         if (result.Success && result.Data != null)
         {
-            await _hubContext.Clients.Group($"session_{command.SessionId}")
-                .SendAsync("ParticipantJoined", new 
-                { 
-                    sessionId = command.SessionId,
-                    userId = command.UserId,
-                    timestamp = System.DateTime.UtcNow 
-                });
+            await _notificationService.NotifyParticipantJoinedAsync(
+                command.SessionId, 
+                command.UserId);
         }
 
         return HandleResult(result);
@@ -123,13 +118,9 @@ public class LeanParticipantsController : ControllerBase
         
         if (result.Success && result.Data != null)
         {
-            await _hubContext.Clients.Group($"session_{command.SessionId}")
-                .SendAsync("ParticipantLeft", new 
-                { 
-                    sessionId = command.SessionId,
-                    userId = command.UserId,
-                    timestamp = System.DateTime.UtcNow 
-                });
+            await _notificationService.NotifyParticipantLeftAsync(
+                command.SessionId, 
+                command.UserId);
         }
 
         return HandleResult(result);

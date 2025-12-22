@@ -13,6 +13,10 @@ public class LeanParticipant : BaseEntity
     [DataMember] public DateTime JoinedAt { get; set; }
     [DataMember] public DateTime? LeftAt { get; set; }
     [DataMember] public bool IsActive { get; set; } = true;
+    
+    // FCM-related fields
+    [DataMember] public bool IsSubscribedToFCM { get; set; }
+    [DataMember] public DateTime? FCMSubscribedAt { get; set; }
 }
 
 public enum ParticipantRole

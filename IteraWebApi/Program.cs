@@ -67,6 +67,7 @@ builder.Services.AddMarten(options =>
     options.Schema.For<AppCore.Entities.LeanTopic>().Identity(x => x.Id);
     options.Schema.For<AppCore.Entities.LeanTopicVote>().Identity(x => x.Id);
     options.Schema.For<AppCore.Entities.LeanSessionNote>().Identity(x => x.Id);
+    options.Schema.For<AppCore.Entities.UserDeviceToken>().Identity(x => x.Id);
     
     // Add indexes for commonly queried fields
     options.Schema.For<AppCore.Entities.User>()
@@ -95,6 +96,11 @@ builder.Services.AddMarten(options =>
     options.Schema.For<AppCore.Entities.LeanTopicVote>()
         .Index(x => x.LeanTopicId)
         .Index(x => x.LeanSessionId);
+    
+    options.Schema.For<AppCore.Entities.UserDeviceToken>()
+        .Index(x => x.UserId)
+        .Index(x => x.DeviceToken)
+        .Index(x => x.IsActive);
 });
 
 // Add CORS
@@ -108,17 +114,9 @@ builder.Services.AddCors(options =>
                 "https://congenial-parakeet-v65x4jgr6p2v96-4200.app.github.dev")
               .AllowAnyHeader()
               .AllowAnyMethod()
-              .AllowCredentials() // Required for SignalR
+              .AllowCredentials() // Required for cookies/auth
               .SetIsOriginAllowedToAllowWildcardSubdomains();
     });
-});
-
-// Add SignalR
-builder.Services.AddSignalR(options =>
-{
-    options.EnableDetailedErrors = builder.Environment.IsDevelopment();
-    options.KeepAliveInterval = TimeSpan.FromSeconds(15);
-    options.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
 });
 
 // Add services to the container.
@@ -141,6 +139,11 @@ builder.Services.AddScoped<LeanSessionService>();
 builder.Services.AddScoped<LeanParticipantService>();
 builder.Services.AddScoped<LeanTopicService>();
 builder.Services.AddScoped<LeanSessionQueryService>();
+
+// Register FCM Services
+builder.Services.AddScoped<IFirebaseMessagingService, FirebaseMessagingService>();
+builder.Services.AddScoped<ILeanCoffeeNotificationService, LeanCoffeeNotificationService>();
+builder.Services.AddScoped<IUserDeviceTokenRepository, UserDeviceTokenRepository>();
 
 // Register Generic Entity Services
 builder.Services.AddScoped(typeof(IEntityService<>), typeof(EntityService<>));
@@ -184,8 +187,5 @@ app.UseAuthorization();
 
 // Map controllers
 app.MapControllers();
-
-// Map SignalR Hub
-app.MapHub<IteraWebApi.Hubs.LeanSessionHub>("/hubs/lean-session");
 
 app.Run();

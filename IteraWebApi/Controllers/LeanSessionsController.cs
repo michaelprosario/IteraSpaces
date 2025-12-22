@@ -1,10 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using AppCore.Common;
 using AppCore.DTOs;
 using AppCore.Entities;
 using AppCore.Services;
-using IteraWebApi.Hubs;
+using AppCore.Interfaces;
 using System.Threading.Tasks;
 
 namespace IteraWebApi.Controllers;
@@ -15,16 +14,16 @@ public class LeanSessionsController : ControllerBase
 {
     private readonly LeanSessionService _sessionService;
     private readonly LeanSessionQueryService _queryService;
-    private readonly IHubContext<LeanSessionHub> _hubContext;
+    private readonly ILeanCoffeeNotificationService _notificationService;
 
     public LeanSessionsController(
         LeanSessionService sessionService,
         LeanSessionQueryService queryService,
-        IHubContext<LeanSessionHub> hubContext)
+        ILeanCoffeeNotificationService notificationService)
     {
         _sessionService = sessionService;
         _queryService = queryService;
-        _hubContext = hubContext;
+        _notificationService = notificationService;
     }
 
     /// <summary>
@@ -142,13 +141,9 @@ public class LeanSessionsController : ControllerBase
         
         if (result.Success && result.Data != null)
         {
-            await _hubContext.Clients.Group($"session_{command.SessionId}")
-                .SendAsync("SessionStatusChanged", new 
-                { 
-                    sessionId = command.SessionId,
-                    status = command.NewStatus,
-                    timestamp = System.DateTime.UtcNow 
-                });
+            await _notificationService.NotifySessionStateChangedAsync(
+                command.SessionId, 
+                command.NewStatus);
         }
 
         return HandleResult(result);

@@ -48,3 +48,21 @@ LeanSessionStateMessenger
 - draft an html/css prototype of the LeanSessionView
 - use bootstrap
 - Topics in session should be visualized in a kanban style
+====
+
+As an engineer, we need to pivot lean session, lean topic and participant real time communication features from signalr to firebase messaging. 
+
+Please create a backend plan for this effort.
+
+Document in 018-BackendPivotToFirebaseMessaging
+
+====
+
+As an engineer, we need to pivot lean session, lean topic and participant real time communication features from signalr to firebase messaging. 
+
+Please review backend plan: Prompts/018-BackendPivotToFirebaseMessaging.md
+
+Check implementation of web api
+
+Document in 019-AngularPivotToFirebaseMessaging
+
