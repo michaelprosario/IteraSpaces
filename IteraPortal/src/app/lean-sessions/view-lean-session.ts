@@ -1,10 +1,10 @@
-import { Component, OnInit, OnDestroy, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, ChangeDetectionStrategy, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { LeanTopicsService } from '../core/services/lean-topics.service';
 import { AuthService } from '../core/services/auth.service';
-import { LeanSessionSignalRService } from './services/lean-session-signalr.service';
+import { FirebaseMessagingService } from '../core/services/firebase-messaging.service';
 import { LeanSessionStateService } from './services/lean-session-state.service';
 import { KanbanBoardComponent } from './components/kanban-board/kanban-board.component';
 import { SessionHeaderComponent } from './components/session-header/session-header.component';
@@ -31,7 +31,7 @@ import { TopicStatus } from './models/lean-session.models';
 export class ViewLeanSession implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-  private signalRService = inject(LeanSessionSignalRService);
+  private fcmService = inject(FirebaseMessagingService);
   private stateService = inject(LeanSessionStateService);
   private leanTopicsService = inject(LeanTopicsService);
   private authService = inject(AuthService);
@@ -44,11 +44,21 @@ export class ViewLeanSession implements OnInit, OnDestroy {
   participants = this.stateService.participants;
   notes = this.stateService.notes;
   currentUserVotes = this.stateService.currentUserVotes;
-  connectionState = signal<string>('disconnected');
+  connectionState = signal<string>('connected');
   isLoading = signal(false);
   errorMessage = signal<string | null>(null);
   showAddTopicModal = signal(false);
   topicToEdit = signal<any>(null);
+
+  constructor() {
+    // React to FCM messages
+    effect(() => {
+      const message = this.fcmService.latestMessage();
+      if (message) {
+        this.handleFcmMessage(message);
+      }
+    });
+  }
 
   async ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
@@ -76,21 +86,15 @@ export class ViewLeanSession implements OnInit, OnDestroy {
       // Load session data first
       await this.stateService.loadSession(this.sessionId());
       
-      // Connect to SignalR
-      await this.signalRService.connect();
-      
-      // Join session group
-      await this.signalRService.joinSession(this.sessionId(), currentUser.id);
-      
-      // Subscribe to SignalR events
-      this.subscribeToSignalREvents();
-      
-      // Monitor connection state
-      this.signalRService.connectionState$
-        .pipe(takeUntil(this.destroy$))
-        .subscribe(state => {
-          this.connectionState.set(state);
-        });
+      // Subscribe to FCM notifications for this session
+      try {
+        await this.fcmService.subscribeToSession(this.sessionId());
+        console.log('Subscribed to session notifications');
+        this.connectionState.set('connected');
+      } catch (error) {
+        console.error('Failed to subscribe to session:', error);
+        this.connectionState.set('disconnected');
+      }
         
     } catch (error: any) {
       console.error('Failed to initialize session:', error);
@@ -100,76 +104,41 @@ export class ViewLeanSession implements OnInit, OnDestroy {
     }
   }
 
-  private subscribeToSignalREvents(): void {
-    // Participant events
-    this.signalRService.onParticipantJoined$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(event => {
-        this.stateService.addParticipant(event.participant);
-      });
-    
-    this.signalRService.onParticipantLeft$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(event => {
-        this.stateService.removeParticipant(event.userId);
-      });
-    
-    // Topic events
-    this.signalRService.onTopicAdded$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(event => {
-        this.stateService.addTopic(event.topic);
-      });
-    
-    this.signalRService.onTopicEdited$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(event => {
-        this.stateService.updateTopic(event.topicId, event.topic);
-      });
-    
-    this.signalRService.onTopicDeleted$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(event => {
-        this.stateService.deleteTopic(event.topicId);
-      });
-    
-    this.signalRService.onTopicStatusChanged$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(event => {
-        this.stateService.moveTopicToStatus(event.topicId, event.newStatus);
-      });
-    
-    // Vote events
-    this.signalRService.onVoteCast$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(event => {
-        this.stateService.incrementVoteCount(event.topicId, event.userId);
-      });
-    
-    this.signalRService.onVoteRemoved$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(event => {
-        this.stateService.decrementVoteCount(event.topicId, event.userId);
-      });
-    
-    // Session events
-    this.signalRService.onSessionStatusChanged$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(event => {
-        this.stateService.updateSession({ status: event.newStatus });
-      });
-    
-    this.signalRService.onSessionClosed$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(event => {
-        this.router.navigate(['/lean-sessions/list']);
-      });
-    
-    this.signalRService.onSessionDeleted$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(event => {
-        this.router.navigate(['/lean-sessions/list']);
-      });
+  /**
+   * Handle incoming FCM messages
+   */
+  private handleFcmMessage(message: any): void {
+    // Only process messages for this session
+    if (message.sessionId !== this.sessionId()) {
+      return;
+    }
+
+    console.log('Processing FCM message:', message);
+
+    switch (message.eventType) {
+      case 'session_updated':
+      case 'session_closed':
+      case 'session_state_changed':
+        // Reload entire session
+        this.stateService.loadSession(this.sessionId());
+        break;
+
+      case 'topic_added':
+      case 'topic_updated':
+      case 'topic_status_changed':
+      case 'vote_cast':
+      case 'vote_removed':
+      case 'participant_joined':
+      case 'participant_left':
+      case 'current_topic_changed':
+      case 'note_added':
+        // Reload session to get updated data
+        this.stateService.loadSession(this.sessionId());
+        break;
+
+      default:
+        console.log('Unknown FCM event type:', message.eventType);
+    }
   }
 
   // Event handlers
@@ -200,7 +169,7 @@ export class ViewLeanSession implements OnInit, OnDestroy {
         entityId: topicId
       });
       
-      // State will be updated via SignalR
+      // State will be updated via FCM
     } catch (error) {
       console.error('Error deleting topic:', error);
       alert('Failed to delete topic. Please try again.');
@@ -225,7 +194,7 @@ export class ViewLeanSession implements OnInit, OnDestroy {
         this.stateService.decrementVoteCount(event.topicId, currentUser.id);
       }
       
-      // State will be updated via SignalR
+      // State will be updated via FCM
     } catch (error) {
       console.error('Error voting for topic:', error);
     }
@@ -256,7 +225,7 @@ export class ViewLeanSession implements OnInit, OnDestroy {
         userId: currentUser.id
       });
       
-      // State will be updated via SignalR
+      // State will be updated via FCM
     } catch (error) {
       console.error('Error moving topic:', error);
     }
@@ -265,7 +234,7 @@ export class ViewLeanSession implements OnInit, OnDestroy {
   onTopicSaved(): void {
     this.showAddTopicModal.set(false);
     this.topicToEdit.set(null);
-    // State will be updated via SignalR
+    // State will be updated via FCM
   }
 
   onModalClosed(): void {
@@ -283,14 +252,14 @@ export class ViewLeanSession implements OnInit, OnDestroy {
   }
 
   async ngOnDestroy(): Promise<void> {
-    try {
-      const currentUser = this.authService.currentUser();
-      if (currentUser?.id) {
-        await this.signalRService.leaveSession(this.sessionId(), currentUser.id);
+    // Unsubscribe from session notifications
+    if (this.sessionId()) {
+      try {
+        await this.fcmService.unsubscribeFromSession(this.sessionId());
+        console.log('Unsubscribed from session notifications');
+      } catch (error) {
+        console.error('Failed to unsubscribe from session:', error);
       }
-      await this.signalRService.disconnect();
-    } catch (error) {
-      console.error('Error during cleanup:', error);
     }
     
     this.destroy$.next();

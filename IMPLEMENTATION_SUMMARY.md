@@ -1,27 +1,44 @@
 # Lean Coffee Session View Implementation - Summary
 
 ## Overview
-Successfully implemented the real-time Lean Coffee session view as specified in `Designs/LeanCoffeeSessionView2.md`. The implementation includes a complete SignalR-based real-time collaborative Kanban board for Lean Coffee sessions.
+Successfully implemented the real-time Lean Coffee session view as specified in `Designs/LeanCoffeeSessionView2.md`. The implementation includes a complete Firebase Cloud Messaging (FCM) based real-time collaborative Kanban board for Lean Coffee sessions.
+
+**Migration Status**: ✅ **Migrated from SignalR to Firebase Cloud Messaging (December 2025)**
 
 ## Implementation Completed
 
 ### 1. Dependencies Installed ✅
-- `@microsoft/signalr` - For real-time SignalR communication
+- `@angular/fire` - Firebase SDK for Angular
+- `firebase` - Core Firebase library
 - `@angular/cdk` - For drag-and-drop functionality
+- ~~`@microsoft/signalr`~~ - **REMOVED** (migrated to FCM)
 
 ### 2. Models & Interfaces ✅
 Created comprehensive TypeScript models:
 - **lean-session.models.ts**: Core domain models (LeanSession, LeanTopic, LeanParticipant, LeanSessionNote)
-- **signalr-events.models.ts**: SignalR event payloads for all real-time events
+- **FCM message types**: Event payloads for all real-time events via Firebase Cloud Messaging
 
 ### 3. Services ✅
 
-#### LeanSessionSignalRService
-- Manages SignalR hub connection lifecycle
-- Provides observables for all real-time events
-- Handles connection state (connected, reconnecting, disconnected, error)
-- Automatic reconnection with exponential backoff
-- Join/leave session group functionality
+#### FirebaseMessagingService ⭐ NEW
+- Manages FCM token lifecycle
+- Requests notification permissions
+- Registers device tokens with backend
+- Listens for foreground messages
+- Provides reactive signal for latest message
+- Browser and device type detection
+
+#### DeviceTokenService ⭐ NEW
+- Registers device tokens with backend API
+- Subscribes/unsubscribes to session notifications
+- Manages session-specific subscriptions
+
+#### ~~LeanSessionSignalRService~~ (DEPRECATED - Replaced by FCM)
+- ~~Manages SignalR hub connection lifecycle~~
+- ~~Provides observables for all real-time events~~
+- ~~Handles connection state (connected, reconnecting, disconnected, error)~~
+- ~~Automatic reconnection with exponential backoff~~
+- ~~Join/leave session group functionality~~
 
 #### LeanSessionStateService
 - Centralized state management using Angular signals
@@ -79,21 +96,41 @@ Created comprehensive TypeScript models:
 
 #### ViewLeanSessionComponent
 - Orchestrates the entire session view
-- Manages SignalR connection lifecycle
-- Subscribes to all real-time events
-- Updates state via SignalR broadcasts
+- Manages FCM subscription lifecycle ⭐ UPDATED
+- Uses effect() to react to FCM messages ⭐ NEW
+- Updates state when notifications received
 - Connection status indicator
 - Cleanup on component destroy
+
+### 6. Service Worker & Push Notifications ⭐ NEW
+
+#### firebase-messaging-sw.js
+- Service worker for background message handling
+- Shows browser notifications when app not in focus
+- Handles notification clicks to navigate to sessions
+- Integrated with Firebase Cloud Messaging
+
+#### App Component Integration
+- Initializes FCM on app startup
+- Requests notification permissions
+- Starts listening for foreground messages
+- Registers device token with backend
 
 ## Key Features Implemented
 
 ### Real-Time Synchronization
-- All participants see updates in real-time
+- All participants see updates in real-time via FCM push notifications
 - Topic additions, edits, deletions
 - Vote casting and removal
 - Status changes (moving topics between columns)
 - Participant join/leave events
 - Session status changes
+
+### Push Notifications
+- Browser notifications when app is in background ⭐ NEW
+- Notification permission management ⭐ NEW
+- Click-to-navigate from notifications ⭐ NEW
+- Cross-browser support (Chrome, Firefox, Safari 16.4+, Edge) ⭐ NEW
 
 ### Drag-and-Drop
 - Topics can be dragged between columns
