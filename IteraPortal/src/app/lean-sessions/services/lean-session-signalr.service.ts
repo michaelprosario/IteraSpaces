@@ -80,8 +80,22 @@ export class LeanSessionSignalRService {
       throw new Error('No authentication token available');
     }
 
-    const baseUrl = environment.apiUrl || window.location.origin;
-    const hubUrl = `${baseUrl}/leanSessionHub`;
+    // In development, use /api prefix to go through Angular proxy
+    // In production, use the full API URL
+    let hubUrl = "";
+
+    if(environment.production === false){
+      // In Codespaces/dev, connect directly to backend with full URL
+      // This avoids proxy complications with WebSocket upgrades
+      hubUrl = 'http://localhost:5267/hubs/lean-session';
+    } 
+    else 
+    {
+      hubUrl = `${environment.apiUrl}/hubs/lean-session`
+    }
+
+    // log out hubUrl for debugging
+    console.log('Connecting to SignalR hub at:', hubUrl);
 
     this.hubConnection = new HubConnectionBuilder()
       .withUrl(hubUrl, {

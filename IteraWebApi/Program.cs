@@ -105,7 +105,7 @@ builder.Services.AddCors(options =>
         policy.WithOrigins(
                 "http://localhost:4200", 
                 "https://localhost:4200",
-                "https://congenial-parakeet-v65x4jqr6p2v96-4200.app.github.dev")
+                "https://congenial-parakeet-v65x4jgr6p2v96-4200.app.github.dev")
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials() // Required for SignalR
