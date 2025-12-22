@@ -68,3 +68,50 @@
     (modalClosed)="onModalClosed()">
   </app-add-topic-modal>
 </div>
+
+                    </div>
+
+                    <div class="detail-item" *ngIf="session.actualStartTime">
+                        <span class="detail-label">Actual Start:</span>
+                        <span class="detail-value">{{ session.actualStartTime | date:'medium' }}</span>
+                    </div>
+
+                    <div class="detail-item" *ngIf="session.actualEndTime">
+                        <span class="detail-label">Actual End:</span>
+                        <span class="detail-value">{{ session.actualEndTime | date:'medium' }}</span>
+                    </div>
+
+                    <div class="detail-item" *ngIf="session.inviteCode">
+                        <span class="detail-label">Invite Code:</span>
+                        <span class="detail-value">{{ session.inviteCode }}</span>
+                    </div>
+                </div>
+
+                <div class="metadata-section">
+                    <h4>Session Metadata</h4>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">Created At:</span>
+                            <span class="detail-value">{{ session.createdAt ? (session.createdAt | date:'medium') : 'N/A' }}</span>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">Created By:</span>
+                            <span class="detail-value">{{ session.createdBy || 'N/A' }}</span>
+                        </div>
+
+                        <div class="detail-item" *ngIf="session.updatedAt">
+                            <span class="detail-label">Updated At:</span>
+                            <span class="detail-value">{{ session.updatedAt | date:'medium' }}</span>
+                        </div>
+
+                        <div class="detail-item" *ngIf="session.updatedBy">
+                            <span class="detail-label">Updated By:</span>
+                            <span class="detail-value">{{ session.updatedBy }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -191,6 +191,99 @@
         }
       }
     },
+    "/api/LeanParticipants/JoinSession": {
+      "post": {
+        "tags": [
+          "LeanParticipants"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JoinSessionCommand"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JoinSessionCommand"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/JoinSessionCommand"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/LeanParticipants/LeaveSession": {
+      "post": {
+        "tags": [
+          "LeanParticipants"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LeaveSessionCommand"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LeaveSessionCommand"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/LeaveSessionCommand"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/LeanParticipants/GetActiveParticipants": {
+      "post": {
+        "tags": [
+          "LeanParticipants"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetActiveParticipantsQuery"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetActiveParticipantsQuery"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetActiveParticipantsQuery"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/LeanSessions/StoreEntityAsync": {
       "post": {
         "tags": [
@@ -408,6 +501,37 @@
         }
       }
     },
+    "/api/LeanSessions/ChangeSessionStatus": {
+      "post": {
+        "tags": [
+          "LeanSessions"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeSessionStatusCommand"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeSessionStatusCommand"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeSessionStatusCommand"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/LeanTopics/StoreEntityAsync": {
       "post": {
         "tags": [
@@ -490,6 +614,37 @@
             "application/*+json": {
               "schema": {
                 "$ref": "#/components/schemas/VoteForLeanTopicCommand"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/LeanTopics/RemoveVote": {
+      "post": {
+        "tags": [
+          "LeanTopics"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RemoveVoteCommand"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RemoveVoteCommand"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RemoveVoteCommand"
               }
             }
           }
@@ -1103,6 +1258,19 @@
         },
         "additionalProperties": false
       },
+      "ChangeSessionStatusCommand": {
+        "type": "object",
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "nullable": true
+          },
+          "newStatus": {
+            "$ref": "#/components/schemas/SessionStatus"
+          }
+        },
+        "additionalProperties": false
+      },
       "CloseSessionCommand": {
         "type": "object",
         "properties": {
@@ -1157,6 +1325,16 @@
             "nullable": true
           },
           "enabledBy": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetActiveParticipantsQuery": {
+        "type": "object",
+        "properties": {
+          "sessionId": {
             "type": "string",
             "nullable": true
           }
@@ -1248,6 +1426,23 @@
           "roleId": {
             "type": "string",
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "JoinSessionCommand": {
+        "type": "object",
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "nullable": true
+          },
+          "userId": {
+            "type": "string",
+            "nullable": true
+          },
+          "role": {
+            "$ref": "#/components/schemas/ParticipantRole"
           }
         },
         "additionalProperties": false
@@ -1473,6 +1668,20 @@
         },
         "additionalProperties": false
       },
+      "LeaveSessionCommand": {
+        "type": "object",
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "nullable": true
+          },
+          "userId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "NoteType": {
         "enum": [
           0,
@@ -1532,6 +1741,24 @@
             "nullable": true
           },
           "removedBy": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "RemoveVoteCommand": {
+        "type": "object",
+        "properties": {
+          "topicId": {
+            "type": "string",
+            "nullable": true
+          },
+          "userId": {
+            "type": "string",
+            "nullable": true
+          },
+          "sessionId": {
             "type": "string",
             "nullable": true
           }

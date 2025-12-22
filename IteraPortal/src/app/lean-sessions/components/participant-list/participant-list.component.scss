@@ -1,0 +1,96 @@
+.participant-list {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.participant-list-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #333;
+  display: flex;
+  align-items: center;
+  
+  i {
+    color: #0dcaf0;
+  }
+}
+
+.participant-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 1rem;
+}
+
+.participant-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  
+  &:hover {
+    background: #f8f9fa;
+    transform: scale(1.05);
+  }
+  
+  &.inactive {
+    opacity: 0.5;
+    
+    .status-indicator {
+      background: #6c757d;
+    }
+  }
+}
+
+.participant-avatar {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  .avatar-initials {
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+  }
+  
+  .status-indicator {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #198754;
+    border: 2px solid white;
+  }
+  
+  .facilitator-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    color: #ffc107;
+    font-size: 1rem;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+  }
+}
+
+.participant-name {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #333;
+  text-align: center;
+  word-break: break-word;
+  max-width: 100px;
+}

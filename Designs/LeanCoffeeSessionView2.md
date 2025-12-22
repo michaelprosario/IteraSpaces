@@ -1,5 +1,7 @@
 # Lean Coffee Session View - Angular Frontend Implementation Plan
 
+Make sure to review openapi.json to see backend design for api
+
 ## Overview
 This document outlines the Angular frontend implementation for a real-time Lean Coffee session view with SignalR integration. The design builds upon `LeanCoffeeSignalR2.md` and uses the HTML prototype from `ScreenSketch/viewSession.html` as a visual reference.
 

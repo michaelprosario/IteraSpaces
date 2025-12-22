@@ -1,0 +1,14 @@
+<div class="kanban-board" cdkDropListGroup>
+  <app-kanban-column
+    *ngFor="let status of columnStatuses"
+    [status]="status"
+    [topics]="getTopicsByStatus(status)"
+    [currentUserVotes]="currentUserVotes"
+    [currentUserId]="currentUserId"
+    (addTopic)="addTopic.emit()"
+    (editTopic)="editTopic.emit($event)"
+    (deleteTopic)="deleteTopic.emit($event)"
+    (voteTopic)="voteTopic.emit($event)"
+    (topicDropped)="onTopicDropped($event)">
+  </app-kanban-column>
+</div>

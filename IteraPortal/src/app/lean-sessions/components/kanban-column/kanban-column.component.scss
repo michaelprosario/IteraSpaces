@@ -1,0 +1,111 @@
+.kanban-column {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 1rem;
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+  
+  &.column-todiscuss {
+    background: linear-gradient(135deg, #f0fcff 0%, #f8f9fa 100%);
+  }
+  
+  &.column-discussing {
+    background: linear-gradient(135deg, #f8fff9 0%, #f8f9fa 100%);
+  }
+  
+  &.column-discussed {
+    background: linear-gradient(135deg, #f8f9fa 0%, #f0f0f0 100%);
+  }
+}
+
+.kanban-column-header {
+  margin-bottom: 1rem;
+}
+
+.kanban-column-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  
+  i {
+    font-size: 1.25rem;
+  }
+  
+  span {
+    flex: 1;
+  }
+  
+  .column-count {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+.topic-list {
+  flex: 1;
+  min-height: 300px;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+  
+  &.cdk-drop-list-dragging {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: #999;
+  
+  p {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+.add-topic-btn {
+  border: 2px dashed #0dcaf0;
+  background: white;
+  color: #0dcaf0;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: #0dcaf0;
+    color: white;
+    border-style: solid;
+  }
+}
+
+// Drag-and-drop styles
+:host ::ng-deep {
+  .cdk-drag-preview {
+    box-sizing: border-box;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    opacity: 0.9;
+  }
+  
+  .cdk-drag-placeholder {
+    opacity: 0.4;
+    background: #e9ecef;
+    border: 2px dashed #6c757d;
+    border-radius: 10px;
+  }
+  
+  .cdk-drag-animating {
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+  }
+  
+  .topic-list.cdk-drop-list-dragging .topic-card:not(.cdk-drag-placeholder) {
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+  }
+}
