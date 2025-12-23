@@ -17,6 +17,7 @@ public interface ILeanCoffeeNotificationService
     // Topic Events
     Task NotifyTopicAddedAsync(string sessionId, string topicId);
     Task NotifyTopicUpdatedAsync(string sessionId, string topicId);
+    Task NotifyTopicDeletedAsync(string sessionId, string topicId);
     Task NotifyTopicStatusChangedAsync(string sessionId, string topicId, TopicStatus newStatus);
     Task NotifyCurrentTopicChangedAsync(string sessionId, string? topicId);
     

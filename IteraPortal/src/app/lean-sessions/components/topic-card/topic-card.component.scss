@@ -105,6 +105,64 @@
   gap: 0.5rem;
 }
 
+.action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  
+  .btn-action {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    border: 1px solid #dee2e6;
+    background: white;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    
+    i {
+      font-size: 1rem;
+      line-height: 1;
+      display: inline-block;
+    }
+    
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+  
+  .btn-edit {
+    color: #0d6efd !important;
+    border-color: #b6d4fe;
+    
+    i {
+      color: #0d6efd !important;
+    }
+    
+    &:hover {
+      background: #e7f1ff;
+      border-color: #0d6efd;
+    }
+  }
+  
+  .btn-delete {
+    color: #dc3545 !important;
+    border-color: #f5c2c7;
+    
+    i {
+      color: #dc3545 !important;
+    }
+    
+    &:hover {
+      background: #ffe5e7;
+      border-color: #dc3545;
+    }
+  }
+}
+
 .vote-badge {
   display: flex;
   align-items: center;
@@ -143,7 +201,8 @@
   }
 }
 
-.dropdown {
+// Dropdown styles removed - using direct action buttons instead
+.dropdown-legacy {
   .btn-link {
     color: #6c757d;
     padding: 0.25rem 0.5rem;
