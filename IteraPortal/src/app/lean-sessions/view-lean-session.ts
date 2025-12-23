@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, inject, signal, ChangeDetectionStrategy, 
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
-import { LeanTopicsService } from '../core/services/lean-topics.service';
+import { LeanTopicsService, SetTopicStatusCommand } from '../core/services/lean-topics.service';
 import { AuthService } from '../core/services/auth.service';
 import { FirebaseMessagingService } from '../core/services/firebase-messaging.service';
 import { LeanSessionStateService } from './services/lean-session-state.service';
@@ -225,7 +225,7 @@ export class ViewLeanSession implements OnInit, OnDestroy {
         topicId: event.topicId,
         status: event.newStatus,
         userId: currentUser.id
-      };
+      } as unknown as SetTopicStatusCommand;
       
       console.log('[ViewLeanSession] Sending setTopicStatus command:', command);
       await this.leanTopicsService.setTopicStatus(command);

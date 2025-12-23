@@ -1,6 +1,7 @@
 <div class="session-container">
   <!-- Connection Status Indicator -->
-  <div class="connection-status" 
+  <div  style="display:none"
+      class="connection-status" 
        [class.connected]="connectionState() === 'connected'"
        [class.reconnecting]="connectionState() === 'reconnecting'"
        [class.error]="connectionState() === 'error'">
