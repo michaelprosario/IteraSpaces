@@ -32,8 +32,23 @@ export class KanbanColumnComponent {
         return 'Discussing';
       case TopicStatus.Discussed:
         return 'Discussed';
+      case TopicStatus.Archived:
+        return 'Archived';
       default:
-        return status;
+        return 'Unknown';
+    }
+  }
+  
+  getColumnClass(): string {
+    switch (this.status) {
+      case TopicStatus.ToDiscuss:
+        return 'column-todiscuss';
+      case TopicStatus.Discussing:
+        return 'column-discussing';
+      case TopicStatus.Discussed:
+        return 'column-discussed';
+      default:
+        return '';
     }
   }
   
@@ -56,6 +71,14 @@ export class KanbanColumnComponent {
   
   canEditTopic(topic: LeanTopic): boolean {
     return topic.authorId === this.currentUserId;
+  }
+  
+  isToDiscuss(): boolean {
+    return this.status === TopicStatus.ToDiscuss;
+  }
+  
+  isDiscussing(topicStatus: TopicStatus): boolean {
+    return topicStatus === TopicStatus.Discussing;
   }
   
   onTopicDropped(event: CdkDragDrop<LeanTopic[]>): void {

@@ -1,4 +1,4 @@
-<div class="kanban-column" [class]="'column-' + status.toLowerCase()">
+<div class="kanban-column" [ngClass]="getColumnClass()">
   <div class="kanban-column-header">
     <div class="kanban-column-title">
       <i [class]="getColumnIcon(status)"></i>
@@ -18,7 +18,7 @@
       *ngFor="let topic of topics; trackBy: trackByTopicId"
       [topic]="topic"
       [isVoted]="currentUserVotes.includes(topic.id)"
-      [isActive]="topic.status === 'Discussing'"
+      [isActive]="isDiscussing(topic.status)"
       [canEdit]="canEditTopic(topic)"
       cdkDrag
       (edit)="editTopic.emit(topic.id)"
@@ -33,7 +33,7 @@
   </div>
   
   <button 
-    *ngIf="status === 'ToDiscuss'"
+    *ngIf="isToDiscuss()"
     class="add-topic-btn btn btn-outline-primary w-100 mt-3"
     (click)="addTopic.emit()">
     <i class="bi bi-plus-circle me-2"></i> Add Topic

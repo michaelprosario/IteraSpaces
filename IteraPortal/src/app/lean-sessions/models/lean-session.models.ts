@@ -6,9 +6,10 @@ export enum SessionStatus {
 }
 
 export enum TopicStatus {
-  ToDiscuss = 'ToDiscuss',
-  Discussing = 'Discussing',
-  Discussed = 'Discussed'
+  ToDiscuss = 0,
+  Discussing = 1,
+  Discussed = 2,
+  Archived = 3
 }
 
 export enum ParticipantRole {

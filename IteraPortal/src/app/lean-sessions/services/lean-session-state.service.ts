@@ -57,41 +57,50 @@ export class LeanSessionStateService {
 
   async loadSession(sessionId: string): Promise<void> {
     try {
-      const response = await this.leanSessionsService.getLeanSession({ sessionId });
+      console.log('[LeanSessionStateService] Loading session:', sessionId);
+      const sessionData = await this.leanSessionsService.getLeanSession({ sessionId });
       
-      if (response && response.data) {
-        const sessionData = response.data;
+      console.log('[LeanSessionStateService] Session data received:', sessionData);
+      
+      if (!sessionData) {
+        console.error('[LeanSessionStateService] No session data received');
+        return;
+      }
+      
+      // Map the session
+      const session = sessionData.session;
+      console.log('[LeanSessionStateService] Setting session:', session);
+      this.sessionSignal.set(session);
+      
+      // Map topics
+      if (sessionData.topics && Array.isArray(sessionData.topics)) {
+        console.log('[LeanSessionStateService] Setting topics:', sessionData.topics.length);
+        this.topicsSignal.set(sessionData.topics);
         
-        // Map the session
-        this.sessionSignal.set(sessionData.session || sessionData);
-        
-        // Map topics
-        if (sessionData.topics && Array.isArray(sessionData.topics)) {
-          this.topicsSignal.set(sessionData.topics);
-          
-          // Load user's votes
-          const currentUser = this.authService.currentUser();
-          if (currentUser?.id) {
-            const userVotes = sessionData.topics
-              .filter((t: any) => t.userHasVoted === true || 
-                     (t.votes && Array.isArray(t.votes) && t.votes.some((v: any) => v.userId === currentUser.id)))
-              .map((t: any) => t.id);
-            this.userVotesSignal.set(userVotes);
-          }
-        }
-        
-        // Map participants
-        if (sessionData.participants && Array.isArray(sessionData.participants)) {
-          this.participantsSignal.set(sessionData.participants);
-        }
-        
-        // Map notes
-        if (sessionData.notes && Array.isArray(sessionData.notes)) {
-          this.notesSignal.set(sessionData.notes);
+        // Load user's votes from the votes array
+        const currentUser = this.authService.currentUser();
+        if (currentUser?.id && sessionData.votes && Array.isArray(sessionData.votes)) {
+          const userVotes = sessionData.votes
+            .filter((v: any) => v.userId === currentUser.id)
+            .map((v: any) => v.topicId);
+          console.log('[LeanSessionStateService] User votes:', userVotes);
+          this.userVotesSignal.set(userVotes);
         }
       }
+      
+      // Map participants
+      if (sessionData.participants && Array.isArray(sessionData.participants)) {
+        console.log('[LeanSessionStateService] Setting participants:', sessionData.participants.length);
+        this.participantsSignal.set(sessionData.participants);
+      }
+      
+      // Map notes
+      if (sessionData.notes && Array.isArray(sessionData.notes)) {
+        console.log('[LeanSessionStateService] Setting notes:', sessionData.notes.length);
+        this.notesSignal.set(sessionData.notes);
+      }
     } catch (error) {
-      console.error('Error loading session:', error);
+      console.error('[LeanSessionStateService] Error loading session:', error);
       throw error;
     }
   }

@@ -30,11 +30,25 @@ public class DeviceTokensController : ControllerBase
     {
         try
         {
-            var userId = User.FindFirst("user_id")?.Value;
+            _logger.LogInformation("RegisterToken: Received request - Token={Token}, DeviceType={DeviceType}, DeviceName={DeviceName}",
+                request?.Token?.Length > 0 ? $"[{request.Token.Length} chars]" : "[empty]",
+                request?.DeviceType ?? "[null]",
+                request?.DeviceName ?? "[null]");
+            
+            // Firebase JWT uses "sub" claim for user ID (Firebase UID)
+            var userId = User.FindFirst("sub")?.Value 
+                ?? User.FindFirst("user_id")?.Value 
+                ?? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            
             if (string.IsNullOrEmpty(userId))
             {
+                _logger.LogWarning("User ID not found in token. Available claims: {Claims}", 
+                    string.Join(", ", User.Claims.Select(c => $"{c.Type}={c.Value}")));
                 return Unauthorized("User ID not found in token");
             }
+            
+            _logger.LogInformation("RegisterToken: Processing for userId={UserId}, tokenLength={TokenLength}", 
+                userId, request.Token?.Length ?? 0);
             
             // Check if token already exists
             var existingToken = await _tokenRepository.GetByTokenAsync(request.Token);
@@ -80,17 +94,28 @@ public class DeviceTokensController : ControllerBase
     {
         try
         {
-            var userId = User.FindFirst("user_id")?.Value;
+            // Firebase JWT uses "sub" claim for user ID (Firebase UID)
+            var userId = User.FindFirst("sub")?.Value 
+                ?? User.FindFirst("user_id")?.Value 
+                ?? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            
             if (string.IsNullOrEmpty(userId))
             {
                 return Unauthorized("User ID not found in token");
             }
             
+            _logger.LogInformation("SubscribeToSession: Attempting to subscribe for userId={UserId}, sessionId={SessionId}", 
+                userId, request.SessionId);
+            
             var tokens = await _tokenRepository.GetActiveTokensByUserIdAsync(userId);
+            
+            _logger.LogInformation("SubscribeToSession: Found {TokenCount} active tokens for userId={UserId}", 
+                tokens.Count, userId);
             
             if (!tokens.Any())
             {
-                return BadRequest(new { success = false, message = "No active device tokens found" });
+                _logger.LogWarning("SubscribeToSession: No active device tokens found for userId={UserId}. User may need to reload the page to register FCM token.", userId);
+                return BadRequest(new { success = false, message = "No active device tokens found. Please reload the page to register your device." });
             }
             
             var successCount = 0;
@@ -120,7 +145,11 @@ public class DeviceTokensController : ControllerBase
     {
         try
         {
-            var userId = User.FindFirst("user_id")?.Value;
+            // Firebase JWT uses "sub" claim for user ID (Firebase UID)
+            var userId = User.FindFirst("sub")?.Value 
+                ?? User.FindFirst("user_id")?.Value 
+                ?? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            
             if (string.IsNullOrEmpty(userId))
             {
                 return Unauthorized("User ID not found in token");
@@ -160,7 +189,11 @@ public class DeviceTokensController : ControllerBase
     {
         try
         {
-            var userId = User.FindFirst("user_id")?.Value;
+            // Firebase JWT uses "sub" claim for user ID (Firebase UID)
+            var userId = User.FindFirst("sub")?.Value 
+                ?? User.FindFirst("user_id")?.Value 
+                ?? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            
             if (string.IsNullOrEmpty(userId))
             {
                 return Unauthorized("User ID not found in token");

@@ -74,7 +74,7 @@ export class AddTopicModalComponent implements OnInit {
       const currentUser = this.authService.currentUser();
       
       const topic: any = {
-        id: this.topicToEdit?.id,
+        id: this.topicToEdit?.id || crypto.randomUUID(),
         leanSessionId: this.sessionId,
         title: titleValue,
         description: descriptionValue || undefined,

@@ -77,14 +77,22 @@ export class ViewLeanSession implements OnInit, OnDestroy {
     
     try {
       const currentUser = this.authService.currentUser();
+      console.log('[ViewLeanSession] Current user:', currentUser);
+      
       if (!currentUser?.id) {
         this.errorMessage.set('User not authenticated');
         this.router.navigate(['/login']);
         return;
       }
 
+      console.log('[ViewLeanSession] Loading session:', this.sessionId());
+      
       // Load session data first
       await this.stateService.loadSession(this.sessionId());
+      
+      console.log('[ViewLeanSession] Session loaded:', this.session());
+      console.log('[ViewLeanSession] Topics:', this.topics());
+      console.log('[ViewLeanSession] Participants:', this.participants());
       
       // Subscribe to FCM notifications for this session
       try {
@@ -100,6 +108,9 @@ export class ViewLeanSession implements OnInit, OnDestroy {
       console.error('Failed to initialize session:', error);
       this.errorMessage.set(error.message || 'Failed to connect to session');
     } finally {
+      console.log('[ViewLeanSession] isLoading:', this.isLoading());
+      console.log('[ViewLeanSession] errorMessage:', this.errorMessage());
+      console.log('[ViewLeanSession] session:', this.session());
       this.isLoading.set(false);
     }
   }
@@ -201,40 +212,38 @@ export class ViewLeanSession implements OnInit, OnDestroy {
   }
 
   async onMoveTopic(event: { topicId: string; newStatus: TopicStatus }): Promise<void> {
+    console.log('[ViewLeanSession] Moving topic:', event);
+    
     try {
       const currentUser = this.authService.currentUser();
-      if (!currentUser?.id) return;
-      
-      // Map TopicStatus to the backend enum
-      let backendStatus = 0; // Submitted
-      switch (event.newStatus) {
-        case TopicStatus.ToDiscuss:
-          backendStatus = 1; // Voting
-          break;
-        case TopicStatus.Discussing:
-          backendStatus = 2; // Discussing
-          break;
-        case TopicStatus.Discussed:
-          backendStatus = 3; // Completed
-          break;
+      if (!currentUser?.id) {
+        console.error('[ViewLeanSession] No current user');
+        return;
       }
       
-      await this.leanTopicsService.setTopicStatus({
+      const command = {
         topicId: event.topicId,
-        status: backendStatus as any,
+        status: event.newStatus,
         userId: currentUser.id
-      });
+      };
       
-      // State will be updated via FCM
+      console.log('[ViewLeanSession] Sending setTopicStatus command:', command);
+      await this.leanTopicsService.setTopicStatus(command);
+      
+      console.log('[ViewLeanSession] Topic status updated successfully');
+      // Reload session immediately to show the change
+      await this.stateService.loadSession(this.sessionId());
     } catch (error) {
-      console.error('Error moving topic:', error);
+      console.error('[ViewLeanSession] Error moving topic:', error);
+      alert('Failed to move topic. Please try again.');
     }
   }
 
-  onTopicSaved(): void {
+  async onTopicSaved(): Promise<void> {
     this.showAddTopicModal.set(false);
     this.topicToEdit.set(null);
-    // State will be updated via FCM
+    // Reload session to show new topic immediately
+    await this.stateService.loadSession(this.sessionId());
   }
 
   onModalClosed(): void {

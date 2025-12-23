@@ -1,6 +1,6 @@
 // Give the service worker access to Firebase Messaging.
-importScripts('https://www.gserviceaccount.com/firebasejs/10.7.1/firebase-app-compat.js');
-importScripts('https://www.gserviceaccount.com/firebasejs/10.7.1/firebase-messaging-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js');
 
 // Initialize the Firebase app in the service worker
 firebase.initializeApp({

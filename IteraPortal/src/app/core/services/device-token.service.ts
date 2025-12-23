@@ -25,20 +25,20 @@ export class DeviceTokenService {
    * Register a device token with the backend
    */
   async registerToken(request: RegisterDeviceTokenRequest): Promise<any> {
-    return this.apiService.post<any>('/api/DeviceTokens/RegisterToken', request);
+    return this.apiService.postDirect<any>('/api/DeviceTokens/RegisterToken', request);
   }
 
   /**
    * Subscribe to a specific lean coffee session
    */
   async subscribeToSession(request: SubscribeToSessionRequest): Promise<any> {
-    return this.apiService.post<any>('/api/DeviceTokens/SubscribeToSession', request);
+    return this.apiService.postDirect<any>('/api/DeviceTokens/SubscribeToSession', request);
   }
 
   /**
    * Unsubscribe from a specific lean coffee session
    */
   async unsubscribeFromSession(request: UnsubscribeFromSessionRequest): Promise<any> {
-    return this.apiService.post<any>('/api/DeviceTokens/UnsubscribeFromSession', request);
+    return this.apiService.postDirect<any>('/api/DeviceTokens/UnsubscribeFromSession', request);
   }
 }

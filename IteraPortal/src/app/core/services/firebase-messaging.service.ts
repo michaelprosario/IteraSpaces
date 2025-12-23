@@ -26,6 +26,36 @@ export class FirebaseMessagingService {
 
   // Signal to track the latest message received
   latestMessage = signal<FcmMessage | null>(null);
+  
+  // Track token registration state
+  private tokenRegistrationPromise: Promise<string | null> | null = null;
+
+  /**
+   * Ensure FCM token is registered before proceeding
+   */
+  async ensureTokenRegistered(): Promise<string | null> {
+    // If token is already registered, return it
+    const existingToken = this.currentToken();
+    if (existingToken) {
+      console.log('Token already registered, reusing existing token');
+      return existingToken;
+    }
+    
+    // If registration is in progress, wait for it
+    if (this.tokenRegistrationPromise) {
+      console.log('Token registration in progress, waiting...');
+      const result = await this.tokenRegistrationPromise;
+      console.log('Token registration completed:', result ? 'success' : 'failed');
+      return result;
+    }
+    
+    // Start new registration
+    console.log('Starting new token registration...');
+    this.tokenRegistrationPromise = this.requestPermissionAndGetToken();
+    const result = await this.tokenRegistrationPromise;
+    console.log('New token registration completed:', result ? 'success' : 'failed');
+    return result;
+  }
 
   /**
    * Request notification permission and get FCM token
@@ -80,15 +110,33 @@ export class FirebaseMessagingService {
       const deviceType = this.getDeviceType();
       const deviceName = this.getDeviceName();
 
-      await this.deviceTokenService.registerToken({
+      console.log('Registering device token with backend...', { 
+        tokenLength: token?.length,
+        deviceType, 
+        deviceName,
+        user: this.authService.currentUser()
+      });
+
+      const registerTokenRequest = {
         token,
         deviceType,
         deviceName
-      });
+      }
 
-      console.log('Device token registered with backend');
+      console.log("Register Token Request:");
+      console.log(registerTokenRequest);
+
+      const response = await this.deviceTokenService.registerToken(registerTokenRequest);
+
+      console.log('Device token registration response:', JSON.stringify(response));
+      
+      if (!response || (response as any).success === false) {
+        throw new Error('Token registration failed: ' + JSON.stringify(response));
+      }
     } catch (error) {
       console.error('Failed to register token with backend:', error);
+      // Re-throw to signal that initialization failed
+      throw error;
     }
   }
 
@@ -97,11 +145,40 @@ export class FirebaseMessagingService {
    */
   async subscribeToSession(sessionId: string): Promise<void> {
     try {
+      // Ensure token is registered before subscribing to session
+      let token = await this.ensureTokenRegistered();
+      
+      if (!token) {
+        console.error('Failed to register FCM token. Subscription skipped.');
+        // Don't throw - allow user to continue without notifications
+        return;
+      }
+      
+      console.log('Subscribing to session with token:', token.substring(0, 20) + '...');
+      
       await this.deviceTokenService.subscribeToSession({ sessionId });
-      console.log(`Subscribed to session: ${sessionId}`);
-    } catch (error) {
+      console.log(`Successfully subscribed to session: ${sessionId}`);
+    } catch (error: any) {
       console.error(`Failed to subscribe to session ${sessionId}:`, error);
-      throw error;
+      
+      // If we get "No active device tokens found", try to re-register the token
+      if (error?.message?.includes('No active device tokens found')) {
+        console.log('Attempting to re-register token...');
+        this.tokenRegistrationPromise = null; // Reset promise to force re-registration
+        this.currentToken.set(null); // Reset token
+        
+        const token = await this.ensureTokenRegistered();
+        if (token) {
+          console.log('Token re-registered, retrying subscription...');
+          // Retry subscription
+          await this.deviceTokenService.subscribeToSession({ sessionId });
+          console.log(`Successfully subscribed to session after retry: ${sessionId}`);
+          return;
+        }
+      }
+      
+      // Don't throw - allow user to continue without notifications
+      console.warn('Subscription failed, but allowing user to continue without notifications');
     }
   }
 
