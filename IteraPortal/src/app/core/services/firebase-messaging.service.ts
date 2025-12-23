@@ -199,7 +199,7 @@ export class FirebaseMessagingService {
    */
   listenForMessages(): void {
     onMessage(this.messaging, (payload) => {
-      console.log('Foreground message received:', payload);
+      console.log('[FCM] Foreground message received:', payload);
 
       // Parse data payload
       if (payload.data) {
@@ -211,10 +211,15 @@ export class FirebaseMessagingService {
           timestamp: payload.data['timestamp'] || new Date().toISOString()
         };
 
+        console.log('[FCM] Parsed message:', message);
+        console.log('[FCM] Setting latestMessage signal...');
+        
         // Update the latest message signal
         this.latestMessage.set(message);
-
-        console.log('Parsed FCM message:', message);
+        
+        console.log('[FCM] Latest message signal updated');
+      } else {
+        console.warn('[FCM] No data payload in message');
       }
 
       // Show notification if present (for notification + data messages)

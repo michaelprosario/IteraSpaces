@@ -58,6 +58,8 @@ export class LeanSessionStateService {
   async loadSession(sessionId: string): Promise<void> {
     try {
       console.log('[LeanSessionStateService] Loading session:', sessionId);
+      console.log('[LeanSessionStateService] Current topics before load:', this.topicsSignal().length);
+      
       const sessionData = await this.leanSessionsService.getLeanSession({ sessionId });
       
       console.log('[LeanSessionStateService] Session data received:', sessionData);
@@ -74,8 +76,10 @@ export class LeanSessionStateService {
       
       // Map topics
       if (sessionData.topics && Array.isArray(sessionData.topics)) {
-        console.log('[LeanSessionStateService] Setting topics:', sessionData.topics.length);
+        console.log('[LeanSessionStateService] Setting topics count:', sessionData.topics.length);
+        console.log('[LeanSessionStateService] Topic IDs:', sessionData.topics.map((t: any) => t.id));
         this.topicsSignal.set(sessionData.topics);
+        console.log('[LeanSessionStateService] Topics signal updated, new count:', this.topicsSignal().length);
         
         // Load user's votes from the votes array
         const currentUser = this.authService.currentUser();

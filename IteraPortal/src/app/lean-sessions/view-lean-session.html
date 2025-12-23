@@ -1,6 +1,7 @@
 <div class="session-container">
   <!-- Connection Status Indicator -->
-  <div class="connection-status" 
+  <div  style="display:none"
+      class="connection-status" 
        [class.connected]="connectionState() === 'connected'"
        [class.reconnecting]="connectionState() === 'reconnecting'"
        [class.error]="connectionState() === 'error'">
@@ -26,11 +27,15 @@
 
   <!-- Session Content -->
   <div *ngIf="!isLoading() && !errorMessage() && session()">
+
+
     <!-- Participant List -->
+    <!-- 
     <app-participant-list 
       [participants]="participants()"
       [facilitatorId]="session()?.facilitatorId || ''">
     </app-participant-list>
+    -->
 
     <!-- Session Header -->
     <app-session-header 
@@ -53,10 +58,13 @@
     </app-kanban-board>
 
     <!-- Session Notes -->
+
+    <!-- 
     <app-session-notes 
       [sessionId]="sessionId()"
       [notes]="notes()">
     </app-session-notes>
+    -->
   </div>
 
   <!-- Add/Edit Topic Modal -->
@@ -67,4 +75,12 @@
     (topicSaved)="onTopicSaved()"
     (modalClosed)="onModalClosed()">
   </app-add-topic-modal>
+
+  <!-- Confirmation Dialog -->
+  <app-confirmation-dialog
+    *ngIf="showConfirmDialog() && confirmDialogConfig()"
+    [config]="confirmDialogConfig()!"
+    (confirmed)="onConfirmDelete()"
+    (cancelled)="onCancelDelete()">
+  </app-confirmation-dialog>
 </div>

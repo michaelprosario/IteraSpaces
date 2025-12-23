@@ -86,7 +86,23 @@ export class ApiService {
   }
 
   private processError(error: any): any {
-    if (error.error instanceof ErrorEvent) {
+    console.error('[ApiService] Error details:', {
+      status: error.status,
+      statusText: error.statusText,
+      message: error.message,
+      url: error.url,
+      error: error.error
+    });
+
+    if (error.status === 0) {
+      // Network error or CORS issue
+      const err: any = new Error(
+        'Unable to connect to the server. Please ensure the backend is running and CORS is configured correctly.'
+      );
+      err.status = 0;
+      err.originalError = error;
+      return err;
+    } else if (error.error instanceof ErrorEvent) {
       // Client-side error
       const err: any = new Error(error.error.message);
       err.status = 0;

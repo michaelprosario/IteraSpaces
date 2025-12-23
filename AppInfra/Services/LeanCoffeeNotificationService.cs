@@ -210,6 +210,28 @@ public class LeanCoffeeNotificationService : ILeanCoffeeNotificationService
         }
     }
     
+    public async Task NotifyTopicDeletedAsync(string sessionId, string topicId)
+    {
+        try
+        {
+            var data = new Dictionary<string, string>
+            {
+                { "eventType", "topic_deleted" },
+                { "sessionId", sessionId },
+                { "topicId", topicId },
+                { "timestamp", DateTime.UtcNow.ToString("O") }
+            };
+            
+            await _fcmService.SendDataToTopicAsync($"session_{sessionId}", data);
+            
+            _logger.LogInformation("Sent FCM notification for topic deleted: {TopicId} in session {SessionId}", topicId, sessionId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to send topic deleted notification for topic {TopicId}", topicId);
+        }
+    }
+    
     public async Task NotifyTopicStatusChangedAsync(string sessionId, string topicId, TopicStatus newStatus)
     {
         try

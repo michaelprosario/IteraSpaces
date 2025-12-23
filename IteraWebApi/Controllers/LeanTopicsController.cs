@@ -151,7 +151,20 @@ public class LeanTopicsController : ControllerBase
         var userId = "SYSTEM"; // TODO: Get from auth context
         command.UserId = userId;
 
+        // Get topic details before deletion to retrieve sessionId
+        var topicQuery = new GetEntityByIdQuery(command.EntityId);
+        var topicResult = await _topicService.GetEntityByIdAsync(topicQuery);
+        
         var result = await _topicService.DeleteEntityAsync(command);
+        
+        if (result.Success && topicResult.Success && topicResult.Data != null)
+        {
+            // Notify all session participants via FCM
+            await _notificationService.NotifyTopicDeletedAsync(
+                topicResult.Data.LeanSessionId, 
+                command.EntityId);
+        }
+        
         return HandleResult(result);
     }
 
