@@ -1,0 +1,81 @@
+<div class="modal fade show d-block" tabindex="-1" role="dialog">
+  <div class="modal-backdrop fade show" (click)="close()"></div>
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-plus-circle me-2"></i>
+          {{ isEditMode ? 'Edit Topic' : 'Add New Topic' }}
+        </h5>
+        <button type="button" class="btn-close" (click)="close()" aria-label="Close"></button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="alert alert-danger" *ngIf="error()">
+          <i class="bi bi-exclamation-triangle me-2"></i>
+          {{ error() }}
+        </div>
+        
+        <div class="mb-3">
+          <label for="topicTitle" class="form-label">
+            Title <span class="text-danger">*</span>
+          </label>
+          <input
+            type="text"
+            class="form-control"
+            id="topicTitle"
+            [value]="title()"
+            (input)="onTitleChange($any($event.target).value)"
+            maxlength="100"
+            placeholder="Enter topic title"
+            [disabled]="isSaving()">
+          <div class="form-text text-end">
+            {{ remainingTitleChars }} characters remaining
+          </div>
+        </div>
+        
+        <div class="mb-3">
+          <label for="topicDescription" class="form-label">
+            Description <span class="text-muted">(optional)</span>
+          </label>
+          <textarea
+            class="form-control"
+            id="topicDescription"
+            rows="4"
+            [value]="description()"
+            (input)="onDescriptionChange($any($event.target).value)"
+            maxlength="500"
+            placeholder="Provide additional details about this topic"
+            [disabled]="isSaving()"></textarea>
+          <div class="form-text text-end">
+            {{ remainingDescriptionChars }} characters remaining
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button 
+          type="button" 
+          class="btn btn-secondary" 
+          (click)="close()"
+          [disabled]="isSaving()">
+          Cancel
+        </button>
+        <button 
+          type="button" 
+          class="btn btn-primary" 
+          (click)="save()"
+          [disabled]="isSaving() || !title().trim()">
+          <span *ngIf="isSaving()">
+            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            Saving...
+          </span>
+          <span *ngIf="!isSaving()">
+            <i class="bi bi-check-lg me-2"></i>
+            {{ isEditMode ? 'Update' : 'Add' }} Topic
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

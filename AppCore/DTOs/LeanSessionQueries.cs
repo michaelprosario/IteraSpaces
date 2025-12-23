@@ -18,9 +18,10 @@ public class GetLeanSessionQuery
 
 public class GetLeanSessionResult
 {
-    public string SessionName { get; set; } = string.Empty;
-    public LeanTopic? CurrentTopic { get; set; }
-    public List<LeanTopic> TopicBacklog { get; set; } = new();
-    public List<LeanTopicVote> TopicVotes { get; set; } = new();
+    public LeanSession? Session { get; set; }
+    public List<LeanTopic> Topics { get; set; } = new();
+    public List<LeanParticipant> Participants { get; set; } = new();
+    public List<LeanSessionNote> Notes { get; set; } = new();
+    public List<LeanTopicVote> Votes { get; set; } = new();
     public List<User> Users { get; set; } = new();
 }

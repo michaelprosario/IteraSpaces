@@ -1,0 +1,23 @@
+<div class="participant-list">
+  <h3 class="participant-list-title">
+    <i class="bi bi-people-fill me-2"></i>
+    Participants
+  </h3>
+  
+  <div class="participant-grid">
+    <div 
+      *ngFor="let participant of participants; trackBy: trackByUserId"
+      class="participant-item"
+      [class.inactive]="!participant.isActive"
+      [title]="participant.userName + (isFacilitator(participant) ? ' (Facilitator)' : '')">
+      
+      <div class="participant-avatar">
+        <span class="avatar-initials">{{ getInitials(participant.userName) }}</span>
+        <span class="status-indicator" *ngIf="participant.isActive"></span>
+        <i class="bi bi-star-fill facilitator-badge" *ngIf="isFacilitator(participant)"></i>
+      </div>
+      
+      <div class="participant-name">{{ participant.userName }}</div>
+    </div>
+  </div>
+</div>

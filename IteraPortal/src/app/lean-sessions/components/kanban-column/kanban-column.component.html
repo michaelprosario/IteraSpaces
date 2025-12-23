@@ -1,0 +1,41 @@
+<div class="kanban-column" [ngClass]="getColumnClass()">
+  <div class="kanban-column-header">
+    <div class="kanban-column-title">
+      <i [class]="getColumnIcon(status)"></i>
+      <span>{{ getColumnTitle(status) }}</span>
+      <span class="column-count badge bg-secondary">{{ topics.length }}</span>
+    </div>
+  </div>
+  
+  <div 
+    class="topic-list"
+    cdkDropList
+    [cdkDropListData]="topics"
+    [id]="'list-' + status"
+    (cdkDropListDropped)="onTopicDropped($event)">
+    
+    <app-topic-card
+      *ngFor="let topic of topics; trackBy: trackByTopicId"
+      [topic]="topic"
+      [isVoted]="currentUserVotes.includes(topic.id)"
+      [isActive]="isDiscussing(topic.status)"
+      [canEdit]="canEditTopic(topic)"
+      cdkDrag
+      (edit)="editTopic.emit(topic.id)"
+      (delete)="deleteTopic.emit(topic.id)"
+      (vote)="voteTopic.emit({ topicId: topic.id, vote: $event })">
+    </app-topic-card>
+    
+    <div class="empty-state" *ngIf="topics.length === 0">
+      <i class="bi bi-inbox" style="font-size: 2rem; color: #ccc;"></i>
+      <p>No topics yet</p>
+    </div>
+  </div>
+  
+  <button 
+    *ngIf="isToDiscuss()"
+    class="add-topic-btn btn btn-outline-primary w-100 mt-3"
+    (click)="addTopic.emit()">
+    <i class="bi bi-plus-circle me-2"></i> Add Topic
+  </button>
+</div>

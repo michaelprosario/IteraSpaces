@@ -10,4 +10,5 @@ public interface ILeanTopicVoteRepository : IRepository<LeanTopicVote>
     Task<List<LeanTopicVote>> GetBySessionIdAsync(string sessionId);
     Task<LeanTopicVote?> GetByTopicAndUserIdAsync(string topicId, string userId);
     Task<int> GetVoteCountForTopicAsync(string topicId);
+    Task<IEnumerable<LeanTopicVote>> GetBySessionAndUserIdAsync(string sessionId, string userId);
 }

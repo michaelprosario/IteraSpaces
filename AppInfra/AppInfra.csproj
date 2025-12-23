@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="FirebaseAdmin" Version="3.4.0" />
     <PackageReference Include="Marten" Version="7.35.0" />
     <PackageReference Include="Marten.AspNetCore" Version="7.35.0" />
     <PackageReference Include="Npgsql" Version="9.0.2" />

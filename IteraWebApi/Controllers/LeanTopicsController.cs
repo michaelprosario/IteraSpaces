@@ -3,6 +3,7 @@ using AppCore.Common;
 using AppCore.DTOs;
 using AppCore.Entities;
 using AppCore.Services;
+using AppCore.Interfaces;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -13,10 +14,17 @@ namespace IteraWebApi.Controllers;
 public class LeanTopicsController : ControllerBase
 {
     private readonly LeanTopicService _topicService;
+    private readonly ILeanCoffeeNotificationService _notificationService;
+    private readonly ILogger<LeanTopicsController> _logger;
 
-    public LeanTopicsController(LeanTopicService topicService)
+    public LeanTopicsController(
+        LeanTopicService topicService,
+        ILeanCoffeeNotificationService notificationService,
+        ILogger<LeanTopicsController> logger)
     {
         _topicService = topicService;
+        _notificationService = notificationService;
+        _logger = logger;
     }
 
     /// <summary>
@@ -54,6 +62,15 @@ public class LeanTopicsController : ControllerBase
         };
 
         var result = await _topicService.StoreEntityAsync(command);
+        
+        if (result.Success && result.Data != null)
+        {
+            // Notify all session participants via FCM
+            await _notificationService.NotifyTopicAddedAsync(
+                result.Data.LeanSessionId, 
+                result.Data.Id);
+        }
+
         return HandleResult(result);
     }
 
@@ -74,6 +91,35 @@ public class LeanTopicsController : ControllerBase
     public async Task<IActionResult> VoteForLeanTopicAsync([FromBody] VoteForLeanTopicCommand command)
     {
         var result = await _topicService.VoteForLeanTopicAsync(command);
+        
+        if (result.Success && result.Data != null)
+        {
+            // Notify all session participants via FCM
+            await _notificationService.NotifyVoteCastAsync(
+                command.LeanSessionId, 
+                command.LeanTopicId, 
+                command.UserId);
+        }
+
+        return HandleResult(result);
+    }
+
+    /// <summary>
+    /// Remove vote from a topic
+    /// </summary>
+    [HttpPost("RemoveVote")]
+    public async Task<IActionResult> RemoveVote([FromBody] RemoveVoteCommand command)
+    {
+        var result = await _topicService.RemoveVoteAsync(command.TopicId, command.UserId);
+        
+        if (result.Success && result.Data != null)
+        {
+            await _notificationService.NotifyVoteRemovedAsync(
+                command.SessionId, 
+                command.TopicId, 
+                command.UserId);
+        }
+
         return HandleResult(result);
     }
 
@@ -84,6 +130,15 @@ public class LeanTopicsController : ControllerBase
     public async Task<IActionResult> SetTopicStatusAsync([FromBody] SetTopicStatusCommand command)
     {
         var result = await _topicService.SetTopicStatusAsync(command);
+        
+        if (result.Success && result.Data != null)
+        {
+            await _notificationService.NotifyTopicStatusChangedAsync(
+                result.Data.LeanSessionId, 
+                command.TopicId, 
+                result.Data.Status);
+        }
+
         return HandleResult(result);
     }
 

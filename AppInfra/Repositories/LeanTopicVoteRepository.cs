@@ -50,4 +50,12 @@ public class LeanTopicVoteRepository : Repository<LeanTopicVote>, ILeanTopicVote
         return await session.Query<LeanTopicVote>()
             .CountAsync(v => v.LeanTopicId == topicId && !v.IsDeleted);
     }
+
+    public async Task<IEnumerable<LeanTopicVote>> GetBySessionAndUserIdAsync(string sessionId, string userId)
+    {
+        using var session = _documentStore.QuerySession();
+        return await session.Query<LeanTopicVote>()
+            .Where(v => v.LeanSessionId == sessionId && v.UserId == userId && !v.IsDeleted)
+            .ToListAsync();
+    }
 }

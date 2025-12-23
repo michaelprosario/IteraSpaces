@@ -1,0 +1,56 @@
+<div 
+  class="topic-card"
+  [class.active]="isActive"
+  [class.voted]="isVoted">
+  
+  <div class="topic-header">
+    <div class="topic-title" (click)="toggleExpanded()">
+      <i class="bi bi-lightbulb-fill me-2" *ngIf="isActive"></i>
+      {{ topic.title }}
+    </div>
+    
+    <span class="badge bg-success active-badge" *ngIf="isActive">ACTIVE</span>
+  </div>
+  
+  <div class="topic-description" *ngIf="isExpanded() && topic.description">
+    {{ topic.description }}
+  </div>
+  
+  <div class="topic-meta">
+    <div class="topic-author">
+      <span class="author-avatar">{{ getInitials(topic.authorName) }}</span>
+      <span class="author-name">{{ topic.authorName }}</span>
+    </div>
+    
+    <div class="topic-actions">
+      <button 
+        class="btn btn-sm vote-badge"
+        [class.voted]="isVoted"
+        (click)="onVoteClick()"
+        title="Vote for this topic">
+        <i class="bi" 
+           [class.bi-hand-thumbs-up-fill]="isVoted" 
+           [class.bi-hand-thumbs-up]="!isVoted"></i>
+        <span class="vote-count">{{ topic.voteCount }}</span>
+      </button>
+      
+      <div class="dropdown" *ngIf="canEdit">
+        <button class="btn btn-sm btn-link" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="bi bi-three-dots-vertical"></i>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li>
+            <a class="dropdown-item" (click)="edit.emit()">
+              <i class="bi bi-pencil me-2"></i> Edit
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item text-danger" (click)="delete.emit()">
+              <i class="bi bi-trash me-2"></i> Delete
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

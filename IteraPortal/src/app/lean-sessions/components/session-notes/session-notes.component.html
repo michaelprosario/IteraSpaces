@@ -1,0 +1,29 @@
+<div class="session-notes">
+  <h3 class="notes-title">
+    <i class="bi bi-journal-text me-2"></i>
+    Session Notes
+  </h3>
+  
+  <div class="notes-list" *ngIf="notes.length > 0">
+    <div 
+      *ngFor="let note of notes; trackBy: trackByNoteId"
+      class="note-item">
+      <div class="note-header">
+        <span class="badge" [class]="getNoteTypeBadgeClass(note.noteType)">
+          <i class="bi" [class]="getNoteTypeIcon(note.noteType)"></i>
+          {{ note.noteType }}
+        </span>
+        <span class="note-meta">
+          <span class="note-author">{{ note.authorName }}</span>
+          <span class="note-time">{{ formatDate(note.createdAt) }}</span>
+        </span>
+      </div>
+      <div class="note-content">{{ note.content }}</div>
+    </div>
+  </div>
+  
+  <div class="empty-state" *ngIf="notes.length === 0">
+    <i class="bi bi-journal" style="font-size: 2rem; color: #ccc;"></i>
+    <p>No notes yet</p>
+  </div>
+</div>

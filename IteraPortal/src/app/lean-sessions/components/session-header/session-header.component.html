@@ -1,0 +1,34 @@
+<div class="session-header" *ngIf="session">
+  <div class="session-info">
+    <div class="session-title-row">
+      <h1 class="session-title">{{ session.title }}</h1>
+      <span class="badge" [class]="getStatusBadgeClass(session.status)">
+        {{ session.status }}
+      </span>
+    </div>
+    
+    <p class="session-description" *ngIf="session.description">
+      {{ session.description }}
+    </p>
+    
+    <div class="session-meta">
+      <span class="meta-item">
+        <i class="bi bi-calendar3"></i>
+        {{ formatDate(session.startTime) }}
+      </span>
+      <span class="meta-item">
+        <i class="bi bi-people"></i>
+        {{ getActiveParticipants().length }} participants
+      </span>
+    </div>
+  </div>
+  
+  <div class="session-actions">
+    <button class="btn btn-outline-secondary" (click)="exportSession.emit()">
+      <i class="bi bi-download me-2"></i> Export
+    </button>
+    <button class="btn btn-danger" (click)="endSession.emit()">
+      <i class="bi bi-stop-circle me-2"></i> End Session
+    </button>
+  </div>
+</div>

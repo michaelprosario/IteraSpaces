@@ -3,6 +3,7 @@ using AppCore.Common;
 using AppCore.DTOs;
 using AppCore.Entities;
 using AppCore.Services;
+using AppCore.Interfaces;
 using System.Threading.Tasks;
 
 namespace IteraWebApi.Controllers;
@@ -13,13 +14,16 @@ public class LeanSessionsController : ControllerBase
 {
     private readonly LeanSessionService _sessionService;
     private readonly LeanSessionQueryService _queryService;
+    private readonly ILeanCoffeeNotificationService _notificationService;
 
     public LeanSessionsController(
         LeanSessionService sessionService,
-        LeanSessionQueryService queryService)
+        LeanSessionQueryService queryService,
+        ILeanCoffeeNotificationService notificationService)
     {
         _sessionService = sessionService;
         _queryService = queryService;
+        _notificationService = notificationService;
     }
 
     /// <summary>
@@ -120,6 +124,28 @@ public class LeanSessionsController : ControllerBase
         command.UserId = userId;
 
         var result = await _sessionService.DeleteEntityAsync(command);
+        return HandleResult(result);
+    }
+
+    /// <summary>
+    /// Change session status
+    /// </summary>
+    [HttpPost("ChangeSessionStatus")]
+    public async Task<IActionResult> ChangeSessionStatus([FromBody] ChangeSessionStatusCommand command)
+    {
+        var userId = "SYSTEM"; // TODO: Get from auth context
+        var result = await _sessionService.ChangeSessionStatusAsync(
+            command.SessionId, 
+            command.NewStatus, 
+            userId);
+        
+        if (result.Success && result.Data != null)
+        {
+            await _notificationService.NotifySessionStateChangedAsync(
+                command.SessionId, 
+                command.NewStatus);
+        }
+
         return HandleResult(result);
     }
 
