@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ChallengesService, Challenge } from '../core/services/challenges.service';
@@ -24,6 +24,7 @@ export class ViewChallenge implements OnInit {
   private authService = inject(AuthService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
   challenge: Challenge | null = null;
   phasesWithPosts: PhaseWithPosts[] = [];
@@ -50,6 +51,7 @@ export class ViewChallenge implements OnInit {
       if (!userId) {
         this.error = 'You must be logged in to view challenges';
         this.loading = false;
+        this.cdr.detectChanges();
         return;
       }
 
@@ -59,6 +61,7 @@ export class ViewChallenge implements OnInit {
         challengeId 
       });
       this.challenge = challengeResult.challenge;
+      this.cdr.detectChanges();
 
       // Load phases
       const phasesResult = await this.challengePhasesService.list({ 
@@ -82,12 +85,15 @@ export class ViewChallenge implements OnInit {
           return { phase, posts: posts || [] };
         })
       );
+      this.cdr.detectChanges();
 
     } catch (err: any) {
       console.error('Error loading challenge:', err);
       this.error = err.message || 'Failed to load challenge';
+      this.cdr.detectChanges();
     } finally {
       this.loading = false;
+      this.cdr.detectChanges();
     }
   }
 
@@ -132,7 +138,7 @@ export class ViewChallenge implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/list-challenges']);
+    this.router.navigate(['/challenges/list']);
   }
 
   editChallenge() {

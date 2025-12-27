@@ -122,6 +122,11 @@ export const routes: Routes = [
         path: 'edit/:id',
         loadComponent: () => import('./edit-challenge/edit-challenge')
           .then(m => m.EditChallenge)
+      },
+      {
+        path: 'view/:id',
+        loadComponent: () => import('./view-challenge/view-challenge')
+          .then(m => m.ViewChallenge)
       }
     ]
   },

@@ -60,7 +60,7 @@ export class ListChallenges implements OnInit {
   }
 
   navigateToViewChallenge(challengeId: string): void {
-    this.router.navigate(['/view-challenge', challengeId]);
+    this.router.navigate(['/challenges/view', challengeId]);
   }
 
   getStatusLabel(status?: ChallengeStatus): string {
