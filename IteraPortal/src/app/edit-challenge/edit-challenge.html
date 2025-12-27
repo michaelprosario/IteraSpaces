@@ -1,0 +1,195 @@
+<div class="edit-challenge-container">
+  <header class="page-header">
+    <h1>{{ isEditMode ? 'Edit Challenge' : 'Add Challenge' }}</h1>
+    <div class="header-actions">
+      <button class="btn-secondary" (click)="cancel()">Cancel</button>
+      <button class="btn-danger" *ngIf="isEditMode" (click)="deleteChallenge()" [disabled]="loading">
+        Delete Challenge
+      </button>
+    </div>
+  </header>
+
+  <div class="success-message" *ngIf="successMessage">
+    {{ successMessage }}
+  </div>
+
+  <div class="error-message" *ngIf="error">
+    {{ error }}
+  </div>
+
+  <div class="loading-message" *ngIf="loading">
+    Loading challenge...
+  </div>
+
+  <div class="challenge-form" *ngIf="!loading">
+    <form>
+      <div class="form-section">
+        <h2>Challenge Details</h2>
+        
+        <div class="form-group">
+          <label for="name">Name *</label>
+          <input 
+            id="name" 
+            name="name"
+            type="text" 
+            [(ngModel)]="challenge.name"
+            [ngModelOptions]="{standalone: true}"
+            placeholder="Enter challenge name"
+            class="form-control"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea 
+            id="description" 
+            name="description"
+            [(ngModel)]="challenge.description"
+            [ngModelOptions]="{standalone: true}"
+            placeholder="Enter challenge description"
+            class="form-control"
+            rows="5"
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="category">Category</label>
+          <input 
+            id="category" 
+            name="category"
+            type="text" 
+            [(ngModel)]="challenge.category"
+            [ngModelOptions]="{standalone: true}"
+            placeholder="Enter category"
+            class="form-control"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="imageUrl">Image URL</label>
+          <input 
+            id="imageUrl" 
+            name="imageUrl"
+            type="text" 
+            [(ngModel)]="challenge.imageUrl"
+            [ngModelOptions]="{standalone: true}"
+            placeholder="Enter image URL"
+            class="form-control"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="status">Status</label>
+          <select 
+            id="status" 
+            name="status"
+            [(ngModel)]="challenge.status"
+            [ngModelOptions]="{standalone: true}"
+            class="form-control"
+          >
+            <option [ngValue]="ChallengeStatus.Draft">Draft</option>
+            <option [ngValue]="ChallengeStatus.Open">Open</option>
+            <option [ngValue]="ChallengeStatus.Closed">Closed</option>
+            <option [ngValue]="ChallengeStatus.Archived">Archived</option>
+          </select>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-primary" (click)="saveChallenge()" [disabled]="savingChallenge">
+            {{ savingChallenge ? 'Saving...' : (isEditMode ? 'Update Challenge' : 'Create Challenge') }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Phases Section - Only show in edit mode -->
+      <div class="form-section" *ngIf="isEditMode">
+      <h2>Challenge Phases</h2>
+      
+      <div class="error-message" *ngIf="phaseError">
+        {{ phaseError }}
+      </div>
+
+      <!-- Existing Phases -->
+      <div class="phases-list">
+        <div class="phase-card" *ngFor="let phase of phases; let i = index">
+          <div class="phase-header">
+            <h3>{{ phase.name }}</h3>
+            <button class="btn-icon-danger" (click)="deletePhase(phase.id!)" title="Delete phase">
+              ✕
+            </button>
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea 
+              [name]="'phaseDescription' + i"
+              [(ngModel)]="phase.description" 
+              class="form-control"
+              rows="2"
+            ></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Status</label>
+              <select 
+                [name]="'phaseStatus' + i"
+                [(ngModel)]="phase.status" 
+                class="form-control">
+                <option [ngValue]="ChallengePhaseStatus.NotStarted">Not Started</option>
+                <option [ngValue]="ChallengePhaseStatus.Active">Active</option>
+                <option [ngValue]="ChallengePhaseStatus.Completed">Completed</option>
+                <option [ngValue]="ChallengePhaseStatus.Archived">Archived</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Display Order</label>
+              <input 
+                [name]="'phaseDisplayOrder' + i"
+                type="number" 
+                [(ngModel)]="phase.displayOrder" 
+                class="form-control"
+              />
+            </div>
+          </div>
+          <div class="phase-actions">
+            <button class="btn-small" (click)="savePhase(phase)" [disabled]="savingPhases">
+              Save Phase
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add New Phase Form -->
+      <div class="add-phase-form">
+        <h3>Add New Phase</h3>
+        <div class="form-group">
+          <label for="newPhaseName">Phase Name *</label>
+          <input 
+            id="newPhaseName" 
+            name="newPhaseName"
+            type="text" 
+            [(ngModel)]="newPhase.name" 
+            placeholder="Enter phase name"
+            class="form-control"
+          />
+        </div>
+        <div class="form-group">
+          <label for="newPhaseDescription">Description</label>
+          <textarea 
+            id="newPhaseDescription" 
+            name="newPhaseDescription"
+            [(ngModel)]="newPhase.description" 
+            placeholder="Enter phase description"
+            class="form-control"
+            rows="2"
+          ></textarea>
+        </div>
+        <div class="form-actions">
+          <button class="btn-secondary" (click)="addPhase()">
+            Add Phase
+          </button>
+        </div>
+      </div>
+    </div>
+    </form>
+  </div>
+</div>

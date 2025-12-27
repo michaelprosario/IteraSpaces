@@ -68,6 +68,11 @@ builder.Services.AddMarten(options =>
     options.Schema.For<AppCore.Entities.LeanTopicVote>().Identity(x => x.Id);
     options.Schema.For<AppCore.Entities.LeanSessionNote>().Identity(x => x.Id);
     options.Schema.For<AppCore.Entities.UserDeviceToken>().Identity(x => x.Id);
+    options.Schema.For<AppCore.Entities.Challenge>().Identity(x => x.Id);
+    options.Schema.For<AppCore.Entities.ChallengePhase>().Identity(x => x.Id);
+    options.Schema.For<AppCore.Entities.ChallengePost>().Identity(x => x.Id);
+    options.Schema.For<AppCore.Entities.ChallengePostVote>().Identity(x => x.Id);
+    options.Schema.For<AppCore.Entities.ChallengePostComment>().Identity(x => x.Id);
     
     // Add indexes for commonly queried fields
     options.Schema.For<AppCore.Entities.User>()
@@ -101,6 +106,28 @@ builder.Services.AddMarten(options =>
         .Index(x => x.UserId)
         .Index(x => x.DeviceToken)
         .Index(x => x.IsActive);
+    
+    options.Schema.For<AppCore.Entities.Challenge>()
+        .Index(x => x.Status)
+        .Index(x => x.CreatedByUserId)
+        .Index(x => x.Category);
+    
+    options.Schema.For<AppCore.Entities.ChallengePhase>()
+        .Index(x => x.ChallengeId)
+        .Index(x => x.Status);
+    
+    options.Schema.For<AppCore.Entities.ChallengePost>()
+        .Index(x => x.ChallengePhaseId)
+        .Index(x => x.SubmittedByUserId)
+        .Index(x => x.Status);
+    
+    options.Schema.For<AppCore.Entities.ChallengePostVote>()
+        .Index(x => x.ChallengePostId)
+        .Index(x => x.UserId);
+    
+    options.Schema.For<AppCore.Entities.ChallengePostComment>()
+        .Index(x => x.ChallengePostId)
+        .Index(x => x.UserId);
 });
 
 // Add CORS
@@ -139,6 +166,12 @@ builder.Services.AddScoped<LeanSessionService>();
 builder.Services.AddScoped<LeanParticipantService>();
 builder.Services.AddScoped<LeanTopicService>();
 builder.Services.AddScoped<LeanSessionQueryService>();
+builder.Services.AddScoped<ChallengeService>();
+builder.Services.AddScoped<ChallengePhaseService>();
+builder.Services.AddScoped<ChallengePostService>();
+builder.Services.AddScoped<ChallengeQueryService>();
+builder.Services.AddScoped<ChallengePhaseQueryService>();
+builder.Services.AddScoped<ChallengePostQueryService>();
 
 // Register FCM Services
 builder.Services.AddScoped<IFirebaseMessagingService, FirebaseMessagingService>();
@@ -159,6 +192,11 @@ builder.Services.AddScoped<ILeanParticipantRepository, AppInfra.Repositories.Lea
 builder.Services.AddScoped<ILeanTopicRepository, AppInfra.Repositories.LeanTopicRepository>();
 builder.Services.AddScoped<ILeanTopicVoteRepository, AppInfra.Repositories.LeanTopicVoteRepository>();
 builder.Services.AddScoped<ILeanSessionNoteRepository, AppInfra.Repositories.LeanSessionNoteRepository>();
+builder.Services.AddScoped<IChallengeRepository, AppInfra.Repositories.ChallengeRepository>();
+builder.Services.AddScoped<IChallengePhaseRepository, AppInfra.Repositories.ChallengePhaseRepository>();
+builder.Services.AddScoped<IChallengePostRepository, AppInfra.Repositories.ChallengePostRepository>();
+builder.Services.AddScoped<IChallengePostVoteRepository, AppInfra.Repositories.ChallengePostVoteRepository>();
+builder.Services.AddScoped<IChallengePostCommentRepository, AppInfra.Repositories.ChallengePostCommentRepository>();
 
 // Register AppInfra External Services
 builder.Services.AddSingleton<IAuthenticationService, FirebaseAuthenticationService>();

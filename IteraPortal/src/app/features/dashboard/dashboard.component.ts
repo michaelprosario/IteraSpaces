@@ -50,4 +50,8 @@ export class DashboardComponent {
     this.router.navigate(['/lean-sessions/list']);
   }
 
+  navigateToListChallenges(): void {
+    this.router.navigate(['/challenges/list']);
+  }
+
 }

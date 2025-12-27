@@ -21,8 +21,6 @@ import { TopicStatus } from './models/lean-session.models';
     CommonModule,
     KanbanBoardComponent,
     SessionHeaderComponent,
-    ParticipantListComponent,
-    SessionNotesComponent,
     AddTopicModalComponent,
     ConfirmationDialogComponent
   ],

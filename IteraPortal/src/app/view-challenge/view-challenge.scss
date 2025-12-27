@@ -1,0 +1,110 @@
+// View Challenge Component Styles
+
+// Card hover effect
+.hover-shadow {
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15) !important;
+  }
+}
+
+// Phase header styling
+.card-header {
+  border-bottom: 2px solid #dee2e6;
+}
+
+// Smooth transitions for badges
+.badge {
+  transition: all 0.2s ease;
+}
+
+// Post card styling
+.card {
+  overflow: hidden;
+  
+  .card-img-top {
+    transition: transform 0.3s ease;
+  }
+  
+  &:hover .card-img-top {
+    transform: scale(1.05);
+  }
+}
+
+// Button hover effects
+.btn {
+  transition: all 0.2s ease;
+}
+
+// Loading spinner container
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .display-5 {
+    font-size: 2rem;
+  }
+  
+  .card-body {
+    padding: 1rem;
+  }
+}
+
+// Tag styling
+.badge.bg-light {
+  border: 1px solid #dee2e6;
+  font-weight: 500;
+}
+
+// Empty state styling
+.text-muted {
+  &.fs-1 {
+    opacity: 0.3;
+  }
+}
+
+// Status badge colors
+.badge {
+  &.bg-secondary {
+    background-color: #6c757d !important;
+  }
+  
+  &.bg-success {
+    background-color: #198754 !important;
+  }
+  
+  &.bg-danger {
+    background-color: #dc3545 !important;
+  }
+  
+  &.bg-warning {
+    background-color: #ffc107 !important;
+    color: #000 !important;
+  }
+  
+  &.bg-primary {
+    background-color: #0d6efd !important;
+  }
+  
+  &.bg-dark {
+    background-color: #212529 !important;
+  }
+}
+
+// Card text truncation
+.card-text {
+  line-height: 1.5;
+}
+
+// Image styling
+img {
+  &.img-fluid {
+    max-width: 100%;
+    height: auto;
+  }
+}

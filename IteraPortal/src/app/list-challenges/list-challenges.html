@@ -1,0 +1,48 @@
+<div class="list-challenges-container">
+  <header class="page-header">
+    <h1>Challenges</h1>
+    <button class="btn-add" (click)="navigateToAddChallenge()">
+      Add Challenge
+    </button>
+  </header>
+
+  <div class="error-message" *ngIf="error">
+    {{ error }}
+  </div>
+
+  <div class="loading-message" *ngIf="loading">
+    Loading challenges...
+  </div>
+
+  <div class="challenges-grid" *ngIf="!loading && !error">
+    <div class="challenge-card" *ngFor="let challenge of challenges">
+      <div class="challenge-image" *ngIf="challenge.imageUrl">
+        <img [src]="challenge.imageUrl" [alt]="challenge.name" />
+      </div>
+      <div class="challenge-content">
+        <h3>{{ challenge.name }}</h3>
+        <p class="challenge-description">{{ challenge.description }}</p>
+        <div class="challenge-meta">
+          <span class="challenge-status" [class.active]="challenge.status === ChallengeStatus.Open">
+            {{ getStatusLabel(challenge.status) }}
+          </span>
+          <span class="challenge-category" *ngIf="challenge.category">
+            {{ challenge.category }}
+          </span>
+        </div>
+        <div class="challenge-actions">
+          <button class="btn-view" (click)="navigateToViewChallenge(challenge.id!)" title="View challenge details">
+            View
+          </button>
+          <button class="btn-edit" (click)="navigateToEditChallenge(challenge.id!)" title="Edit challenge">
+            Edit
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="empty-state" *ngIf="!loading && !error && challenges.length === 0">
+    <p>No challenges found. Create your first challenge!</p>
+  </div>
+</div>
