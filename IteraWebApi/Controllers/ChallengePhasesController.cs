@@ -33,12 +33,13 @@ public class ChallengePhasesController : ControllerBase
     public async Task<IActionResult> ListPhases([FromBody] GetChallengePhasesQuery query)
     {
         var result = await _queryService.GetChallengePhasesAsync(query);
-        return Ok(new AppResult<List<ChallengePhase>>
+        var appResult = new AppResult<List<ChallengePhase>>
         {
             Success = true,
             Data = result,
             Message = "Challenge phases retrieved successfully"
-        });
+        };
+        return HandleResult(appResult);
     }
 
     /// <summary>
