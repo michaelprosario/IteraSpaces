@@ -24,3 +24,9 @@ Please make sure to assign a guid id on the new challenge instance when creating
 
 when the edit challenge screen loads, the data fields are not populated.
 
+====
+
+- explore Designs/openapi.json
+- make an html/css/bootstrap prototype of the view challenge screen
+- list phases for challenge on the screen
+- each phase should have cards for each challenge post

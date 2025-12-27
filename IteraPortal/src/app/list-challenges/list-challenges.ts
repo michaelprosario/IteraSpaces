@@ -59,6 +59,10 @@ export class ListChallenges implements OnInit {
     this.router.navigate(['/challenges/edit', challengeId]);
   }
 
+  navigateToViewChallenge(challengeId: string): void {
+    this.router.navigate(['/view-challenge', challengeId]);
+  }
+
   getStatusLabel(status?: ChallengeStatus): string {
     switch (status) {
       case ChallengeStatus.Draft:
