@@ -25,6 +25,28 @@ export interface Challenge {
   isDeleted?: boolean;
 }
 
+export interface ChallengePhase {
+  id?: string;
+  challengeId?: string;
+  name?: string;
+  description?: string;
+  status?: number;
+  displayOrder?: number;
+  createdAt?: Date;
+  createdBy?: string;
+  updatedAt?: Date;
+  updatedBy?: string;
+  deletedAt?: Date;
+  deletedBy?: string;
+  isDeleted?: boolean;
+}
+
+export interface GetChallengeResult {
+  challenge: Challenge;
+  phases: ChallengePhase[];
+  totalPosts: number;
+}
+
 export interface GetChallengesQuery {
   userId?: string;
   pageNumber?: number;
@@ -58,8 +80,8 @@ export class ChallengesService {
     return this.apiService.post<Challenge[]>('/api/Challenges/list', query);
   }
 
-  async get(query: GetChallengeQuery): Promise<Challenge> {
-    return this.apiService.post<Challenge>('/api/Challenges/get', query);
+  async get(query: GetChallengeQuery): Promise<GetChallengeResult> {
+    return this.apiService.post<GetChallengeResult>('/api/Challenges/get', query);
   }
 
   async store(challenge: Challenge): Promise<Challenge> {

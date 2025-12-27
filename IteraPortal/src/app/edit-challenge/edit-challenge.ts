@@ -48,7 +48,6 @@ export class EditChallenge implements OnInit {
     if (id) {
       this.isEditMode = true;
       await this.loadChallenge(id);
-      await this.loadPhases(id);
     } else {
       this.challenge.status = ChallengeStatus.Draft;
     }
@@ -63,15 +62,19 @@ export class EditChallenge implements OnInit {
       
       const userId = this.currentUser()?.id || '';
       console.log('Fetching challenge with id:', id, 'userId:', userId);
-      const loadedChallenge = await this.challengesService.get({ userId, challengeId: id });
-      console.log('Challenge loaded from API:', loadedChallenge);
-      console.log('Challenge name:', loadedChallenge?.name);
-      console.log('Challenge description:', loadedChallenge?.description);
-      console.log('Challenge status:', loadedChallenge?.status);
-      console.log('Challenge category:', loadedChallenge?.category);
+      const result = await this.challengesService.get({ userId, challengeId: id });
+      console.log('Challenge result loaded from API:', result);
+      console.log('Challenge name:', result.challenge?.name);
+      console.log('Challenge description:', result.challenge?.description);
+      console.log('Challenge status:', result.challenge?.status);
+      console.log('Challenge category:', result.challenge?.category);
+      console.log('Phases count:', result.phases?.length);
+      console.log('Total posts:', result.totalPosts);
       
-      // Direct assignment
-      this.challenge = loadedChallenge;
+      // Direct assignment from result
+      this.challenge = result.challenge;
+      this.phases = result.phases || [];
+      this.phases.sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
       console.log('Challenge assigned to component:', this.challenge);
       console.log('this.challenge.name:', this.challenge.name);
       
