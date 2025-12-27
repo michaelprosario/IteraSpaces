@@ -245,8 +245,24 @@ namespace AppCore.UnitTests.Services
                 }
             };
 
+            var role1 = new Role
+            {
+                Id = "role-1",
+                Name = "Admin",
+                Description = "Administrator role"
+            };
+
+            var role2 = new Role
+            {
+                Id = "role-2",
+                Name = "User",
+                Description = "Regular user role"
+            };
+
             _userRepository.GetById(userId).Returns(Task.FromResult<User?>(user));
             _userRoleRepository.GetUserRolesAsync(userId).Returns(Task.FromResult(userRoles));
+            _roleRepository.GetById("role-1").Returns(Task.FromResult<Role?>(role1));
+            _roleRepository.GetById("role-2").Returns(Task.FromResult<Role?>(role2));
 
             var query = new GetUserRolesQuery { UserId = userId };
 

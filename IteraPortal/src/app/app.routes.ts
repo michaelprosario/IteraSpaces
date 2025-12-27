@@ -105,6 +105,27 @@ export const routes: Routes = [
     ]
   },
   {
+    path: 'challenges',
+    canActivate: [authGuard],
+    children: [
+      {
+        path: 'list',
+        loadComponent: () => import('./list-challenges/list-challenges')
+          .then(m => m.ListChallenges)
+      },
+      {
+        path: 'add',
+        loadComponent: () => import('./edit-challenge/edit-challenge')
+          .then(m => m.EditChallenge)
+      },
+      {
+        path: 'edit/:id',
+        loadComponent: () => import('./edit-challenge/edit-challenge')
+          .then(m => m.EditChallenge)
+      }
+    ]
+  },
+  {
     path: '**',
     redirectTo: '/login'
   }
